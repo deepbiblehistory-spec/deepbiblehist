@@ -526,25 +526,61 @@ async function generateVeoPrompts() {
   document.getElementById('veoResults').innerHTML='';
   document.getElementById('veoCopyAllBtn').style.display='none';
   const btn=document.getElementById('veoGenBtn');
-  btn.disabled=true; btn.textContent='GENERATING...';
+  btn.disabled=true;
   document.getElementById('veoStatusBar').style.display='flex';
-  document.getElementById('veoStatusText').textContent='Sending to AI...';
 
-  const prompt='You are a cinematic AI video director for biblical history content.\n\nVIDEO: "'+title+'"\nSTYLE: '+style+'\nDURATION: '+duration+' seconds per scene\nRATIO: '+ratio+'\nCHARACTER: '+charRef+'\n\nDBH VISUAL RULES:\n- Setting: Ancient Middle East, first-century Jerusalem, Judean wilderness, Roman-era architecture\n- Lighting: Chiaroscuro, amber-gold tones, candlelight or harsh sunlight\n- Atmosphere: Dusty, ancient, cinematic weight\n- NO modern elements, NO text overlays\n\nSCRIPT:\n'+script+'\n\nBreak into 8-15 scenes. For each scene use EXACTLY this format:\n---SCENE [N]: [TITLE]---\nVOICEOVER: [script text for this scene]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan]\nVEO PROMPT: [detailed Veo prompt under 150 words]\n---END SCENE---\n\nWrite all scenes now.';
+  // Calculate expected scenes based on script length
+  // Average: 1 scene per 60-80 words for a 38-min video
+  const wordCount=script.split(/\s+/).length;
+  const expectedScenes=Math.ceil(wordCount/70);
+  const wordsPerChunk=Math.ceil(wordCount/Math.ceil(wordCount/70));
 
-  try {
-    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
-    const data=await res.json();
-    if(!data.success) throw new Error(data.error||'Generation failed');
-    renderVeoScenes(data.text||'',title,duration,style,ratio);
-  } catch(err){
-    document.getElementById('veoErrorBox').innerHTML='<div class="err">'+err.message+'. Make sure ANTHROPIC_API_KEY is set in Vercel.</div>';
+  // Split script into chunks of ~1500 words for long scripts
+  const CHUNK_SIZE=1500;
+  const words=script.split(/\s+/);
+  const chunks=[];
+  for(let i=0;i<words.length;i+=CHUNK_SIZE){
+    chunks.push(words.slice(i,i+CHUNK_SIZE).join(' '));
   }
+
+  const allScenes=[];
+  let sceneOffset=0;
+
+  for(let ci=0;ci<chunks.length;ci++){
+    document.getElementById('veoStatusText').textContent='Processing part '+(ci+1)+' of '+chunks.length+'... ('+allScenes.length+' scenes so far)';
+
+    const scenesInChunk=Math.ceil((chunks[ci].split(/\s+/).length/wordCount)*expectedScenes);
+
+    const prompt='You are a cinematic AI video director for biblical history content.\n\nVIDEO: "'+title+'" (Part '+(ci+1)+' of '+chunks.length+')\nSTYLE: '+style+'\nDURATION: '+duration+' seconds per scene\nRATIO: '+ratio+'\nCHARACTER: '+charRef+'\nSTARTING SCENE NUMBER: '+(sceneOffset+1)+'\n\nDBH VISUAL RULES:\n- Ancient Middle East, first-century Jerusalem, Judean wilderness\n- Chiaroscuro lighting, amber-gold tones\n- Dusty, cinematic atmosphere\n- NO modern elements, NO text overlays\n\nSCRIPT SECTION:\n'+chunks[ci]+'\n\nGenerate approximately '+scenesInChunk+' scenes for this section. Use EXACTLY this format:\n---SCENE [N]: [TITLE]---\nVOICEOVER: [exact script text for this scene]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in]\nVEO PROMPT: [detailed cinematic prompt, 80-120 words]\n---END SCENE---\n\nWrite all scenes now.';
+
+    try{
+      const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:8000})});
+      const data=await res.json();
+      if(!data.success) throw new Error(data.error||'Generation failed');
+      const parsed=parseScenes(data.text||'',sceneOffset);
+      allScenes.push(...parsed);
+      sceneOffset+=parsed.length;
+    } catch(err){
+      if(allScenes.length>0){
+        document.getElementById('veoErrorBox').innerHTML='<div class="err">Part '+(ci+1)+' failed: '+err.message+'. Showing '+allScenes.length+' scenes generated so far.</div>';
+        break;
+      } else {
+        document.getElementById('veoErrorBox').innerHTML='<div class="err">'+err.message+'</div>';
+        btn.disabled=false; btn.textContent='GENERATE VEO PROMPTS';
+        document.getElementById('veoStatusBar').style.display='none';
+        return;
+      }
+    }
+  }
+
+  if(allScenes.length>0) renderVeoScenes(allScenes,title,duration,style,ratio);
+  else document.getElementById('veoErrorBox').innerHTML='<div class="err">Could not parse any scenes. Try again.</div>';
+
   btn.disabled=false; btn.textContent='GENERATE VEO PROMPTS';
   document.getElementById('veoStatusBar').style.display='none';
 }
 
-function renderVeoScenes(text,title,duration,style,ratio) {
+function parseScenes(text, offset) {
   const scenes=[];
   const re=/---SCENE (\d+): (.+?)---([\s\S]*?)---END SCENE---/g;
   let m;
@@ -553,10 +589,14 @@ function renderVeoScenes(text,title,duration,style,ratio) {
     const vo=(body.match(/VOICEOVER:\s*([\s\S]*?)(?=SHOT TYPE:|VEO PROMPT:|$)/)||[])[1]||'';
     const shot=(body.match(/SHOT TYPE:\s*(.+?)(?:\n|$)/)||[])[1]||'';
     const vp=(body.match(/VEO PROMPT:\s*([\s\S]*?)(?=---END|$)/)||[])[1]||body.trim();
-    scenes.push({num:m[1],title:m[2].trim(),voiceover:vo.trim(),shotType:shot.trim(),prompt:vp.trim()});
+    scenes.push({num:offset+scenes.length+1,title:m[2].trim(),voiceover:vo.trim(),shotType:shot.trim(),prompt:vp.trim()});
   }
-  if(scenes.length===0){
-    document.getElementById('veoErrorBox').innerHTML='<div class="err">Could not parse scenes. Try again or check your script format.</div>';
+  return scenes;
+}
+
+function renderVeoScenes(scenes,title,duration,style,ratio) {
+  if(!scenes||scenes.length===0){
+    document.getElementById('veoErrorBox').innerHTML='<div class="err">Could not parse scenes. Try again.</div>';
     return;
   }
   window._veoScenes=scenes; window._veoTitle=title;
