@@ -923,7 +923,14 @@ select {
     <p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;margin-bottom:16px;">Generate a fully SEO-optimised YouTube description for your video &mdash; with keywords, timestamps, hashtags, and a CTA structure tuned for the biblical history niche.</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
       <div><label class="lbl">Video Title</label><input type="text" id="seoTitle" placeholder="e.g. The FORBIDDEN Tomb of Jesus..."></div>
-      <div><label class="lbl">Target Keywords (comma separated)</label><input type="text" id="seoKeywords" placeholder="e.g. Jesus tomb, Jerusalem archaeology, Bible history"></div>
+      <div>
+          <label class="lbl">Target Keywords</label>
+          <div style="display:flex;gap:8px;align-items:stretch;">
+            <input type="text" id="seoKeywords" placeholder="Click Scan to auto-generate, or type manually..." style="flex:1;">
+            <button onclick="scanKeywords()" id="scanKeywordsBtn" style="background:transparent;border:1px solid var(--border-bright);border-radius:10px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:0 14px;cursor:pointer;white-space:nowrap;transition:all 0.2s;font-weight:700;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--navy)';" onmouseout="this.style.background='transparent';this.style.color='var(--gold)';">&#128269; SCAN KEYWORDS</button>
+          </div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:5px;font-style:italic;">AI scans your script and extracts the 20 best SEO keywords automatically</p>
+        </div>
     </div>
     <div style="margin-bottom:12px;">
       <label class="lbl">Script Summary or Paste Script</label>
@@ -1726,6 +1733,79 @@ async function generateVeoLineByLine(mode) {
   btn.disabled = false;
   btn.textContent = 'Generate Veo Prompts';
   document.getElementById('veoStatusBar').style.display = 'none';
+}
+
+
+// ─── KEYWORD SCANNER ─────────────────────────────────────────────────────
+async function scanKeywords() {
+  const script = document.getElementById('seoScript').value.trim();
+  const title = document.getElementById('seoTitle').value.trim();
+
+  if (!script && !title) {
+    alert('Please paste your script or enter a video title first, then scan for keywords.');
+    return;
+  }
+
+  const btn = document.getElementById('scanKeywordsBtn');
+  const input = document.getElementById('seoKeywords');
+  const origText = btn.innerHTML;
+  btn.innerHTML = '&#9203; Scanning...';
+  btn.disabled = true;
+  input.value = '';
+  input.placeholder = 'Scanning script for keywords...';
+
+  const prompt = `You are a YouTube SEO specialist for biblical history and Christian content targeting US audiences.
+
+Analyse this content and extract the 20 best SEO keywords for a YouTube video.
+
+VIDEO TITLE: "${title || 'Biblical history video'}"
+SCRIPT/CONTENT: ${(script || title).slice(0, 3000)}
+
+Return ONLY a comma-separated list of 20 keywords — no explanation, no numbering, no extra text.
+
+Rules:
+- Mix short-tail (2-3 words) and long-tail (4-6 words) keywords
+- Include the main topic + related biblical/archaeological terms
+- Include question-based keywords people actually search ("who was...", "what happened to...", "where is...")
+- Include high-volume biblical history search terms
+- NO generic words like "video", "watch", "YouTube"
+- Ordered by search relevance (most important first)
+
+Return only the comma-separated keywords list now.`;
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt, max_tokens: 300})
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Scan failed');
+
+    const keywords = data.text.trim()
+      .replace(/^(Keywords:|SEO Keywords:|Here are.*?:)/i, '')
+      .replace(/\n/g, ', ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    input.value = keywords;
+    input.placeholder = 'Keywords scanned successfully';
+    input.style.borderColor = 'var(--green)';
+    input.style.boxShadow = '0 0 0 3px rgba(77,200,138,0.15)';
+    setTimeout(() => {
+      input.style.borderColor = '';
+      input.style.boxShadow = '';
+    }, 3000);
+
+  } catch(err) {
+    input.placeholder = 'Scan failed — type keywords manually';
+    input.style.borderColor = 'var(--red)';
+    setTimeout(() => { input.style.borderColor = ''; }, 3000);
+    console.error('Keyword scan error:', err.message);
+  }
+
+  btn.innerHTML = origText;
+  btn.disabled = false;
 }
 
 </script>
