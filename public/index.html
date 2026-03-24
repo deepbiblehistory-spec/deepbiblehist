@@ -968,6 +968,291 @@ select {
 
 </div>
 
+
+
+<!-- TAB 4: PRODUCTION TOOLS -->
+<div id="tab-tools" class="tab-panel">
+
+  <!-- TOOL GRID INTRO -->
+  <div class="card"><p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;">10 production tools to make your DBH workflow seamless &mdash; from thumbnail concepts to viral angle finding. All tools use AI and are tuned specifically for the biblical history niche.</p></div>
+
+  <!-- ROW 1: THUMBNAIL + TITLE TESTER -->
+  <div style="display:grid;grid-template-columns:1fr;gap:0;">
+
+    <!-- THUMBNAIL CONCEPT GENERATOR -->
+    <div class="card">
+      <div class="section-label">Thumbnail Concept Generator</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;font-style:italic;">Choose a thumbnail style, enter your video details, and get a complete concept with baked-in text and AI generation prompts.</p>
+
+      <!-- STYLE SELECTOR -->
+      <label class="lbl" style="margin-bottom:10px;">Thumbnail Style</label>
+      <div id="thumbStyleGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
+
+        <div class="thumb-style-card active" onclick="selectThumbStyle(this,'dbh_oil')" style="border:2px solid var(--gold);border-radius:12px;padding:12px;cursor:pointer;background:rgba(201,168,76,0.08);transition:all 0.2s;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#8B4513,#C9A84C,#1A0A00);flex-shrink:0;"></div>
+            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--gold);">DBH OIL PAINTING</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Chiaroscuro oil painting, impasto texture, amber-gold palette. Figure forward-left, dramatic shadows. DBH signature style.</p>
+          <div style="margin-top:6px;font-size:0.65rem;color:var(--amber);">&#9733; DBH Standard &bull; Works on all topics</div>
+        </div>
+
+        <div class="thumb-style-card" onclick="selectThumbStyle(this,'face_close')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#2C1810,#8B6050,#E8C090);flex-shrink:0;"></div>
+            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">FACE CLOSE-UP</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Extreme close-up of a biblical figure&apos;s face, emotionally intense expression, eyes locked on camera. Red banner with white text.</p>
+          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">High CTR &bull; Best for: Jesus, prophets, key figures</div>
+        </div>
+
+        <div class="thumb-style-card" onclick="selectThumbStyle(this,'discovery_shock')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#0A1628,#1E3A5F,#4A90D9);flex-shrink:0;"></div>
+            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">DISCOVERY SHOCK</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Archaeological find or ancient artefact illuminated by dramatic light against dark background. Text: "THEY FOUND IT" style.</p>
+          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Curiosity driver &bull; Best for: tombs, scrolls, artefacts</div>
+        </div>
+
+        <div class="thumb-style-card" onclick="selectThumbStyle(this,'split_scene')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(90deg,#8B4513 50%,#1A3A5F 50%);flex-shrink:0;"></div>
+            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">THEN vs NOW SPLIT</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Split image: ancient scene on left vs modern discovery/map/text on right. "TRUTH" or "REAL" text across the divide.</p>
+          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">High retention signal &bull; Best for: biblical vs modern</div>
+        </div>
+
+        <div class="thumb-style-card" onclick="selectThumbStyle(this,'epic_landscape')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(180deg,#FF6B35,#C9A84C,#8B4513);flex-shrink:0;"></div>
+            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">EPIC LANDSCAPE</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Wide cinematic landscape — ancient Jerusalem, Sinai desert, Dead Sea. Tiny figure for scale. Bold text across the sky.</p>
+          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Epic feel &bull; Best for: Exodus, flood, creation topics</div>
+        </div>
+
+        <div class="thumb-style-card" onclick="selectThumbStyle(this,'forbidden_scroll')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#1C0A00,#4A2800,#C9A84C);flex-shrink:0;"></div>
+            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">FORBIDDEN SCROLL</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Ancient scroll or codex open, illuminated text glowing, dark atmospheric background. "HIDDEN FOR 2000 YEARS" style text.</p>
+          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Mystery driver &bull; Best for: lost gospels, apocrypha</div>
+        </div>
+
+        <div class="thumb-style-card" onclick="selectThumbStyle(this,'revelation_beam')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#0A0A1A,#1A1A3A,#F5D080);flex-shrink:0;"></div>
+            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">REVELATION LIGHT</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Single beam of divine light cutting through dark scene onto a figure or object. Heavenly atmosphere. "FINALLY REVEALED" style.</p>
+          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Awe trigger &bull; Best for: resurrection, angels, visions</div>
+        </div>
+
+        <div class="thumb-style-card" onclick="selectThumbStyle(this,'map_evidence')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#2A1A00,#8B6914,#D4A520);flex-shrink:0;"></div>
+            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">EVIDENCE MAP</span>
+          </div>
+          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Aged parchment map or annotated manuscript with circled locations. Detective/investigation aesthetic. "PROOF" or "EVIDENCE" text.</p>
+          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Scholar credibility &bull; Best for: locations, archaeology</div>
+        </div>
+
+      </div>
+
+      <!-- INPUTS -->
+      <input type="hidden" id="thumbStyleSelected" value="dbh_oil">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div><label class="lbl">Video Title</label><input type="text" id="thumbTitle" placeholder="e.g. The FORBIDDEN Tomb of Jesus"></div>
+        <div>
+          <label class="lbl">Baked-in Hook Text</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="thumbText" placeholder="Click Scan or type your own..." style="flex:1;">
+            <button onclick="scanThumbText()" id="scanThumbBtn" style="background:transparent;border:1px solid var(--border-bright);border-radius:10px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:1.5px;padding:9px 10px;cursor:pointer;white-space:nowrap;font-weight:700;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--navy)';" onmouseout="this.style.background='transparent';this.style.color='var(--gold)';">&#128269; SCAN</button>
+          </div>
+          <div id="thumbTextOptions" style="display:none;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+          <p style="font-size:0.75rem;color:var(--muted);margin-top:5px;font-style:italic;">AI scans your script for 4 hook text options (max 2-3 words each)</p>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;"><label class="lbl">Key Scene / Visual Element</label><input type="text" id="thumbScene" placeholder="e.g. ancient stone tomb entrance, torchlight, Jerusalem ruins"></div>
+      <button onclick="generateThumbnail()" id="thumbBtn" class="run-btn" style="margin-bottom:0;">&#127912; Generate Thumbnail Concept</button>
+      <div id="thumbResults"></div>
+    </div>
+
+    <!-- TITLE A/B TESTER -->
+    <div class="card">
+      <div class="section-label">Title A/B Tester</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Score up to 5 title options against proven biblical history niche patterns. Get a ranking with specific improvement suggestions.</p>
+      <label class="lbl">Enter Titles (one per line)</label>
+      <textarea class="txt" id="titleTestInput" style="min-height:120px;" placeholder="The FORBIDDEN Verse in Genesis That Reveals the True Reason for the Flood&#10;What the Bible Never Told You About the Real Reason for Noah's Flood&#10;THEY HID THIS: The Secret Verse That Explains Everything About the Flood"></textarea>
+      <button onclick="testTitles()" id="titleTestBtn" class="run-btn" style="margin-top:10px;margin-bottom:0;">&#127919; Score & Rank Titles</button>
+      <div id="titleTestResults"></div>
+    </div>
+
+    <!-- HOOK SCORER -->
+    <div class="card">
+      <div class="section-label">Hook Scorer</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste your opening 60 seconds. Get a retention score out of 100 with specific line-by-line improvement suggestions.</p>
+      <label class="lbl">Paste Your Hook (first 60 seconds)</label>
+      <textarea class="txt" id="hookInput" style="min-height:120px;" placeholder="Paste the opening lines of your script here..."></textarea>
+      <button onclick="scoreHook()" id="hookBtn" class="run-btn" style="margin-top:10px;margin-bottom:0;">&#128200; Score My Hook</button>
+      <div id="hookResults"></div>
+    </div>
+
+    <!-- TAGS GENERATOR -->
+    <div class="card">
+      <div class="section-label">Tags Generator</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Generate exactly 15 backend tags optimised for the YouTube algorithm &mdash; within the 2026 compliance rules.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Video Title</label><input type="text" id="tagsTitle" placeholder="Your video title..."></div>
+        <div><label class="lbl">Main Topic</label><input type="text" id="tagsTopic" placeholder="e.g. Noah's Flood, Mary Magdalene"></div>
+      </div>
+      <button onclick="generateTags()" id="tagsBtn" class="run-btn" style="margin-bottom:0;">&#127991; Generate 15 Tags</button>
+      <div id="tagsResults"></div>
+    </div>
+
+    <!-- SCRIPT TO CHAPTERS -->
+    <div class="card">
+      <div class="section-label">Script to YouTube Chapters</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste your script and get YouTube chapter timestamps ready to copy into your description.</p>
+      <label class="lbl">Paste Script</label>
+      <textarea class="txt" id="chaptersScript" style="min-height:120px;" placeholder="Paste your full script here..."></textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;">
+        <div><label class="lbl">Video Duration</label><input type="text" id="chaptersDuration" placeholder="e.g. 38 mins"></div>
+        <div><label class="lbl">Number of Chapters</label>
+          <select id="chaptersCount"><option value="8">8 chapters</option><option value="10" selected>10 chapters</option><option value="12">12 chapters</option><option value="15">15 chapters</option></select>
+        </div>
+      </div>
+      <button onclick="generateChapters()" id="chaptersBtn" class="run-btn" style="margin-bottom:0;">&#128214; Generate Chapters</button>
+      <div id="chaptersResults"></div>
+    </div>
+
+    <!-- VIRAL ANGLE FINDER -->
+    <div class="card">
+      <div class="section-label">Viral Angle Finder</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Enter a biblical topic and get the 5 most clickable angles ranked by viral potential for DBH&apos;s US Christian audience.</p>
+      <label class="lbl">Biblical Topic</label>
+      <input type="text" id="viralTopic" placeholder="e.g. Mary Magdalene, The Book of Enoch, Solomon's Temple" style="margin-bottom:10px;">
+      <button onclick="findViralAngles()" id="viralBtn" class="run-btn" style="margin-bottom:0;">&#128293; Find Viral Angles</button>
+      <div id="viralResults"></div>
+    </div>
+
+    <!-- CARD & END SCREEN PLANNER -->
+    <div class="card">
+      <div class="section-label">Card &amp; End Screen Planner</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste your script and get exact timestamps for cards and end screens, with suggested link targets.</p>
+      <label class="lbl">Paste Script</label>
+      <textarea class="txt" id="cardsScript" style="min-height:100px;" placeholder="Paste your script here..."></textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;">
+        <div><label class="lbl">Video Duration</label><input type="text" id="cardsDuration" placeholder="e.g. 38 mins"></div>
+        <div><label class="lbl">Related Video Title</label><input type="text" id="cardsRelated" placeholder="e.g. The Gospel of Judas (your previous video)"></div>
+      </div>
+      <button onclick="planCards()" id="cardsBtn" class="run-btn" style="margin-bottom:0;">&#127911; Plan Cards &amp; End Screens</button>
+      <div id="cardsResults"></div>
+    </div>
+
+    <!-- COMPETITOR GAP FINDER -->
+    <div class="card">
+      <div class="section-label">Competitor Gap Finder &amp; Viral Topic Generator</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;font-style:italic;">Paste a competitor&apos;s viral video title and view count. The AI reverse-engineers the exact title formula that made it viral, then generates 5 DBH alternative titles using that same formula &mdash; plus a full production package.</p>
+
+      <!-- MODE TABS -->
+      <div style="display:flex;gap:4px;margin-bottom:16px;background:var(--navy);border-radius:10px;padding:3px;">
+        <button onclick="switchGapMode('viral',this)" id="gapModeViral" style="flex:1;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:1.5px;padding:9px 6px;cursor:pointer;font-weight:700;">VIRAL TOPIC SCANNER</button>
+        <button onclick="switchGapMode('bulk',this)" id="gapModeBulk" style="flex:1;background:transparent;border:none;border-radius:8px;color:var(--muted);font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:1.5px;padding:9px 6px;cursor:pointer;font-weight:700;">BULK GAP ANALYSIS</button>
+      </div>
+
+      <!-- VIRAL MODE -->
+      <div id="gapViralMode">
+        <div style="margin-bottom:12px;">
+          <label class="lbl">Competitor Viral Video Title</label>
+          <input type="text" id="gapViralTitle" placeholder="e.g. THE FORBIDDEN CHAPTER: What They Removed From Genesis...">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div>
+            <label class="lbl">View Count</label>
+            <input type="text" id="gapViralViews" placeholder="e.g. 2.4M or 840K">
+          </div>
+          <div>
+            <label class="lbl">Channel Name</label>
+            <input type="text" id="gapViralChannel" placeholder="e.g. Bible Secrets">
+          </div>
+          <div>
+            <label class="lbl">Video Duration</label>
+            <input type="text" id="gapViralDuration" placeholder="e.g. 22 mins">
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label class="lbl">Paste Their Description or Key Points (optional but improves output)</label>
+          <textarea class="txt" id="gapViralDesc" style="min-height:80px;" placeholder="Paste the competitor video description, or bullet points of what they covered..."></textarea>
+        </div>
+
+        <button onclick="scanViralTopic()" id="gapViralBtn" class="run-btn" style="margin-bottom:0;">&#128293; Generate DBH Viral Version</button>
+      </div>
+
+      <!-- BULK MODE -->
+      <div id="gapBulkMode" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+          <div><label class="lbl">Competitor Titles (one per line)</label>
+            <textarea class="txt" id="gapCompetitor" style="min-height:120px;" placeholder="The FORBIDDEN Verse in Genesis...&#10;THEY NEVER DIED: How the Nephilim...&#10;etc."></textarea>
+          </div>
+          <div><label class="lbl">DBH Titles (one per line)</label>
+            <textarea class="txt" id="gapDBH" style="min-height:120px;" placeholder="Your existing DBH video titles..."></textarea>
+          </div>
+        </div>
+        <button onclick="findGaps()" id="gapBtn" class="run-btn" style="margin-bottom:0;">&#128270; Find Content Gaps</button>
+      </div>
+
+      <div id="gapResults"></div>
+    </div>
+
+    <!-- COMMENT RESPONSE GENERATOR -->
+    <div class="card">
+      <div class="section-label">Comment Response Generator</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste a YouTube comment and get a strategic, credibility-building reply that grows your authority with undecided viewers.</p>
+      <label class="lbl">Comment to Respond To</label>
+      <textarea class="txt" id="commentInput" style="min-height:80px;" placeholder="Paste the YouTube comment here..."></textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;">
+        <div><label class="lbl">Comment Type</label>
+          <select id="commentType">
+            <option value="sceptical">Sceptical / Dismissive</option>
+            <option value="supportive">Supportive / Fan</option>
+            <option value="question">Genuine Question</option>
+            <option value="debate">Theological Debate</option>
+            <option value="negative">Hostile / Negative</option>
+          </select>
+        </div>
+        <div><label class="lbl">Video This Is On</label><input type="text" id="commentVideo" placeholder="e.g. Mary Magdalene video"></div>
+      </div>
+      <button onclick="generateCommentReply()" id="commentBtn" class="run-btn" style="margin-bottom:0;">&#128172; Generate Reply</button>
+      <div id="commentResults"></div>
+    </div>
+
+    <!-- UPLOAD SCHEDULE PLANNER -->
+    <div class="card">
+      <div class="section-label">Upload Schedule Planner</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Based on your DBH analytics data, get personalised upload schedule recommendations for maximum reach.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div><label class="lbl">Your Peak View Hours</label><input type="text" id="schedPeakHours" placeholder="e.g. 10pm-2am WAT, 6pm-9pm WAT" value="10pm-2am WAT, 6pm-9pm WAT"></div>
+        <div><label class="lbl">Your Top Viewer Location</label><input type="text" id="schedLocation" placeholder="e.g. US East Coast" value="US East Coast"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Videos Per Month Target</label>
+          <select id="schedFreq"><option value="2">2 per month</option><option value="4" selected>4 per month</option><option value="8">8 per month</option><option value="12">12 per month</option></select>
+        </div>
+        <div><label class="lbl">Your Timezone</label><input type="text" id="schedTimezone" value="WAT (GMT+1)"></div>
+      </div>
+      <button onclick="planSchedule()" id="schedBtn" class="run-btn" style="margin-bottom:0;">&#128197; Generate Upload Schedule</button>
+      <div id="schedResults"></div>
+    </div>
+
+  </div>
+</div>
+
+
+
 <script>
 // TAB SWITCHING
 function switchTab(id, btn) {
@@ -2617,249 +2902,174 @@ function selectThumbText(btn) {
   btn.style.border = '1px solid var(--gold)';
 }
 
+
+// ── COMPETITOR GAP FINDER — VIRAL SCANNER ────────────────────────────────
+function switchGapMode(mode, btn) {
+  document.getElementById('gapViralMode').style.display = mode === 'viral' ? 'block' : 'none';
+  document.getElementById('gapBulkMode').style.display  = mode === 'bulk'  ? 'block' : 'none';
+  document.getElementById('gapModeViral').style.background = mode === 'viral'
+    ? 'linear-gradient(135deg,var(--gold),var(--amber))' : 'transparent';
+  document.getElementById('gapModeViral').style.color = mode === 'viral' ? 'var(--navy)' : 'var(--muted)';
+  document.getElementById('gapModeBulk').style.background = mode === 'bulk'
+    ? 'linear-gradient(135deg,var(--gold),var(--amber))' : 'transparent';
+  document.getElementById('gapModeBulk').style.color = mode === 'bulk' ? 'var(--navy)' : 'var(--muted)';
+}
+
+async function scanViralTopic() {
+  const viralTitle    = document.getElementById('gapViralTitle').value.trim();
+  const views         = document.getElementById('gapViralViews').value.trim();
+  const channel       = document.getElementById('gapViralChannel').value.trim();
+  const duration      = document.getElementById('gapViralDuration').value.trim();
+  const desc          = document.getElementById('gapViralDesc').value.trim();
+  const dbhTitles     = document.getElementById('gapViralDBH').value.trim();
+
+  if (!viralTitle) { alert('Please enter the competitor viral video title.'); return; }
+
+  const btn = document.getElementById('gapViralBtn');
+  btn.textContent = 'Scanning...'; btn.disabled = true;
+  document.getElementById('gapResults').innerHTML = '';
+
+  const prompt = `You are a viral content strategist for Deep Bible History (DBH), a biblical history channel targeting US Christians aged 35-65.
+
+A competitor video has gone viral. Analyse WHY it went viral and generate a complete DBH-ready version that can match or beat its performance.
+
+COMPETITOR VIRAL VIDEO:
+Title: "${viralTitle}"
+Views: ${views || 'not specified'}
+Channel: ${channel || 'competitor channel'}
+Duration: ${duration || 'not specified'}
+Description/Key Points: ${desc || 'not provided'}
+
+DBH CHANNEL CONTEXT:
+- US Christian audience, 35-65, heavy TV viewers
+- Evidence-based biblical scholarship with detective framing
+- ElevenLabs AI voiceover, Google Flow / Veo visuals
+- Upload: Thursday/Friday 3-4PM WAT
+- Strong performers: mystery angles, forbidden knowledge, female biblical figures, archaeological evidence
+
+DELIVER ALL OF THE FOLLOWING:
+
+---
+**WHY THIS VIDEO WENT VIRAL**
+Identify the exact psychological triggers that drove ${views || 'millions of'} views:
+- Hook mechanism (what stops the scroll in the title)
+- Emotional trigger (curiosity / fear / validation / awe)
+- Audience desire being served (forbidden knowledge / identity / faith confirmation)
+- Title formula used (ALLCAPS hook + colon pattern, question, number etc)
+- Thumbnail angle that likely worked
+
+---
+**DBH VIRAL TOPIC VERSION**
+Topic: [The same core topic reframed for DBH's angle and audience]
+DBH Unique Angle: [What evidence, scholarship or perspective DBH brings that the competitor didn't — Dead Sea Scrolls, Josephus, archaeology, original language analysis etc]
+Why DBH Can Beat This: [1-2 sentences on DBH's competitive advantage on this specific topic]
+
+---
+**VIRAL TITLE FORMULA BREAKDOWN**
+Deconstruct the competitor title formula:
+- Hook word/structure: [what makes people stop scrolling]
+- Separator: [colon / pipe / dash / question mark]
+- Payoff structure: [how they complete the promise]
+- Emotional driver: [curiosity / outrage / revelation / validation]
+- Character count: [number] chars — [above/below/within] the 60-80 sweet spot
+
+**5 DBH ALTERNATIVE TITLES** (reverse-engineered from the viral formula above)
+Generate 5 titles for DBH that use the SAME formula pattern as the competitor but on the DBH topic angle. Each title must:
+- Mirror the competitor's hook structure exactly
+- Replace with DBH's unique scholarly angle
+- Stay within 65-80 characters
+- Follow YouTube 2026 compliance (no banned words)
+
+1. [Title] — [character count] chars | Hook: [hook word]
+2. [Title] — [character count] chars | Hook: [hook word]
+3. [Title] — [character count] chars | Hook: [hook word]
+4. [Title] — [character count] chars | Hook: [hook word]
+5. [Title] — [character count] chars | Hook: [hook word]
+
+WINNER: #[N] — [one sentence on why this beats the competitor title for DBH's audience]
+A/B TEST: Pit #[N] vs #[N] first — here is why these two are closest
+
+---
+**FULL SCRIPT OUTLINE** (10 sections)
+For each section: Section name | Duration | What to cover | Key evidence or source to cite
+
+Section 1: Hook (0:00-1:00)
+Section 2: ...
+[continue to Section 10]
+
+---
+**THUMBNAIL CONCEPT**
+Style: [Choose from: DBH Oil Painting / Face Close-Up / Discovery Shock / Forbidden Scroll]
+Visual: [Describe the scene]
+Baked-in text: [1-3 words ALLCAPS]
+Why this beats the competitor thumbnail: [one sentence]
+
+---
+**SEO PACKAGE**
+Best upload time: Thursday or Friday, 3:00-4:00 PM WAT
+3 Hashtags: #[Tag1] #[Tag2] #[Tag3]
+15 Backend tags (comma separated): [tags]
+Description hook (2 lines): [First 2 lines of YouTube description]
+
+---
+**PRODUCTION NOTES**
+Estimated script length for ${duration || '35 min'} video: [word count]
+ElevenLabs batches needed (at 4000 chars each): [number]
+Key visuals to generate in Veo: [5 scene suggestions]`;
+
+  try {
+    const result = await aiCall(prompt, 3000, 'gapViralBtn', 'Scanning viral topic...');
+    window._gapResult = result;
+
+    document.getElementById('gapResults').innerHTML = `
+      <div class="intel-section" style="margin-top:16px;">
+        <div class="intel-title">DBH Viral Version — ${viralTitle.slice(0,50)}${viralTitle.length>50?'...':''}</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <button onclick="copyToolResult('_gapResult')"
+            style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;">
+            COPY FULL ANALYSIS
+          </button>
+          <button onclick="copyGapSection('titles')"
+            style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:8px 12px;cursor:pointer;">
+            COPY TITLES
+          </button>
+          <button onclick="copyGapSection('outline')"
+            style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:8px 12px;cursor:pointer;">
+            COPY SCRIPT OUTLINE
+          </button>
+          <button onclick="copyGapSection('seo')"
+            style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:8px 12px;cursor:pointer;">
+            COPY SEO PACKAGE
+          </button>
+        </div>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) {
+    errCard('Viral scan failed: ' + err.message, 'gapResults');
+  }
+}
+
+function copyGapSection(section) {
+  const text = window._gapResult || '';
+  let extracted = '';
+  if (section === 'titles') {
+    const m = text.match(/DBH ALTERNATIVE TITLES[\s\S]*?(?=FULL SCRIPT OUTLINE|---)/i);
+    extracted = m ? m[0].trim() : '';
+  } else if (section === 'outline') {
+    const m = text.match(/FULL SCRIPT OUTLINE[\s\S]*?(?=THUMBNAIL CONCEPT|---)/i);
+    extracted = m ? m[0].trim() : '';
+  } else if (section === 'seo') {
+    const m = text.match(/SEO PACKAGE[\s\S]*?(?=PRODUCTION NOTES|$)/i);
+    extracted = m ? m[0].trim() : '';
+  }
+  if (!extracted) extracted = text;
+  navigator.clipboard.writeText(extracted).then(() => {
+    const labels = {titles:'COPY TITLES', outline:'COPY SCRIPT OUTLINE', seo:'COPY SEO PACKAGE'};
+    event.target.textContent = 'COPIED!';
+    setTimeout(() => event.target.textContent = labels[section] || 'COPY', 2000);
+  });
+}
+
 </script>
-
-<!-- TAB 4: PRODUCTION TOOLS -->
-<div id="tab-tools" class="tab-panel">
-
-  <!-- TOOL GRID INTRO -->
-  <div class="card"><p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;">10 production tools to make your DBH workflow seamless &mdash; from thumbnail concepts to viral angle finding. All tools use AI and are tuned specifically for the biblical history niche.</p></div>
-
-  <!-- ROW 1: THUMBNAIL + TITLE TESTER -->
-  <div style="display:grid;grid-template-columns:1fr;gap:0;">
-
-    <!-- THUMBNAIL CONCEPT GENERATOR -->
-    <div class="card">
-      <div class="section-label">Thumbnail Concept Generator</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;font-style:italic;">Choose a thumbnail style, enter your video details, and get a complete concept with baked-in text and AI generation prompts.</p>
-
-      <!-- STYLE SELECTOR -->
-      <label class="lbl" style="margin-bottom:10px;">Thumbnail Style</label>
-      <div id="thumbStyleGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
-
-        <div class="thumb-style-card active" onclick="selectThumbStyle(this,'dbh_oil')" style="border:2px solid var(--gold);border-radius:12px;padding:12px;cursor:pointer;background:rgba(201,168,76,0.08);transition:all 0.2s;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#8B4513,#C9A84C,#1A0A00);flex-shrink:0;"></div>
-            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--gold);">DBH OIL PAINTING</span>
-          </div>
-          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Chiaroscuro oil painting, impasto texture, amber-gold palette. Figure forward-left, dramatic shadows. DBH signature style.</p>
-          <div style="margin-top:6px;font-size:0.65rem;color:var(--amber);">&#9733; DBH Standard &bull; Works on all topics</div>
-        </div>
-
-        <div class="thumb-style-card" onclick="selectThumbStyle(this,'face_close')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#2C1810,#8B6050,#E8C090);flex-shrink:0;"></div>
-            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">FACE CLOSE-UP</span>
-          </div>
-          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Extreme close-up of a biblical figure&apos;s face, emotionally intense expression, eyes locked on camera. Red banner with white text.</p>
-          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">High CTR &bull; Best for: Jesus, prophets, key figures</div>
-        </div>
-
-        <div class="thumb-style-card" onclick="selectThumbStyle(this,'discovery_shock')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#0A1628,#1E3A5F,#4A90D9);flex-shrink:0;"></div>
-            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">DISCOVERY SHOCK</span>
-          </div>
-          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Archaeological find or ancient artefact illuminated by dramatic light against dark background. Text: "THEY FOUND IT" style.</p>
-          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Curiosity driver &bull; Best for: tombs, scrolls, artefacts</div>
-        </div>
-
-        <div class="thumb-style-card" onclick="selectThumbStyle(this,'split_scene')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(90deg,#8B4513 50%,#1A3A5F 50%);flex-shrink:0;"></div>
-            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">THEN vs NOW SPLIT</span>
-          </div>
-          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Split image: ancient scene on left vs modern discovery/map/text on right. "TRUTH" or "REAL" text across the divide.</p>
-          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">High retention signal &bull; Best for: biblical vs modern</div>
-        </div>
-
-        <div class="thumb-style-card" onclick="selectThumbStyle(this,'epic_landscape')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(180deg,#FF6B35,#C9A84C,#8B4513);flex-shrink:0;"></div>
-            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">EPIC LANDSCAPE</span>
-          </div>
-          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Wide cinematic landscape — ancient Jerusalem, Sinai desert, Dead Sea. Tiny figure for scale. Bold text across the sky.</p>
-          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Epic feel &bull; Best for: Exodus, flood, creation topics</div>
-        </div>
-
-        <div class="thumb-style-card" onclick="selectThumbStyle(this,'forbidden_scroll')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#1C0A00,#4A2800,#C9A84C);flex-shrink:0;"></div>
-            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">FORBIDDEN SCROLL</span>
-          </div>
-          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Ancient scroll or codex open, illuminated text glowing, dark atmospheric background. "HIDDEN FOR 2000 YEARS" style text.</p>
-          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Mystery driver &bull; Best for: lost gospels, apocrypha</div>
-        </div>
-
-        <div class="thumb-style-card" onclick="selectThumbStyle(this,'revelation_beam')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#0A0A1A,#1A1A3A,#F5D080);flex-shrink:0;"></div>
-            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">REVELATION LIGHT</span>
-          </div>
-          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Single beam of divine light cutting through dark scene onto a figure or object. Heavenly atmosphere. "FINALLY REVEALED" style.</p>
-          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Awe trigger &bull; Best for: resurrection, angels, visions</div>
-        </div>
-
-        <div class="thumb-style-card" onclick="selectThumbStyle(this,'map_evidence')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:28px;height:20px;border-radius:3px;background:linear-gradient(135deg,#2A1A00,#8B6914,#D4A520);flex-shrink:0;"></div>
-            <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);">EVIDENCE MAP</span>
-          </div>
-          <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;">Aged parchment map or annotated manuscript with circled locations. Detective/investigation aesthetic. "PROOF" or "EVIDENCE" text.</p>
-          <div style="margin-top:6px;font-size:0.65rem;color:var(--muted);">Scholar credibility &bull; Best for: locations, archaeology</div>
-        </div>
-
-      </div>
-
-      <!-- INPUTS -->
-      <input type="hidden" id="thumbStyleSelected" value="dbh_oil">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-        <div><label class="lbl">Video Title</label><input type="text" id="thumbTitle" placeholder="e.g. The FORBIDDEN Tomb of Jesus"></div>
-        <div>
-          <label class="lbl">Baked-in Hook Text</label>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input type="text" id="thumbText" placeholder="Click Scan or type your own..." style="flex:1;">
-            <button onclick="scanThumbText()" id="scanThumbBtn" style="background:transparent;border:1px solid var(--border-bright);border-radius:10px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:1.5px;padding:9px 10px;cursor:pointer;white-space:nowrap;font-weight:700;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--navy)';" onmouseout="this.style.background='transparent';this.style.color='var(--gold)';">&#128269; SCAN</button>
-          </div>
-          <div id="thumbTextOptions" style="display:none;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"></div>
-          <p style="font-size:0.75rem;color:var(--muted);margin-top:5px;font-style:italic;">AI scans your script for 4 hook text options (max 2-3 words each)</p>
-        </div>
-      </div>
-      <div style="margin-bottom:10px;"><label class="lbl">Key Scene / Visual Element</label><input type="text" id="thumbScene" placeholder="e.g. ancient stone tomb entrance, torchlight, Jerusalem ruins"></div>
-      <button onclick="generateThumbnail()" id="thumbBtn" class="run-btn" style="margin-bottom:0;">&#127912; Generate Thumbnail Concept</button>
-      <div id="thumbResults"></div>
-    </div>
-
-    <!-- TITLE A/B TESTER -->
-    <div class="card">
-      <div class="section-label">Title A/B Tester</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Score up to 5 title options against proven biblical history niche patterns. Get a ranking with specific improvement suggestions.</p>
-      <label class="lbl">Enter Titles (one per line)</label>
-      <textarea class="txt" id="titleTestInput" style="min-height:120px;" placeholder="The FORBIDDEN Verse in Genesis That Reveals the True Reason for the Flood&#10;What the Bible Never Told You About the Real Reason for Noah's Flood&#10;THEY HID THIS: The Secret Verse That Explains Everything About the Flood"></textarea>
-      <button onclick="testTitles()" id="titleTestBtn" class="run-btn" style="margin-top:10px;margin-bottom:0;">&#127919; Score & Rank Titles</button>
-      <div id="titleTestResults"></div>
-    </div>
-
-    <!-- HOOK SCORER -->
-    <div class="card">
-      <div class="section-label">Hook Scorer</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste your opening 60 seconds. Get a retention score out of 100 with specific line-by-line improvement suggestions.</p>
-      <label class="lbl">Paste Your Hook (first 60 seconds)</label>
-      <textarea class="txt" id="hookInput" style="min-height:120px;" placeholder="Paste the opening lines of your script here..."></textarea>
-      <button onclick="scoreHook()" id="hookBtn" class="run-btn" style="margin-top:10px;margin-bottom:0;">&#128200; Score My Hook</button>
-      <div id="hookResults"></div>
-    </div>
-
-    <!-- TAGS GENERATOR -->
-    <div class="card">
-      <div class="section-label">Tags Generator</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Generate exactly 15 backend tags optimised for the YouTube algorithm &mdash; within the 2026 compliance rules.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
-        <div><label class="lbl">Video Title</label><input type="text" id="tagsTitle" placeholder="Your video title..."></div>
-        <div><label class="lbl">Main Topic</label><input type="text" id="tagsTopic" placeholder="e.g. Noah's Flood, Mary Magdalene"></div>
-      </div>
-      <button onclick="generateTags()" id="tagsBtn" class="run-btn" style="margin-bottom:0;">&#127991; Generate 15 Tags</button>
-      <div id="tagsResults"></div>
-    </div>
-
-    <!-- SCRIPT TO CHAPTERS -->
-    <div class="card">
-      <div class="section-label">Script to YouTube Chapters</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste your script and get YouTube chapter timestamps ready to copy into your description.</p>
-      <label class="lbl">Paste Script</label>
-      <textarea class="txt" id="chaptersScript" style="min-height:120px;" placeholder="Paste your full script here..."></textarea>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;">
-        <div><label class="lbl">Video Duration</label><input type="text" id="chaptersDuration" placeholder="e.g. 38 mins"></div>
-        <div><label class="lbl">Number of Chapters</label>
-          <select id="chaptersCount"><option value="8">8 chapters</option><option value="10" selected>10 chapters</option><option value="12">12 chapters</option><option value="15">15 chapters</option></select>
-        </div>
-      </div>
-      <button onclick="generateChapters()" id="chaptersBtn" class="run-btn" style="margin-bottom:0;">&#128214; Generate Chapters</button>
-      <div id="chaptersResults"></div>
-    </div>
-
-    <!-- VIRAL ANGLE FINDER -->
-    <div class="card">
-      <div class="section-label">Viral Angle Finder</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Enter a biblical topic and get the 5 most clickable angles ranked by viral potential for DBH&apos;s US Christian audience.</p>
-      <label class="lbl">Biblical Topic</label>
-      <input type="text" id="viralTopic" placeholder="e.g. Mary Magdalene, The Book of Enoch, Solomon's Temple" style="margin-bottom:10px;">
-      <button onclick="findViralAngles()" id="viralBtn" class="run-btn" style="margin-bottom:0;">&#128293; Find Viral Angles</button>
-      <div id="viralResults"></div>
-    </div>
-
-    <!-- CARD & END SCREEN PLANNER -->
-    <div class="card">
-      <div class="section-label">Card &amp; End Screen Planner</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste your script and get exact timestamps for cards and end screens, with suggested link targets.</p>
-      <label class="lbl">Paste Script</label>
-      <textarea class="txt" id="cardsScript" style="min-height:100px;" placeholder="Paste your script here..."></textarea>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;">
-        <div><label class="lbl">Video Duration</label><input type="text" id="cardsDuration" placeholder="e.g. 38 mins"></div>
-        <div><label class="lbl">Related Video Title</label><input type="text" id="cardsRelated" placeholder="e.g. The Gospel of Judas (your previous video)"></div>
-      </div>
-      <button onclick="planCards()" id="cardsBtn" class="run-btn" style="margin-bottom:0;">&#127911; Plan Cards &amp; End Screens</button>
-      <div id="cardsResults"></div>
-    </div>
-
-    <!-- COMPETITOR GAP FINDER -->
-    <div class="card">
-      <div class="section-label">Competitor Gap Finder</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste competitor video titles and DBH&apos;s video titles. AI identifies gaps &mdash; topics they cover that DBH hasn&apos;t, and angles DBH can own.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
-        <div><label class="lbl">Competitor Titles (one per line)</label>
-          <textarea class="txt" id="gapCompetitor" style="min-height:120px;" placeholder="The FORBIDDEN Verse in Genesis...&#10;THEY NEVER DIED: How the Nephilim...&#10;etc."></textarea>
-        </div>
-        <div><label class="lbl">DBH Titles (one per line)</label>
-          <textarea class="txt" id="gapDBH" style="min-height:120px;" placeholder="Your existing DBH video titles..."></textarea>
-        </div>
-      </div>
-      <button onclick="findGaps()" id="gapBtn" class="run-btn" style="margin-bottom:0;">&#128270; Find Content Gaps</button>
-      <div id="gapResults"></div>
-    </div>
-
-    <!-- COMMENT RESPONSE GENERATOR -->
-    <div class="card">
-      <div class="section-label">Comment Response Generator</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste a YouTube comment and get a strategic, credibility-building reply that grows your authority with undecided viewers.</p>
-      <label class="lbl">Comment to Respond To</label>
-      <textarea class="txt" id="commentInput" style="min-height:80px;" placeholder="Paste the YouTube comment here..."></textarea>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;">
-        <div><label class="lbl">Comment Type</label>
-          <select id="commentType">
-            <option value="sceptical">Sceptical / Dismissive</option>
-            <option value="supportive">Supportive / Fan</option>
-            <option value="question">Genuine Question</option>
-            <option value="debate">Theological Debate</option>
-            <option value="negative">Hostile / Negative</option>
-          </select>
-        </div>
-        <div><label class="lbl">Video This Is On</label><input type="text" id="commentVideo" placeholder="e.g. Mary Magdalene video"></div>
-      </div>
-      <button onclick="generateCommentReply()" id="commentBtn" class="run-btn" style="margin-bottom:0;">&#128172; Generate Reply</button>
-      <div id="commentResults"></div>
-    </div>
-
-    <!-- UPLOAD SCHEDULE PLANNER -->
-    <div class="card">
-      <div class="section-label">Upload Schedule Planner</div>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Based on your DBH analytics data, get personalised upload schedule recommendations for maximum reach.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-        <div><label class="lbl">Your Peak View Hours</label><input type="text" id="schedPeakHours" placeholder="e.g. 10pm-2am WAT, 6pm-9pm WAT" value="10pm-2am WAT, 6pm-9pm WAT"></div>
-        <div><label class="lbl">Your Top Viewer Location</label><input type="text" id="schedLocation" placeholder="e.g. US East Coast" value="US East Coast"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
-        <div><label class="lbl">Videos Per Month Target</label>
-          <select id="schedFreq"><option value="2">2 per month</option><option value="4" selected>4 per month</option><option value="8">8 per month</option><option value="12">12 per month</option></select>
-        </div>
-        <div><label class="lbl">Your Timezone</label><input type="text" id="schedTimezone" value="WAT (GMT+1)"></div>
-      </div>
-      <button onclick="planSchedule()" id="schedBtn" class="run-btn" style="margin-bottom:0;">&#128197; Generate Upload Schedule</button>
-      <div id="schedResults"></div>
-    </div>
-
-  </div>
-</div>
-
 </body>
 </html>
