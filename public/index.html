@@ -883,8 +883,23 @@ select {
       <div><label class="lbl">Aspect Ratio</label>
         <select id="veoRatio"><option value="16:9" selected>16:9 YouTube</option><option value="9:16">9:16 Shorts</option></select></div>
     </div>
-    <div><label class="lbl">Character Reference</label>
+    <div style="margin-bottom:12px;"><label class="lbl">Character Reference</label>
       <input type="text" id="veoCharRef" value="Levantine male figure, olive skin, dark curly hair, dark eyes, weathered face, first-century wool robe, sandals"></div>
+    <div style="background:rgba(201,168,76,0.06);border:1px solid var(--border);border-radius:10px;padding:14px;">
+      <label class="lbl" style="margin-bottom:10px;">Generation Mode</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Crimson Pro',serif;font-size:0.9rem;color:var(--text);">
+          <input type="radio" name="veoMode" value="sections" checked style="accent-color:var(--gold);width:16px;height:16px;"> Section-by-section <span style="font-size:0.78rem;color:var(--muted);">(8-15 scenes per run)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Crimson Pro',serif;font-size:0.9rem;color:var(--text);">
+          <input type="radio" name="veoMode" value="linebytime" style="accent-color:var(--gold);width:16px;height:16px;"> Line by line <span style="font-size:0.78rem;color:var(--muted);">(one prompt per sentence)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Crimson Pro',serif;font-size:0.9rem;color:var(--text);">
+          <input type="radio" name="veoMode" value="paragraph" style="accent-color:var(--gold);width:16px;height:16px;"> Paragraph-by-paragraph <span style="font-size:0.78rem;color:var(--muted);">(one prompt per paragraph)</span>
+        </label>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:8px;font-style:italic;">Line-by-line generates the most prompts for maximum visual variety. Section mode gives narrative arc control.</p>
+    </div>
   </div>
 
   <div class="card">
@@ -899,6 +914,28 @@ select {
   <div class="status-bar" id="veoStatusBar"><div class="spinner"></div><span id="veoStatusText">Generating...</span></div>
   <div id="veoErrorBox"></div>
   <div id="veoResults"></div>
+
+  <div class="divider"></div>
+
+  <!-- SEO DESCRIPTION GENERATOR -->
+  <div class="results-hdr">SEO Description Generator</div>
+  <div class="card">
+    <p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;margin-bottom:16px;">Generate a fully SEO-optimised YouTube description for your video &mdash; with keywords, timestamps, hashtags, and a CTA structure tuned for the biblical history niche.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div><label class="lbl">Video Title</label><input type="text" id="seoTitle" placeholder="e.g. The FORBIDDEN Tomb of Jesus..."></div>
+      <div><label class="lbl">Target Keywords (comma separated)</label><input type="text" id="seoKeywords" placeholder="e.g. Jesus tomb, Jerusalem archaeology, Bible history"></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label class="lbl">Script Summary or Paste Script</label>
+      <textarea class="txt" id="seoScript" style="min-height:100px;" placeholder="Paste your script or a summary of the key points covered in the video..."></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div><label class="lbl">Video Duration</label><input type="text" id="seoDuration" placeholder="e.g. 38 minutes"></div>
+      <div><label class="lbl">Channel CTA Link</label><input type="text" id="seoCTA" placeholder="e.g. https://youtube.com/@DeepBibleHistory"></div>
+    </div>
+    <button onclick="generateSEODescription()" id="seoBtn" class="run-btn" style="margin-bottom:0;">&#128270; Generate SEO Description</button>
+  </div>
+  <div id="seoResults"></div>
 
   <div class="divider"></div>
 
@@ -1339,13 +1376,18 @@ function copyOnePrompt(btn,encodedPrompt) {
 
 function copyAllPrompts() {
   const scenes=window._veoScenes||[], title=window._veoTitle||'DBH';
-  // Copy ONLY the Veo prompts, one per line — ready for Flow Automation bulk import
-  const promptsOnly=scenes.map(s=>s.prompt).join('\n\n');
-  const fullText='=== DBH VEO PROMPTS: '+title+' ===\n'+'Total scenes: '+scenes.length+'\n\n'+promptsOnly;
+  const sep='\n'+'─'.repeat(50)+'\n\n';
+  const fullText='=== DBH VEO PROMPTS: '+title+' ===\nTotal scenes: '+scenes.length+'\n\n'+
+    scenes.map(s=>
+      'SCENE '+s.num+': '+s.title+'\n'+
+      (s.shotType?'SHOT: '+s.shotType+'\n':'')+
+      'VOICEOVER: '+s.voiceover+'\n\n'+
+      'VEO PROMPT:\n'+s.prompt
+    ).join(sep);
   navigator.clipboard.writeText(fullText).then(()=>{
     const btn=document.getElementById('veoCopyAllBtn');
     const orig=btn.textContent;
-    btn.textContent='COPIED '+scenes.length+' PROMPTS!';
+    btn.textContent='COPIED '+scenes.length+' SCENES!';
     btn.style.background='linear-gradient(135deg,var(--green),#3DAA6A)';
     setTimeout(()=>{btn.textContent=orig;btn.style.background='';},3000);
   });
@@ -1476,6 +1518,214 @@ function copyAllBatches() {
     btn.style.background = 'linear-gradient(135deg,var(--green),#3DAA6A)';
     setTimeout(() => { btn.textContent = 'COPY ALL BATCHES AS TEXT FILE'; btn.style.background = ''; }, 3000);
   });
+}
+
+
+// ─── SEO DESCRIPTION GENERATOR ───────────────────────────────────────────
+async function generateSEODescription() {
+  const title = document.getElementById('seoTitle').value.trim();
+  const keywords = document.getElementById('seoKeywords').value.trim();
+  const script = document.getElementById('seoScript').value.trim();
+  const duration = document.getElementById('seoDuration').value.trim() || '35 minutes';
+  const cta = document.getElementById('seoCTA').value.trim() || 'https://youtube.com/@DeepBibleHistory';
+
+  if (!title && !script) {
+    alert('Please enter at least a video title or script.');
+    return;
+  }
+
+  const btn = document.getElementById('seoBtn');
+  btn.textContent = 'GENERATING...';
+  btn.disabled = true;
+  document.getElementById('seoResults').innerHTML = '<div class="status-bar" style="display:flex;"><div class="spinner"></div><span>Crafting SEO description...</span></div>';
+
+  const prompt = `You are a YouTube SEO expert specialising in biblical history and Christian content. Generate a fully optimised YouTube description for this video.
+
+VIDEO TITLE: "${title}"
+TARGET KEYWORDS: ${keywords || 'biblical history, Bible archaeology, ancient Jerusalem, Christian history'}
+VIDEO DURATION: ${duration}
+CHANNEL LINK: ${cta}
+SCRIPT/CONTENT: ${script || 'Biblical history documentary exploring the topic of ' + title}
+
+Generate a YouTube description with EXACTLY this structure:
+
+1. HOOK (first 2 lines — visible before "show more", must include main keyword naturally):
+Write 2 punchy sentences that tease the video's biggest revelation.
+
+2. FULL DESCRIPTION (150-200 words):
+Engaging paragraph that naturally weaves in the target keywords. Explains what viewers will discover. Uses curiosity gaps. Written in second person ("In this video, you'll discover...").
+
+3. WHAT YOU'LL DISCOVER (bullet points, 5-7 items):
+• Key revelation 1
+• Key revelation 2
+etc.
+
+4. TIMESTAMPS (placeholder format — user will fill in actual times):
+00:00 Introduction
+02:30 [First major section title]
+etc. — generate 8-10 timestamp entries based on the content
+
+5. KEYWORDS (comma-separated, 20-25 keywords for the description):
+Mix of short-tail and long-tail keywords relevant to the topic and biblical history niche.
+
+6. HASHTAGS (exactly 3, as per YouTube 2026 guidelines):
+#Tag1 #Tag2 #Tag3
+
+7. CALL TO ACTION block:
+Standard DBH subscribe/like/notification CTA with the channel link.
+
+8. ABOUT DEEP BIBLE HISTORY (channel description blurb, 2-3 sentences).
+
+Follow YouTube 2026 compliance: NO words like massacre/slaughter/genocide/killed/death+holy/cult/heresy/pagan in the first 2 lines. Keep it professional and discovery-focused.`;
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({prompt, max_tokens: 2000})
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Generation failed');
+    const text = data.text || '';
+    if (!text) throw new Error('No response');
+
+    window._seoDescription = text;
+
+    const formatted = text
+      .replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--amber);">$1</strong>')
+      .replace(/^(\d+\. .+)$/gm, '<div style="font-family:serif;font-size:0.88rem;color:var(--gold);margin:14px 0 6px;font-weight:600;">$1</div>')
+      .replace(/^(• .+)$/gm, '<div style="padding:3px 0 3px 16px;font-size:0.9rem;border-left:2px solid var(--border);margin:3px 0;">$1</div>')
+      .replace(/^(#\w+)/gm, '<span style="color:var(--amber);font-weight:600;">$1</span>')
+      .replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+
+    document.getElementById('seoResults').innerHTML = `
+      <div class="intel-section" style="margin-top:16px;">
+        <div class="intel-title">SEO Description — ${title}</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+          <button onclick="copySEODescription()" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:2px;padding:9px 16px;cursor:pointer;font-weight:700;">COPY FULL DESCRIPTION</button>
+          <button onclick="copySEOSection('hook')" style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:9px 14px;cursor:pointer;">COPY HOOK ONLY</button>
+          <button onclick="copySEOSection('tags')" style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:9px 14px;cursor:pointer;">COPY HASHTAGS</button>
+        </div>
+        <div style="font-size:0.88rem;line-height:1.8;font-family:'Crimson Pro',serif;">${formatted}</div>
+      </div>`;
+  } catch(err) {
+    document.getElementById('seoResults').innerHTML = '<div class="err">SEO generation failed: ' + err.message + '. Ensure ANTHROPIC_API_KEY is set in Vercel.</div>';
+  }
+  btn.textContent = 'Generate SEO Description';
+  btn.disabled = false;
+}
+
+function copySEODescription() {
+  const text = window._seoDescription || '';
+  navigator.clipboard.writeText(text).then(() => {
+    event.target.textContent = 'COPIED!';
+    setTimeout(() => event.target.textContent = 'COPY FULL DESCRIPTION', 2000);
+  });
+}
+
+function copySEOSection(section) {
+  const text = window._seoDescription || '';
+  let extracted = '';
+  if (section === 'hook') {
+    extracted = text.split('\n').slice(0, 3).join('\n');
+  } else if (section === 'tags') {
+    const match = text.match(/#\w+/g);
+    extracted = match ? match.join(' ') : '';
+  }
+  if (extracted) {
+    navigator.clipboard.writeText(extracted).then(() => {
+      event.target.textContent = 'COPIED!';
+      setTimeout(() => event.target.textContent = section === 'hook' ? 'COPY HOOK ONLY' : 'COPY HASHTAGS', 2000);
+    });
+  }
+}
+
+// ─── LINE-BY-LINE MODE in Veo Generator ──────────────────────────────────
+// Modify generateVeoPrompts to check the mode radio
+const _origGenerateVeo = generateVeoPrompts;
+async function generateVeoPrompts() {
+  const mode = document.querySelector('input[name="veoMode"]:checked')?.value || 'sections';
+
+  if (mode === 'linebytime' || mode === 'paragraph') {
+    await generateVeoLineByLine(mode);
+  } else {
+    await _origGenerateVeo();
+  }
+}
+
+async function generateVeoLineByLine(mode) {
+  const script = document.getElementById('veoScript').value.trim();
+  const title = document.getElementById('veoTitle').value.trim() || 'DBH Video';
+  const duration = document.getElementById('veoDuration').value;
+  const style = document.getElementById('veoStyle').value;
+  const ratio = document.getElementById('veoRatio').value;
+  const charRef = document.getElementById('veoCharRef').value.trim();
+
+  if (!script || script.length < 50) {
+    document.getElementById('veoErrorBox').innerHTML = '<div class="err">Please paste your script first.</div>';
+    return;
+  }
+
+  document.getElementById('veoErrorBox').innerHTML = '';
+  document.getElementById('veoResults').innerHTML = '';
+  document.getElementById('veoCopyAllBtn').style.display = 'none';
+
+  const btn = document.getElementById('veoGenBtn');
+  btn.disabled = true;
+  document.getElementById('veoStatusBar').style.display = 'flex';
+
+  // Split into units
+  let units = [];
+  if (mode === 'linebytime') {
+    // Split by sentence
+    units = script.match(/[^.!?\n]+[.!?]+/g) || script.split('\n').filter(l => l.trim().length > 10);
+    units = units.filter(u => u.trim().length > 15);
+  } else {
+    // Paragraph mode
+    units = script.split(/\n\s*\n/).filter(p => p.trim().length > 20);
+    if (units.length < 3) units = script.split('\n').filter(l => l.trim().length > 20);
+  }
+
+  document.getElementById('veoStatusText').textContent = 'Generating ' + units.length + ' prompts...';
+
+  // Process in batches of 15 units to avoid token limits
+  const BATCH = 15;
+  const allScenes = [];
+
+  for (let i = 0; i < units.length; i += BATCH) {
+    const chunk = units.slice(i, i + BATCH);
+    const startN = i + 1;
+    document.getElementById('veoStatusText').textContent = 'Generating scenes ' + startN + '-' + Math.min(i + BATCH, units.length) + ' of ' + units.length + '...';
+
+    const numberedLines = chunk.map((u, j) => 'LINE ' + (startN + j) + ': ' + u.trim()).join('\n');
+
+    const prompt = 'You are a cinematic AI video director for biblical history content.\n\nVIDEO: "' + title + '"\nSTYLE: ' + style + '\nDURATION: ' + duration + ' seconds per scene\nRATIO: ' + ratio + '\nCHARACTER: ' + charRef + '\n\nDBH VISUAL RULES:\n- Ancient Middle East, first-century Jerusalem, Judean wilderness\n- Chiaroscuro lighting, amber-gold tones, candlelight or sunlight\n- Dusty, cinematic, historically authentic atmosphere\n- NO modern elements, NO text overlays\n\nFor EACH line below, generate one Veo scene using EXACTLY this format:\n---SCENE [N]: [SHORT TITLE]---\nVOICEOVER: [copy the line exactly]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in]\nVEO PROMPT: [80-120 word cinematic Veo prompt]\n---END SCENE---\n\nLINES TO PROCESS:\n' + numberedLines + '\n\nGenerate one scene per line. Write all scenes now.';
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({prompt, max_tokens: 8000})
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed');
+      const parsed = parseScenes(data.text || '', allScenes.length);
+      allScenes.push(...parsed);
+    } catch(err) {
+      document.getElementById('veoErrorBox').innerHTML = '<div class="err">Batch failed at scene ' + startN + ': ' + err.message + '. Showing ' + allScenes.length + ' scenes so far.</div>';
+      break;
+    }
+  }
+
+  if (allScenes.length > 0) {
+    renderVeoScenes(allScenes, title + ' [Line-by-Line — ' + allScenes.length + ' scenes]', duration, style, ratio);
+  } else {
+    document.getElementById('veoErrorBox').innerHTML = '<div class="err">Could not generate scenes. Try section mode instead.</div>';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Generate Veo Prompts';
+  document.getElementById('veoStatusBar').style.display = 'none';
 }
 
 </script>
