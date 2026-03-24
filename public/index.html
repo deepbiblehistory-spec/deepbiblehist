@@ -760,6 +760,209 @@ select {
   animation:slideUp 0.3s ease both;
 }
 @keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ═══════════════════════════════════════════════════
+   MOBILE RESPONSIVE — Full coverage ≤768px
+═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Wrapper padding */
+  .wrap { padding: 0 12px 60px; }
+
+  /* ── HEADER ── */
+  header { padding: 32px 12px 24px; }
+  header h1 { font-size: 1.7rem; letter-spacing: 2px; }
+  .header-eyebrow { font-size: 0.58rem; letter-spacing: 4px; }
+  .header-sub { font-size: 0.75rem; letter-spacing: 1px; }
+  .header-line { width: 80px; }
+
+  /* ── TAB NAV ── */
+  .tab-nav { flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 10px; }
+  .tab-btn { flex: 1 1 45%; font-size: 0.58rem; letter-spacing: 1px; padding: 9px 4px; min-width: 0; }
+
+  /* ── CARDS ── */
+  .card { padding: 14px 12px; border-radius: 12px; margin-bottom: 12px; }
+
+  /* ── INPUTS ── */
+  input[type=text],input[type=password],select,.txt {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+  select { padding-right: 28px; }
+  .txt { min-height: 80px; }
+
+  /* ── BUTTONS ── */
+  .run-btn { font-size: 0.78rem; letter-spacing: 2px; padding: 13px; }
+  .icon-btn { font-size: 0.58rem; padding: 6px 10px; }
+
+  /* ── CONTROLS GRID → SINGLE COLUMN ── */
+  .controls { grid-template-columns: 1fr; gap: 10px; }
+
+  /* ── CHANNEL ROW → STACK ── */
+  .channel-row { grid-template-columns: 1fr 1fr auto; gap: 6px; }
+  .channel-row input { font-size: 0.8rem; padding: 8px 10px; }
+
+  /* ── PATTERN GRID → 2 COLS ── */
+  .pattern-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pstat .val { font-size: 1.4rem; }
+  .pstat .lbl2 { font-size: 0.5rem; }
+
+  /* ── INTEL SECTION ── */
+  .intel-section { padding: 14px 12px; border-radius: 12px; }
+  .intel-title { font-size: 0.65rem; letter-spacing: 2px; }
+
+  /* ── VIDEO ROW ── */
+  .video-row { grid-template-columns: 80px 1fr; gap: 8px; }
+
+  /* ── TRANSCRIPT SLOTS ── */
+  .t-slot { padding: 12px; }
+  .t-slot-hdr { flex-wrap: wrap; gap: 8px; }
+  .t-section { padding: 14px 12px; }
+  .t-title { font-size: 0.62rem; letter-spacing: 2px; }
+
+  /* ── SCORE LABELS ── */
+  .score-labels { font-size: 0.78rem; }
+
+  /* ── COMPARE COL ── */
+  .compare-col { padding: 10px; }
+
+  /* ── VEO SCENES ── */
+  .veo-scene { padding: 12px; }
+
+  /* ── RESULTS HEADER ── */
+  .results-hdr { font-size: 0.9rem; letter-spacing: 2px; }
+
+  /* ── SECTION LABEL ── */
+  .section-label { font-size: 0.55rem; letter-spacing: 3px; }
+
+  /* ── PILLS ── */
+  .pill { font-size: 0.52rem; padding: 2px 7px; }
+
+  /* ── COPY/ACTION BUTTONS ROW ── */
+  .intel-section > div[style*="display:flex"] {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* ── DOWNLOAD BTN ── */
+  #downloadBtn { font-size: 0.58rem; padding: 7px 12px; }
+
+  /* ── COPY ALL BTN ── */
+  #veoCopyAllBtn { font-size: 0.62rem; letter-spacing: 1px; padding: 12px 12px; }
+
+  /* ── GATE OVERLAY ── */
+  #gateOverlay { padding: 24px 20px; }
+  #gateOverlay div[style*="max-width:420px"] div[style*="2rem"] { font-size: 1.6rem; }
+}
+
+/* ═══════════════════════════════════════════════════
+   SMALL MOBILE ≤ 480px
+═══════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  header h1 { font-size: 1.4rem; letter-spacing: 1.5px; }
+
+  /* Tabs: all 4 on two rows */
+  .tab-btn { flex: 1 1 45%; font-size: 0.52rem; letter-spacing: 0.8px; padding: 8px 3px; }
+
+  /* Pattern grid: 2 cols on small screens */
+  .pattern-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Channel row: stack vertically */
+  .channel-row { grid-template-columns: 1fr; }
+  .channel-row .remove-btn { width: 100%; }
+
+  /* Controls: single col */
+  .controls { grid-template-columns: 1fr; }
+
+  /* Veo settings grids → single col */
+  .card > div[style*="grid-template-columns:1fr 1fr"] {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  /* Production tools grids → single col */
+  div[style*="grid-template-columns:1fr 1fr 1fr"] {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+
+  div[style*="grid-template-columns:1fr 1fr"] {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+
+  /* Veo generate + copy all buttons: stack */
+  div[style*="display:flex;gap:10px;margin-top:12px"] {
+    flex-direction: column !important;
+  }
+  #veoCopyAllBtn { width: 100% !important; padding: 13px !important; }
+
+  /* Gap mode tabs: stack */
+  div[style*="display:flex;gap:4px;margin-bottom:16px"] {
+    flex-direction: column;
+  }
+
+  /* Thumb style grid: single col */
+  #thumbStyleGrid { grid-template-columns: 1fr !important; }
+
+  /* Score labels smaller */
+  .score-labels span { font-size: 0.75rem; }
+
+  /* CTA item */
+  .cta-item { font-size: 0.82rem; padding: 8px 10px; }
+
+  /* Batch stats: 2x2 grid */
+  div[style*="grid-template-columns:1fr 1fr 1fr 1fr"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Intel section action buttons: wrap */
+  div[style*="display:flex;gap:8px;margin-bottom:14px"] {
+    flex-wrap: wrap !important;
+  }
+  div[style*="display:flex;gap:8px;margin-bottom:14px"] button {
+    flex: 1 1 45%;
+    font-size: 0.58rem !important;
+    padding: 7px 8px !important;
+    min-width: 0;
+  }
+
+  /* Floating copy all in veo */
+  div[style*="display:flex;gap:10px;margin-top:12px"] > button {
+    font-size: 0.75rem;
+  }
+
+  .run-btn { font-size: 0.72rem; letter-spacing: 1.5px; }
+  .card { padding: 12px 10px; }
+  .veo-scene { padding: 10px; }
+  .t-slot { padding: 10px; }
+}
+
+/* ═══════════════════════════════════════════════════
+   LANDSCAPE PHONE ≤ 896px height
+═══════════════════════════════════════════════════ */
+@media (max-height: 500px) and (orientation: landscape) {
+  header { padding: 16px 12px 12px; }
+  header h1 { font-size: 1.3rem; }
+  .header-eyebrow, .header-sub, .header-line { display: none; }
+  .tab-nav { margin-bottom: 12px; }
+}
+
+/* ── RESPONSIVE GRID HELPERS ── */
+@media (max-width: 480px) {
+  .resp-grid-2,
+  .resp-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  /* Tab navigation - ensure 2 per row max */
+  .tab-nav { flex-wrap: wrap; }
+  .tab-btn { flex: 1 1 calc(50% - 4px); min-width: calc(50% - 4px); }
+}
 </style>
 </head>
 <body>
@@ -890,7 +1093,7 @@ select {
 
   <div class="card">
     <div class="section-label">Scene Settings</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+    <div class="resp-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
       <div><label class="lbl">Video Title</label><input type="text" id="veoTitle" placeholder="e.g. The Lost Tomb of Jesus"></div>
       <div><label class="lbl">Scene Duration</label>
         <select id="veoDuration"><option value="5">5 seconds</option><option value="8" selected>8 seconds</option><option value="10">10 seconds</option></select></div>
@@ -944,7 +1147,7 @@ select {
   <div class="results-hdr">SEO Description Generator</div>
   <div class="card">
     <p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;margin-bottom:16px;">Generate a fully SEO-optimised YouTube description for your video &mdash; with keywords, timestamps, hashtags, and a CTA structure tuned for the biblical history niche.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+    <div class="resp-grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
       <div><label class="lbl">Video Title</label><input type="text" id="seoTitle" placeholder="e.g. The FORBIDDEN Tomb of Jesus..."></div>
       <div>
           <label class="lbl">Target Keywords</label>
