@@ -1024,6 +1024,7 @@ select {
   <button class="tab-btn" onclick="switchTab('tab-transcript',this)">&#9997; Transcripts</button>
   <button class="tab-btn" onclick="switchTab('tab-veo',this)">&#9654; Veo Prompts</button>
   <button class="tab-btn" onclick="switchTab('tab-tools',this)">&#9881; Production Tools</button>
+  <button class="tab-btn" onclick="switchTab('tab-studio',this)">&#9997; Script Studio</button>
 </div>
 
 <!-- TAB 1 -->
@@ -1495,9 +1496,328 @@ select {
       <div id="schedResults"></div>
     </div>
 
+
+    <!-- COMMUNITY POST GENERATOR -->
+    <div class="card">
+      <div class="section-label">Community Post Generator</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Write YouTube community tab posts to tease upcoming videos, keep subscribers engaged, and drive traffic before upload day.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Upcoming Video Title</label><input type="text" id="cpTitle" placeholder="Your next video title..."></div>
+        <div><label class="lbl">Post Type</label>
+          <select id="cpType">
+            <option value="teaser" selected>Teaser (2-3 days before)</option>
+            <option value="countdown">Countdown (upload day)</option>
+            <option value="behind the scenes">Behind the Scenes</option>
+            <option value="question poll">Question / Poll</option>
+            <option value="milestone celebration">Milestone Celebration</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;"><label class="lbl">Key Hook / Reveal (optional)</label>
+        <input type="text" id="cpHook" placeholder="e.g. The evidence that was buried for 2000 years...">
+      </div>
+      <button onclick="generateCommunityPost()" id="cpBtn" class="run-btn" style="margin-bottom:0;">&#128172; Generate Community Post</button>
+      <div id="cpResults"></div>
+    </div>
+
+    <!-- PINNED COMMENT GENERATOR -->
+    <div class="card">
+      <div class="section-label">Pinned Comment Generator</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Write the pinned comment and first reply that drive likes, subscriptions and watch time on every upload.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Video Title</label><input type="text" id="pcTitle" placeholder="Your video title..."></div>
+        <div><label class="lbl">Key Revelation in Video</label><input type="text" id="pcReveal" placeholder="e.g. The tomb was found in 1980 but suppressed..."></div>
+      </div>
+      <button onclick="generatePinnedComment()" id="pcBtn" class="run-btn" style="margin-bottom:0;">&#128204; Generate Pinned Comment</button>
+      <div id="pcResults"></div>
+    </div>
+
+    <!-- A/B THUMBNAIL SCORER -->
+    <div class="card">
+      <div class="section-label">A/B Thumbnail Scorer</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Describe two thumbnail concepts and get a scored winner with specific reasons and improvement notes.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Thumbnail A — Describe It</label>
+          <textarea class="txt" id="thumbA" style="min-height:90px;" placeholder="e.g. Close-up of Jesus face, half in shadow, red banner saying FORBIDDEN..."></textarea>
+        </div>
+        <div><label class="lbl">Thumbnail B — Describe It</label>
+          <textarea class="txt" id="thumbB" style="min-height:90px;" placeholder="e.g. Ancient tomb entrance, torchlight, text HIDDEN FOR 2000 YEARS across top..."></textarea>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;"><label class="lbl">Video Topic / Title</label>
+        <input type="text" id="thumbABTitle" placeholder="The video this thumbnail is for...">
+      </div>
+      <button onclick="scoreABThumbnail()" id="thumbABBtn" class="run-btn" style="margin-bottom:0;">&#127919; Score &amp; Pick Winner</button>
+      <div id="thumbABResults"></div>
+    </div>
+
+    <!-- SERIES PLANNER -->
+    <div class="card">
+      <div class="section-label">Series Planner</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Plan a complete 5-10 video series around one topic — maximise watch time, playlists and subscriber retention.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Series Topic</label><input type="text" id="seriesTopic" placeholder="e.g. The Lost Books of the Bible"></div>
+        <div><label class="lbl">Number of Episodes</label>
+          <select id="seriesCount">
+            <option value="5">5 episodes</option>
+            <option value="7" selected>7 episodes</option>
+            <option value="10">10 episodes</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Episode Length</label>
+          <select id="seriesLength">
+            <option value="18-20 mins">18-20 mins (short form)</option>
+            <option value="35-38 mins" selected>35-38 mins (standard DBH)</option>
+            <option value="mixed">Mixed lengths</option>
+          </select>
+        </div>
+        <div><label class="lbl">Release Cadence</label>
+          <select id="seriesCadence">
+            <option value="weekly">Weekly</option>
+            <option value="bi-weekly" selected>Bi-weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="planSeries()" id="seriesBtn" class="run-btn" style="margin-bottom:0;">&#127916; Plan Full Series</button>
+      <div id="seriesResults"></div>
+    </div>
+
+    <!-- SUBSCRIBER MILESTONE POST -->
+    <div class="card">
+      <div class="section-label">Subscriber Milestone Post</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Generate a celebratory community post, pinned comment and short video script for subscriber milestones.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Milestone Reached</label><input type="text" id="milestoneNum" placeholder="e.g. 10,000 / 50K / 100K / 1M"></div>
+        <div><label class="lbl">Channel Started</label><input type="text" id="milestoneDate" placeholder="e.g. January 2024"></div>
+      </div>
+      <div style="margin-bottom:10px;"><label class="lbl">Most Popular Video</label>
+        <input type="text" id="milestoneBestVid" placeholder="e.g. Brothers and Sisters of Jesus (2.1M views)">
+      </div>
+      <button onclick="generateMilestone()" id="milestoneBtn" class="run-btn" style="margin-bottom:0;">&#127881; Generate Milestone Content</button>
+      <div id="milestoneResults"></div>
+    </div>
+
+    <!-- REVENUE CALCULATOR -->
+    <div class="card">
+      <div class="section-label">Revenue Calculator</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Estimate DBH channel revenue potential — AdSense, sponsorships, digital products and Patreon — based on your current metrics.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Monthly Views</label><input type="text" id="revViews" placeholder="e.g. 500K"></div>
+        <div><label class="lbl">Subscribers</label><input type="text" id="revSubs" placeholder="e.g. 85K"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+        <div><label class="lbl">Avg Video Length</label>
+          <select id="revLength">
+            <option value="10">10 mins</option>
+            <option value="20">20 mins</option>
+            <option value="35" selected>35 mins</option>
+            <option value="38">38 mins</option>
+          </select>
+        </div>
+        <div><label class="lbl">Primary Audience</label>
+          <select id="revAudience">
+            <option value="US Christians 35-65" selected>US Christians 35-65</option>
+            <option value="Global Christian">Global Christian</option>
+            <option value="Mixed">Mixed</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="calculateRevenue()" id="revBtn" class="run-btn" style="margin-bottom:0;">&#128176; Calculate Revenue Potential</button>
+      <div id="revResults"></div>
+    </div>
+
+
   </div>
 </div>
 
+
+<!-- TAB 5: SCRIPT STUDIO -->
+<div id="tab-studio" class="tab-panel">
+
+  <div class="card"><p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;">Complete pre-production suite — research, write, score and plan your DBH scripts. All tools use the SACRED + DETECTIVE framework tuned to your channel.</p></div>
+
+  <!-- SCRIPT WRITER -->
+  <div class="card">
+    <div class="section-label">Script Writer</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Full DBH script from a topic — SACRED framework, DETECTIVE retention, emotional peaks, pacing scored. Choose your target length.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div><label class="lbl">Video Topic</label><input type="text" id="swTopic" placeholder="e.g. The Lost Tomb of Jesus"></div>
+      <div><label class="lbl">Target Length</label>
+        <select id="swLength">
+          <option value="10">10 minutes (~1,300 words)</option>
+          <option value="18">18 minutes (~2,400 words)</option>
+          <option value="25">25 minutes (~3,300 words)</option>
+          <option value="35" selected>35 minutes (~4,600 words)</option>
+          <option value="38">38 minutes (~5,000 words)</option>
+        </select>
+      </div>
+    </div>
+    <!-- SCRIPT FORMAT SELECTOR -->
+    <input type="hidden" id="swFormat" value="detective_mystery">
+    <label class="lbl" style="margin-bottom:10px;">Script Format</label>
+    <div id="swFormatGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+
+      <div class="sw-format-card active" onclick="selectScriptFormat(this,'detective_mystery')" style="border:2px solid var(--gold);border-radius:12px;padding:12px;cursor:pointer;background:rgba(201,168,76,0.08);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--gold);margin-bottom:5px;">&#128270; DETECTIVE MYSTERY</div>
+        <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:5px;">Opens with an unsolved crime or hidden truth. Drops evidence clues every 3-4 mins. Builds to a shocking reveal. DBH signature style.</p>
+        <div style="font-size:0.65rem;color:var(--amber);">&#9733; DBH Standard &bull; Best for: forbidden topics, lost books, hidden history</div>
+      </div>
+
+      <div class="sw-format-card" onclick="selectScriptFormat(this,'courtroom_trial')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);margin-bottom:5px;">&#9878; COURTROOM TRIAL</div>
+        <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:5px;">Puts a biblical claim on trial. Calls witnesses (scholars), presents evidence, cross-examines mainstream view, delivers verdict. Highly credible.</p>
+        <div style="font-size:0.65rem;color:var(--muted);">High trust &bull; Best for: debunking myths, proving claims, archaeology</div>
+      </div>
+
+      <div class="sw-format-card" onclick="selectScriptFormat(this,'eyewitness_narrative')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);margin-bottom:5px;">&#128065; EYEWITNESS NARRATIVE</div>
+        <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:5px;">Second-person immersive — places the viewer IN the scene. "You are standing in Jerusalem in 33AD..." Cinematic and emotionally powerful.</p>
+        <div style="font-size:0.65rem;color:var(--muted);">Very immersive &bull; Best for: key biblical events, life of Jesus, exodus</div>
+      </div>
+
+      <div class="sw-format-card" onclick="selectScriptFormat(this,'conspiracy_exposed')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);margin-bottom:5px;">&#128561; CONSPIRACY EXPOSED</div>
+        <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:5px;">Exposes what mainstream scholars, institutions or history books have suppressed. High outrage + curiosity. Backed by real evidence throughout.</p>
+        <div style="font-size:0.65rem;color:var(--muted);">Highest CTR &bull; Best for: banned texts, church history, hidden figures</div>
+      </div>
+
+      <div class="sw-format-card" onclick="selectScriptFormat(this,'countdown_list')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);margin-bottom:5px;">&#128466; COUNTDOWN LIST</div>
+        <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:5px;">"7 things they never told you about..." Each item builds on the last. Saves the most shocking for last. Strong retention — viewers stay for the next item.</p>
+        <div style="font-size:0.65rem;color:var(--muted);">Algorithm-friendly &bull; Best for: facts, signs, prophecies, characters</div>
+      </div>
+
+      <div class="sw-format-card" onclick="selectScriptFormat(this,'biography_epic')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);margin-bottom:5px;">&#127775; BIOGRAPHY EPIC</div>
+        <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:5px;">Deep-dive into one biblical figure. Birth to death, the full life story. Multiple emotional peaks. Who they really were vs how history remembers them.</p>
+        <div style="font-size:0.65rem;color:var(--muted);">Long watch time &bull; Best for: Jesus, Mary, Paul, Moses, Solomon</div>
+      </div>
+
+      <div class="sw-format-card" onclick="selectScriptFormat(this,'prophecy_fulfillment')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);margin-bottom:5px;">&#128313; PROPHECY FULFILLMENT</div>
+        <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:5px;">Side-by-side structure — ancient prophecy vs modern/historical fulfillment. Each prophecy is a mini-revelation. Builds faith and awe simultaneously.</p>
+        <div style="font-size:0.65rem;color:var(--muted);">Faith-building &bull; Best for: prophecy topics, end times, Revelation</div>
+      </div>
+
+      <div class="sw-format-card" onclick="selectScriptFormat(this,'archaeological_dig')" style="border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:1px;color:var(--text);margin-bottom:5px;">&#128640; ARCHAEOLOGICAL DIG</div>
+        <p style="font-size:0.75rem;color:var(--muted);line-height:1.4;margin-bottom:5px;">Follows a real excavation or discovery chronologically. Each layer of digging = a deeper revelation. Evidence-heavy, credible, documentary feel.</p>
+        <div style="font-size:0.65rem;color:var(--muted);">High credibility &bull; Best for: Dead Sea Scrolls, tombs, artefacts</div>
+      </div>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div><label class="lbl">Tone</label>
+        <select id="swTone">
+          <option value="detective mystery" selected>Detective Mystery</option>
+          <option value="scholarly revelation">Scholarly Revelation</option>
+          <option value="urgent prophecy">Urgent Prophecy</option>
+          <option value="archaeological discovery">Archaeological Discovery</option>
+        </select>
+      </div>
+      <div><label class="lbl">Emotional Peaks Target</label>
+        <select id="swPeaks">
+          <option value="5">5 peaks (short video)</option>
+          <option value="7" selected>7 peaks (standard)</option>
+          <option value="10">10 peaks (38 min)</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;"><label class="lbl">Key Evidence / Angle (optional)</label>
+      <textarea class="txt" id="swEvidence" style="min-height:70px;" placeholder="e.g. Dead Sea Scrolls reference, Josephus quote, specific archaeological site..."></textarea>
+    </div>
+    <button onclick="writeScript()" id="swBtn" class="run-btn" style="margin-bottom:0;">&#9997; Write Full Script</button>
+    <div id="swResults"></div>
+  </div>
+
+  <!-- TREND SPOTTER -->
+  <div class="card">
+    <div class="section-label">Trend Spotter</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Identifies the hottest biblical history topics right now based on search patterns, seasonal events, and niche momentum.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+      <div><label class="lbl">Focus Area</label>
+        <select id="trendFocus">
+          <option value="all biblical history" selected>All Biblical History</option>
+          <option value="Old Testament mysteries">Old Testament Mysteries</option>
+          <option value="New Testament revelations">New Testament Revelations</option>
+          <option value="biblical archaeology">Biblical Archaeology</option>
+          <option value="lost books and apocrypha">Lost Books & Apocrypha</option>
+          <option value="biblical prophecy">Biblical Prophecy</option>
+          <option value="women of the Bible">Women of the Bible</option>
+          <option value="African biblical history">African Biblical History</option>
+        </select>
+      </div>
+      <div><label class="lbl">Current Month / Season</label>
+        <input type="text" id="trendSeason" placeholder="e.g. March, Easter season, Lent...">
+      </div>
+    </div>
+    <button onclick="spotTrends()" id="trendBtn" class="run-btn" style="margin-bottom:0;">&#128200; Spot Trending Topics</button>
+    <div id="trendResults"></div>
+  </div>
+
+  <!-- VIDEO RESEARCH ASSISTANT -->
+  <div class="card">
+    <div class="section-label">Video Research Assistant</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Get scholarly sources, archaeological evidence, historical context and quotable references for any biblical topic.</p>
+    <div style="margin-bottom:10px;"><label class="lbl">Research Topic</label>
+      <input type="text" id="researchTopic" placeholder="e.g. Mary Magdalene's role in early Christianity">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+      <div><label class="lbl">Depth</label>
+        <select id="researchDepth">
+          <option value="overview">Quick Overview</option>
+          <option value="detailed" selected>Detailed Research</option>
+          <option value="deep dive">Deep Scholarly Dive</option>
+        </select>
+      </div>
+      <div><label class="lbl">Focus</label>
+        <select id="researchFocus">
+          <option value="all sources" selected>All Sources</option>
+          <option value="archaeological only">Archaeological Only</option>
+          <option value="textual sources only">Textual Sources Only</option>
+          <option value="controversial angles">Controversial Angles</option>
+        </select>
+      </div>
+    </div>
+    <button onclick="runResearch()" id="researchBtn" class="run-btn" style="margin-bottom:0;">&#128270; Research This Topic</button>
+    <div id="researchResults"></div>
+  </div>
+
+  <!-- SCRIPT ANALYSER — Emotional Peaks + Retention + Pacing -->
+  <div class="card">
+    <div class="section-label">Script Analyser — Peaks, Retention &amp; Pacing</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;font-style:italic;">Paste your script and get a full structural analysis — emotional peaks mapped, retention mechanisms scored, pacing graded, and specific rewrites suggested.</p>
+    <label class="lbl">Paste Script to Analyse</label>
+    <textarea class="txt" id="analyseScript" style="min-height:140px;" placeholder="Paste your full DBH script here..."></textarea>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0;">
+      <div><label class="lbl">Target Video Length</label>
+        <select id="analyseLength">
+          <option value="10">10 minutes</option>
+          <option value="18">18 minutes</option>
+          <option value="25">25 minutes</option>
+          <option value="35" selected>35 minutes</option>
+          <option value="38">38 minutes</option>
+        </select>
+      </div>
+      <div><label class="lbl">Minimum Emotional Peaks</label>
+        <select id="analysePeaks">
+          <option value="5">5 peaks</option>
+          <option value="7" selected>7 peaks</option>
+          <option value="10">10 peaks</option>
+        </select>
+      </div>
+    </div>
+    <button onclick="analyseScript()" id="analyseBtn" class="run-btn" style="margin-bottom:0;">&#128293; Analyse Script</button>
+    <div id="analyseResults"></div>
+  </div>
+
+</div>
+
+<!-- ADDITIONAL PRODUCTION TOOLS (appended to existing tab) -->
 
 
 <script>
@@ -3468,6 +3788,638 @@ function copyGapSection(section) {
     setTimeout(() => event.target.textContent = labels[section] || 'COPY', 2000);
   });
 }
+
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SCRIPT STUDIO — Script Writer, Trend Spotter, Research, Analyser
+// ═══════════════════════════════════════════════════════════════════════════
+
+
+// ── SCRIPT FORMAT SELECTOR ────────────────────────────────────────────────
+const SCRIPT_FORMATS = {
+  detective_mystery: {
+    name: 'Detective Mystery',
+    structure: 'Open with an unsolved mystery or hidden crime. Drop evidence clues every 3-4 minutes. Use DETECTIVE framework throughout: Dead Body (mystery) → Evidence Drops → Turns (reframes) → Expert Witnesses → Confrontation → The Truth → Invitation → Verdict Lingers.',
+    openingStyle: 'Start mid-action: "In [year], something was discovered/hidden/destroyed that changed everything..."',
+    peakStyle: 'Each evidence drop is a mini-revelation. Build to one massive final reveal.',
+    ctaStyle: 'Place CTAs at: 2 min (after hook), 40% mark (after first big clue), 70% mark (after confrontation), final 30 secs.'
+  },
+  courtroom_trial: {
+    name: 'Courtroom Trial',
+    structure: 'Frame the entire video as a trial. Opening statement → Call witnesses (scholars, texts, archaeology) → Cross-examine mainstream view → Present defence evidence → Closing argument → Verdict. Viewer is the jury.',
+    openingStyle: 'Start with the charge: "Today, [claim] goes on trial. The evidence will shock you."',
+    peakStyle: 'Each witness testimony is a peak. The cross-examination is the biggest peak.',
+    ctaStyle: 'CTAs framed as: "Stay for the verdict", "Like if you agree with the evidence", "Subscribe to hear more cases".'
+  },
+  eyewitness_narrative: {
+    name: 'Eyewitness Narrative',
+    structure: 'Second-person immersive throughout. Place the viewer inside the scene. Alternate between ancient scene-setting and modern scholarly context. Use sensory details. Return to the scene at each emotional peak.',
+    openingStyle: 'Start in the scene: "You are standing in Jerusalem. It is [date]. The dust is still warm from..."',
+    peakStyle: 'Emotional peaks are moments of direct scene revelation — what the eyewitness sees, hears, feels.',
+    ctaStyle: 'CTAs feel natural: "Stay with me in this moment", "If this moves you, share it."'
+  },
+  conspiracy_exposed: {
+    name: 'Conspiracy Exposed',
+    structure: 'Establish the mainstream narrative first. Then systematically dismantle it with evidence. Build outrage carefully — always grounded in real sources. Structure: What they told you → What the evidence actually shows → Who suppressed it and why → What it means for your faith.',
+    openingStyle: 'Start with the official story then immediately undercut it: "You were taught that... but here is what the evidence actually shows."',
+    peakStyle: 'Each piece of suppressed evidence is a peak. The "who suppressed it" section is the climax.',
+    ctaStyle: 'CTAs leverage outrage: "Share this before it gets buried again", "Subscribe to keep getting the truth."'
+  },
+  countdown_list: {
+    name: 'Countdown List',
+    structure: 'Number the items from least to most shocking (save best for last). Each item = intro sentence + context + evidence + why it matters + tease of next item. Consistent structure per item trains viewer to stay for the next one.',
+    openingStyle: 'Start with the number and a tease of what is coming: "Number 7 will disturb you. But number 1... changes everything."',
+    peakStyle: 'Each item is a mini-peak. Number 3, 2, and 1 must escalate dramatically.',
+    ctaStyle: 'CTAs at: opening tease, midpoint (after item 4), and final item reveal.'
+  },
+  biography_epic: {
+    name: 'Biography Epic',
+    structure: 'Full life story arc. Birth/origin → Early life tensions → The calling or turning point → Peak ministry/mission → Betrayal or trial → Death and legacy → What history got wrong. Each phase has an emotional peak.',
+    openingStyle: 'Start at the most dramatic moment of their life, then flash back: "They were about to change the world. But nobody knew their story."',
+    peakStyle: 'The turning point, the betrayal, and the legacy revelation are the three biggest peaks.',
+    ctaStyle: 'CTAs tied to emotional moments: "If their story moves you..." and "Their legacy continues — subscribe to follow it."'
+  },
+  prophecy_fulfillment: {
+    name: 'Prophecy Fulfillment',
+    structure: 'Alternating structure: Ancient prophecy text → Historical context of when it was written → Evidence of fulfillment → Faith implication → Next prophecy. Each prophecy pair is a self-contained revelation unit.',
+    openingStyle: 'Start with the most impossible-seeming prophecy: "Over 2,500 years ago, this was written. Here is what happened next."',
+    peakStyle: 'Each fulfillment is a peak. Build from most explainable to most miraculous.',
+    ctaStyle: 'CTAs framed around faith: "If this strengthens your faith, share it", "Subscribe to explore more."'
+  },
+  archaeological_dig: {
+    name: 'Archaeological Dig',
+    structure: 'Follow a real discovery chronologically. Discovery → Initial analysis → Expert reactions → What the mainstream said → What deeper analysis revealed → Implications for biblical history. Each layer = a deeper revelation.',
+    openingStyle: 'Start with the discovery moment: "In [year], at [site], a team of archaeologists uncovered something that was never supposed to be found."',
+    peakStyle: 'Each new layer of analysis is a peak. The final implication is the climax.',
+    ctaStyle: 'CTAs leverage credibility: "Stay for the full evidence", "Share this scholarly finding."'
+  }
+};
+
+function selectScriptFormat(el, formatKey) {
+  document.querySelectorAll('.sw-format-card').forEach(c => {
+    c.style.border = '1px solid var(--border)';
+    c.style.background = 'var(--navy3)';
+    c.querySelector('div[style*="font-family"]').style.color = 'var(--text)';
+  });
+  el.style.border = '2px solid var(--gold)';
+  el.style.background = 'rgba(201,168,76,0.08)';
+  el.querySelector('div[style*="font-family"]').style.color = 'var(--gold)';
+  document.getElementById('swFormat').value = formatKey;
+}
+
+async function writeScript() {
+  const topic    = document.getElementById('swTopic').value.trim();
+  const length   = document.getElementById('swLength').value;
+  const tone     = document.getElementById('swTone').value;
+  const peaks    = document.getElementById('swPeaks').value;
+  const evidence = document.getElementById('swEvidence').value.trim();
+  if (!topic) { alert('Please enter a video topic.'); return; }
+
+  const wordCount = {10:1300,18:2400,25:3300,35:4600,38:5000}[length] || 4600;
+  const sections  = {10:6,18:8,25:10,35:12,38:14}[length] || 12;
+
+  const formatKey = document.getElementById('swFormat').value || 'detective_mystery';
+  const fmt = SCRIPT_FORMATS[formatKey] || SCRIPT_FORMATS['detective_mystery'];
+
+  const prompt = `You are the head scriptwriter for Deep Bible History (DBH), a biblical history YouTube channel targeting US Christians aged 35-65.
+
+CHOSEN SCRIPT FORMAT: ${fmt.name}
+FORMAT STRUCTURE: ${fmt.structure}
+OPENING STYLE: ${fmt.openingStyle}
+PEAK STYLE: ${fmt.peakStyle}
+CTA STYLE: ${fmt.ctaStyle}
+
+SACRED FRAMEWORK (always use, adapted to format):
+S — Story Hook: Open with a shocking statement or scene
+A — Agitate: Deepen the mystery, raise stakes
+C — Context: Historical/archaeological background
+R — Revelation: The key discovery or truth
+E — Evidence: Scholarly sources, quotes, proof
+D — Decision: What this means for the viewer's faith
+
+DETECTIVE RETENTION FRAMEWORK (weave throughout):
+D — Dead Body: Start with the mystery/crime
+E — Evidence Drops: Scatter clues every 3-4 mins
+T — Turns: Unexpected revelations that reframe everything
+E — Expert Witnesses: Cite real scholars and sources
+C — Confrontation: Challenge mainstream narrative
+T — The Truth: The full revelation
+I — Invitation: CTA and next steps
+V — Verdict Lingers: End on an open question
+
+VIDEO SPECIFICATIONS:
+Topic: "${topic}"
+Target length: ${length} minutes (~${wordCount} words)
+Number of sections: ${sections}
+Tone: ${tone}
+Emotional peaks required: ${peaks} (must be clearly marked)
+Evidence/angle: ${evidence || 'Use best available biblical scholarship'}
+
+DELIVERABLES — Write the complete script:
+
+**TITLE OPTIONS (3)**
+[Three ALLCAPS hook + colon title options]
+
+**SCRIPT STRUCTURE MAP**
+[List all ${sections} sections with name and target word count]
+
+**EMOTIONAL PEAKS MAP**
+[List all ${peaks} emotional peaks with section, timestamp estimate, and trigger type]
+
+**FULL SCRIPT**
+Write the complete ~${wordCount} word script.
+- Mark each section: === SECTION N: [NAME] ===
+- Mark emotional peaks: *** EMOTIONAL PEAK [N]: [TYPE] ***
+- Mark CTAs: [CTA N: text]
+- Mark retention hooks: {OPEN LOOP: text} and {CLOSE LOOP: text}
+- Write in natural spoken English — this is read aloud by ElevenLabs
+- No stage directions, no [brackets], no timestamps — clean voiceover text only
+
+**PACING SCORE**
+Rate this script: Hook strength /20, Retention mechanics /20, Emotional journey /20, Evidence weight /20, CTA placement /20 = Total /100`;
+
+  try {
+    const result = await aiCall(prompt, 8000, 'swBtn', 'Writing script...');
+    window._swResult = result;
+    document.getElementById('swResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">Script — ${topic} (${length} mins)</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <button onclick="copyToolResult('_swResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;">COPY FULL SCRIPT</button>
+          <button onclick="copyScriptSection('script')" style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:8px 12px;cursor:pointer;">COPY SCRIPT ONLY</button>
+          <button onclick="copyScriptSection('titles')" style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:8px 12px;cursor:pointer;">COPY TITLES</button>
+          <button onclick="sendToBatchSplitter()" style="background:transparent;border:1px solid var(--green);border-radius:8px;color:var(--green);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:8px 12px;cursor:pointer;">SEND TO BATCH SPLITTER</button>
+        </div>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Script writing failed: ' + err.message, 'swResults'); }
+}
+
+function copyScriptSection(section) {
+  const text = window._swResult || '';
+  let extracted = '';
+  if (section === 'script') {
+    const m = text.match(/FULL SCRIPT[\s\S]*?(?=PACING SCORE|$)/i);
+    extracted = m ? m[0].replace(/FULL SCRIPT\n?/i,'').trim() : text;
+  } else if (section === 'titles') {
+    const m = text.match(/TITLE OPTIONS[\s\S]*?(?=SCRIPT STRUCTURE|$)/i);
+    extracted = m ? m[0].trim() : '';
+  }
+  navigator.clipboard.writeText(extracted || text).then(() => {
+    const labels = {script:'COPY SCRIPT ONLY', titles:'COPY TITLES'};
+    event.target.textContent = 'COPIED!';
+    setTimeout(() => event.target.textContent = labels[section] || 'COPY', 2000);
+  });
+}
+
+function sendToBatchSplitter() {
+  const text = window._swResult || '';
+  const m = text.match(/FULL SCRIPT[\s\S]*?(?=PACING SCORE|$)/i);
+  const script = m ? m[0].replace(/FULL SCRIPT\n?/i,'').trim() : text;
+  document.getElementById('batchScript').value = script;
+  switchTab('tab-veo', document.querySelector('.tab-btn:nth-child(3)'));
+  setTimeout(() => document.getElementById('batchScript').scrollIntoView({behavior:'smooth'}), 300);
+}
+
+async function spotTrends() {
+  const focus  = document.getElementById('trendFocus').value;
+  const season = document.getElementById('trendSeason').value.trim();
+
+  const prompt = `You are a YouTube trend analyst specialising in biblical history content for US Christian audiences.
+
+FOCUS AREA: ${focus}
+CURRENT SEASON/MONTH: ${season || 'March 2026'}
+
+Identify the 8 hottest trending topics in ${focus} right now. For each topic:
+
+**TREND [N]: [TOPIC NAME]**
+Search momentum: [RISING / HOT / EVERGREEN / SEASONAL]
+Why trending now: [specific reason — news, anniversary, seasonal, cultural event]
+Search volume estimate: [LOW / MEDIUM / HIGH / MASSIVE]
+DBH opportunity: [What specific angle DBH can take]
+Suggested title: [ALLCAPS hook + colon format]
+Best upload timing: [When to publish for maximum impact]
+Competition level: [LOW / MEDIUM / HIGH — how many channels cover this well]
+
+Then add:
+**TOP 3 IMMEDIATE OPPORTUNITIES FOR DBH**
+The 3 topics DBH should cover in the next 30 days, ranked by opportunity score.`;
+
+  try {
+    const result = await aiCall(prompt, 2000, 'trendBtn', 'Spotting trends...');
+    window._trendResult = result;
+    document.getElementById('trendResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">Trending Topics — ${focus}</div>
+        <button onclick="copyToolResult('_trendResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY TRENDS</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Trend spotting failed: ' + err.message, 'trendResults'); }
+}
+
+async function runResearch() {
+  const topic = document.getElementById('researchTopic').value.trim();
+  const depth = document.getElementById('researchDepth').value;
+  const focus = document.getElementById('researchFocus').value;
+  if (!topic) { alert('Please enter a research topic.'); return; }
+
+  const prompt = `You are a biblical history research assistant for Deep Bible History (DBH). Provide a comprehensive research brief for the following topic.
+
+TOPIC: "${topic}"
+DEPTH: ${depth}
+FOCUS: ${focus}
+
+Provide:
+
+**TOPIC OVERVIEW**
+2-3 paragraph summary of what is known about this topic historically and biblically.
+
+**PRIMARY SOURCES** (cite specifically)
+List 6-8 primary sources with brief description of what each says about the topic:
+- Dead Sea Scrolls references (if applicable)
+- Josephus references (if applicable)
+- Early church fathers
+- Original biblical texts (Hebrew/Greek insights)
+- Archaeological reports
+
+**SCHOLARLY DEBATE**
+What do mainstream scholars say vs alternative historians? Where is the genuine academic controversy?
+
+**ARCHAEOLOGICAL EVIDENCE**
+Key excavations, artefacts, or sites relevant to this topic with dates and discoverers.
+
+**QUOTABLE FACTS** (for script use)
+8-10 specific, shocking or surprising facts that would work well in a DBH script. Format as ready-to-use script lines.
+
+**DBH SCRIPT ANGLES**
+3 specific angles DBH can take on this topic, from most to least controversial.
+
+**SOURCES TO CREDIT ON SCREEN**
+List of scholars, books, institutions DBH should cite for credibility.`;
+
+  try {
+    const result = await aiCall(prompt, 2500, 'researchBtn', 'Researching...');
+    window._researchResult = result;
+    document.getElementById('researchResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">Research Brief — ${topic}</div>
+        <button onclick="copyToolResult('_researchResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY RESEARCH</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Research failed: ' + err.message, 'researchResults'); }
+}
+
+async function analyseScript() {
+  const script = document.getElementById('analyseScript').value.trim();
+  const length = document.getElementById('analyseLength').value;
+  const peaks  = document.getElementById('analysePeaks').value;
+  if (!script || script.length < 200) { alert('Please paste your script (minimum 200 characters).'); return; }
+
+  const wordCount = script.split(/\s+/).length;
+
+  const prompt = `You are a YouTube script optimisation expert for biblical history content. Analyse this DBH script ruthlessly and specifically.
+
+TARGET LENGTH: ${length} minutes
+MINIMUM EMOTIONAL PEAKS REQUIRED: ${peaks}
+SCRIPT WORD COUNT: ${wordCount} words
+EXPECTED WORD COUNT FOR ${length} MIN: ${parseInt(length)*130} words
+
+SCRIPT:
+${script.slice(0,4000)}${script.length > 4000 ? '\n[...script continues...]' : ''}
+
+DELIVER ALL OF THE FOLLOWING:
+
+**OVERALL SCORES**
+Hook strength: [X]/20 — [one sentence reason]
+Retention mechanics: [X]/20 — [one sentence reason]
+Emotional peaks: [X]/20 — [found N peaks, need ${peaks}]
+Pacing: [X]/20 — [one sentence reason]
+Evidence weight: [X]/20 — [one sentence reason]
+TOTAL: [X]/100
+
+**EMOTIONAL PEAKS MAP**
+List every emotional peak found. For each:
+Peak [N] at ~[word N]: Type: [CURIOSITY/AWE/SHOCK/REVELATION/VALIDATION] — "[quote the triggering line]" — Strength: [WEAK/MEDIUM/STRONG/EXPLOSIVE]
+
+**MISSING PEAKS**
+If fewer than ${peaks} peaks found, give exact locations where peaks should be added and suggest the specific technique (open loop, shocking fact, reframe, etc.)
+
+**RETENTION MECHANISM AUDIT**
+- Open loops found: [N] — list them with timestamps
+- Close loops found: [N]
+- Proof drops: [N]
+- Re-engagement lines: [N]
+- Cliffhangers: [N]
+
+**PACING ANALYSIS**
+- Avg sentence length: [N words]
+- Longest dry section: [describe it, estimated position]
+- Fastest section: [describe it]
+- Pacing verdict: [SLOW/VARIABLE/OPTIMAL/TOO FAST]
+
+**LINE-BY-LINE FIXES (top 5 most impactful)**
+For each:
+ORIGINAL: "[exact line]"
+PROBLEM: [what is weak about it]
+REWRITE: "[improved version]"
+
+**WORD COUNT CHECK**
+Current: ${wordCount} words | Target for ${length} min: ${parseInt(length)*130} words | ${wordCount > parseInt(length)*130 ? 'OVER by ' + (wordCount - parseInt(length)*130) : 'UNDER by ' + (parseInt(length)*130 - wordCount)} words
+Recommendation: [cut/expand which sections]`;
+
+  try {
+    const result = await aiCall(prompt, 3000, 'analyseBtn', 'Analysing script...');
+    window._analyseResult = result;
+    document.getElementById('analyseResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">Script Analysis</div>
+        <button onclick="copyToolResult('_analyseResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY ANALYSIS</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Analysis failed: ' + err.message, 'analyseResults'); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// GROWTH TOOLS
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function generateCommunityPost() {
+  const title = document.getElementById('cpTitle').value.trim();
+  const type  = document.getElementById('cpType').value;
+  const hook  = document.getElementById('cpHook').value.trim();
+  if (!title) { alert('Please enter the video title.'); return; }
+
+  const prompt = `You are the social media voice for Deep Bible History (DBH), a biblical history channel targeting US Christians 35-65.
+
+VIDEO: "${title}"
+POST TYPE: ${type}
+KEY HOOK: ${hook || 'tease the biggest revelation in the video'}
+
+Write a YouTube Community post for this video. DBH voice: scholarly but accessible, creates urgency and curiosity, never clickbait, always credible.
+
+**COMMUNITY POST**
+[Write the post — 150-250 words max. Use line breaks for readability. Include 1-2 emojis max. End with a question to drive comments.]
+
+**FIRST PINNED REPLY**
+[Write DBH's reply to their own post — 50-80 words. Adds a teaser detail not in the post. Creates more urgency.]
+
+**BEST TIME TO POST**
+[When to publish this post relative to upload day]
+
+**PREDICTED ENGAGEMENT**
+[What kind of comments to expect and how to seed the discussion]`;
+
+  try {
+    const result = await aiCall(prompt, 1000, 'cpBtn', 'Generating post...');
+    window._cpResult = result;
+    document.getElementById('cpResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">Community Post</div>
+        <button onclick="copyToolResult('_cpResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY POST</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Post generation failed: ' + err.message, 'cpResults'); }
+}
+
+async function generatePinnedComment() {
+  const title  = document.getElementById('pcTitle').value.trim();
+  const reveal = document.getElementById('pcReveal').value.trim();
+  if (!title) { alert('Please enter the video title.'); return; }
+
+  const prompt = `You are writing for Deep Bible History (DBH). Write a high-performing pinned comment for this video.
+
+VIDEO: "${title}"
+KEY REVEAL: ${reveal || 'the main revelation in the video'}
+
+**PINNED COMMENT** (200-300 words)
+Purpose: drive likes, encourage subscription, boost watch time, seed comments.
+Must include: timestamp recommendation, question to viewers, subscribe nudge, teaser of a detail not in the title.
+
+**REPLY COMMENT** (100-150 words)
+DBH replies to their own pinned comment 2 hours after posting.
+Purpose: spark a specific theological discussion, add a detail, make viewers feel like insiders.
+
+**WHY THIS WORKS**
+One sentence on the engagement strategy used.`;
+
+  try {
+    const result = await aiCall(prompt, 800, 'pcBtn', 'Generating comment...');
+    window._pcResult = result;
+    document.getElementById('pcResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">Pinned Comment</div>
+        <button onclick="copyToolResult('_pcResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY COMMENT</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Comment generation failed: ' + err.message, 'pcResults'); }
+}
+
+async function scoreABThumbnail() {
+  const a     = document.getElementById('thumbA').value.trim();
+  const b     = document.getElementById('thumbB').value.trim();
+  const title = document.getElementById('thumbABTitle').value.trim();
+  if (!a || !b) { alert('Please describe both thumbnails.'); return; }
+
+  const prompt = `You are a YouTube thumbnail strategist for biblical history content targeting US Christians 35-65.
+
+VIDEO: "${title || 'Biblical history video'}"
+
+THUMBNAIL A: ${a}
+THUMBNAIL B: ${b}
+
+Score each thumbnail on 5 criteria (0-20 each):
+1. Stop-scroll power (does it make you pause while scrolling?)
+2. Curiosity trigger (does it create a must-click feeling?)
+3. Emotional resonance (does it connect with the target audience?)
+4. Text clarity and impact (is the baked-in text powerful and readable?)
+5. Thumbnail style fit (does it match the DBH oil painting / cinematic standard?)
+
+For each thumbnail:
+**THUMBNAIL [A/B] SCORE: [X]/100**
+- Stop-scroll: [X]/20 — [reason]
+- Curiosity: [X]/20 — [reason]
+- Emotional: [X]/20 — [reason]
+- Text: [X]/20 — [reason]
+- Style fit: [X]/20 — [reason]
+
+**WINNER: THUMBNAIL [A/B]**
+Margin of victory: [X] points
+Key reason it wins: [one paragraph]
+
+**IMPROVEMENT FOR LOSER**
+One specific change that would make the losing thumbnail competitive.
+
+**HYBRID CONCEPT**
+Combine the best of both into one superior concept.`;
+
+  try {
+    const result = await aiCall(prompt, 1200, 'thumbABBtn', 'Scoring thumbnails...');
+    window._thumbABResult = result;
+    document.getElementById('thumbABResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">A/B Thumbnail Score</div>
+        <button onclick="copyToolResult('_thumbABResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY RESULTS</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Scoring failed: ' + err.message, 'thumbABResults'); }
+}
+
+async function planSeries() {
+  const topic   = document.getElementById('seriesTopic').value.trim();
+  const count   = document.getElementById('seriesCount').value;
+  const length  = document.getElementById('seriesLength').value;
+  const cadence = document.getElementById('seriesCadence').value;
+  if (!topic) { alert('Please enter a series topic.'); return; }
+
+  const prompt = `You are a YouTube content strategist for Deep Bible History (DBH), planning a multi-episode series.
+
+SERIES TOPIC: "${topic}"
+EPISODES: ${count}
+EPISODE LENGTH: ${length}
+RELEASE CADENCE: ${cadence}
+
+Design a complete series plan:
+
+**SERIES TITLE & HOOK**
+Series name, tagline, and why this series will drive massive watch time.
+
+**SERIES STRATEGY**
+Why this topic warrants a series (not just one video). How each episode feeds the next. Expected playlist retention effect.
+
+**EPISODE BREAKDOWN**
+For each of the ${count} episodes:
+Episode [N]: [TITLE in ALLCAPS hook format]
+- Core question this episode answers
+- Key revelation
+- Cliffhanger to next episode
+- Estimated views potential: [LOW/MEDIUM/HIGH/VIRAL]
+- Upload date: [based on ${cadence} cadence from today]
+
+**SERIES THUMBNAIL SYSTEM**
+How to make thumbnails visually consistent across all ${count} episodes (series branding).
+
+**PLAYLIST STRATEGY**
+Playlist title, description, and how to sequence for maximum watch time.
+
+**GROWTH PROJECTION**
+Expected subscriber gain and total views if series performs at DBH average.`;
+
+  try {
+    const result = await aiCall(prompt, 2000, 'seriesBtn', 'Planning series...');
+    window._seriesResult = result;
+    document.getElementById('seriesResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">Series Plan — ${topic}</div>
+        <button onclick="copyToolResult('_seriesResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY SERIES PLAN</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Series planning failed: ' + err.message, 'seriesResults'); }
+}
+
+async function generateMilestone() {
+  const num     = document.getElementById('milestoneNum').value.trim();
+  const date    = document.getElementById('milestoneDate').value.trim();
+  const bestVid = document.getElementById('milestoneBestVid').value.trim();
+  if (!num) { alert('Please enter the milestone number.'); return; }
+
+  const prompt = `Write milestone celebration content for Deep Bible History (DBH) reaching ${num} subscribers.
+
+MILESTONE: ${num} subscribers
+CHANNEL STARTED: ${date || 'recently'}
+BEST VIDEO: ${bestVid || 'top performing biblical history video'}
+
+Generate:
+
+**COMMUNITY POST** (250-300 words)
+Warm, personal, grateful — reflects DBH's scholarly but human voice. Thank the community, share a genuine moment, tease what's coming. End with a call to share the channel.
+
+**PINNED COMMENT** (150 words)
+For DBH to pin under the milestone post. More personal, calls out longtime subscribers.
+
+**SHORT CELEBRATION VIDEO SCRIPT** (60-90 seconds)
+Spoken words for a short thank-you video or reel. Natural, emotional, authentic.
+
+**SOCIAL CAPTION** (for any platform)
+Under 280 characters. Impact statement about the milestone.`;
+
+  try {
+    const result = await aiCall(prompt, 1200, 'milestoneBtn', 'Generating...');
+    window._milestoneResult = result;
+    document.getElementById('milestoneResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">${num} Milestone Content</div>
+        <button onclick="copyToolResult('_milestoneResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY ALL</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Generation failed: ' + err.message, 'milestoneResults'); }
+}
+
+async function calculateRevenue() {
+  const views    = document.getElementById('revViews').value.trim();
+  const subs     = document.getElementById('revSubs').value.trim();
+  const length   = document.getElementById('revLength').value;
+  const audience = document.getElementById('revAudience').value;
+  if (!views) { alert('Please enter monthly views.'); return; }
+
+  const prompt = `You are a YouTube monetisation strategist. Calculate revenue potential for Deep Bible History (DBH).
+
+CHANNEL METRICS:
+Monthly views: ${views}
+Subscribers: ${subs || 'not specified'}
+Avg video length: ${length} minutes
+Primary audience: ${audience}
+
+CONTEXT: Biblical history channel, US Christian audience, high-intent viewers, long-form content.
+
+Calculate all revenue streams:
+
+**ADSENSE REVENUE**
+- Estimated RPM for ${audience} biblical history niche: $[X]-$[X]
+- Monthly AdSense estimate: $[X]-$[X]
+- Annual AdSense estimate: $[X]-$[X]
+- Why this RPM: [explain the niche premium]
+
+**SPONSORSHIP POTENTIAL**
+- Current channel value per sponsored video: $[X]-$[X]
+- Best sponsor categories for DBH audience: [list 5]
+- How to approach sponsors: [specific strategy]
+- Realistic monthly sponsorship income at current size: $[X]-$[X]
+
+**DIGITAL PRODUCTS** (high margin)
+- Recommended products for DBH audience: [list with price points]
+- Realistic monthly income from digital products: $[X]-$[X]
+
+**MEMBERSHIP / PATREON**
+- Estimated conversion rate for biblical history niche: [X]%
+- Projected members at current sub count: [N]
+- Monthly membership income at $[X]/month tier: $[X]-$[X]
+
+**TOTAL REVENUE SUMMARY**
+Conservative monthly: $[X]
+Realistic monthly: $[X]
+Optimistic monthly: $[X]
+
+**GROWTH TARGETS**
+Views needed for $5K/month: [N views]
+Views needed for $10K/month: [N views]
+Subscribers needed for sponsorships: [N subs]
+
+**IMMEDIATE REVENUE ACTIONS**
+Top 3 things DBH should do RIGHT NOW to increase revenue.`;
+
+  try {
+    const result = await aiCall(prompt, 1500, 'revBtn', 'Calculating...');
+    window._revResult = result;
+    document.getElementById('revResults').innerHTML = `
+      <div class="intel-section" style="margin-top:14px;">
+        <div class="intel-title">Revenue Projection — DBH</div>
+        <button onclick="copyToolResult('_revResult')" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:2px;padding:8px 14px;cursor:pointer;font-weight:700;margin-bottom:12px;">COPY REPORT</button>
+        <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
+      </div>`;
+  } catch(err) { errCard('Calculation failed: ' + err.message, 'revResults'); }
+}
+
 
 </script>
 </body>
