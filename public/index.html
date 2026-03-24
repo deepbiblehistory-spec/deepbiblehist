@@ -120,6 +120,7 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
 <div class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('tab-channel',this)">📊 Channel Analysis</button>
   <button class="tab-btn" onclick="switchTab('tab-transcript',this)">📝 Transcript Analyzer</button>
+  <button class="tab-btn" onclick="switchTab('tab-veo',this)">🎬 Veo Prompt Generator</button>
 </div>
 
 <!-- ═══════════════════════════════════════════════════ TAB 1: CHANNEL ANALYSIS -->
@@ -920,5 +921,303 @@ function copyScriptBlueprint() {
   });
 }
 </script>
+
+<!-- ═══════════════════════════════════════════════════ TAB 3: VEO PROMPT GENERATOR -->
+<div id="tab-veo" class="tab-panel">
+
+  <div class="card">
+    <p style="font-size:0.8rem;color:var(--muted);line-height:1.6;">
+      Paste your DBH script below — the AI breaks it into cinematic scenes and generates an optimised <strong style="color:var(--amber);">Google Flow / Veo prompt</strong> for every scene, ready to paste directly into Google Flow.
+    </p>
+  </div>
+
+  <!-- Settings -->
+  <div class="card">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <label class="lbl">Video Topic / Title</label>
+        <input type="text" id="veoTitle" placeholder="e.g. The Lost Tomb of Jesus">
+      </div>
+      <div>
+        <label class="lbl">Scene Duration</label>
+        <select id="veoDuration">
+          <option value="5">5 seconds</option>
+          <option value="8" selected>8 seconds</option>
+          <option value="10">10 seconds</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <label class="lbl">Visual Style</label>
+        <select id="veoStyle">
+          <option value="cinematic photorealistic">Cinematic Photorealistic</option>
+          <option value="oil painting cinematic" selected>Oil Painting Cinematic</option>
+          <option value="documentary style">Documentary Style</option>
+          <option value="epic historical drama">Epic Historical Drama</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Aspect Ratio</label>
+        <select id="veoRatio">
+          <option value="16:9" selected>16:9 (YouTube)</option>
+          <option value="9:16">9:16 (Shorts)</option>
+          <option value="1:1">1:1 (Square)</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label class="lbl">Character Reference (DBH Standard)</label>
+      <input type="text" id="veoCharRef" placeholder="e.g. Levantine man, olive skin, dark curly hair, dark eyes, first-century wool robe..." value="Levantine male figure, olive skin, dark curly hair, dark eyes, weathered face, first-century wool robe, sandals">
+    </div>
+  </div>
+
+  <!-- Script Input -->
+  <div class="card">
+    <label class="lbl">Paste Your Script</label>
+    <textarea class="txt" id="veoScript" style="min-height:180px;" placeholder="Paste your full DBH script here... The tool will automatically break it into scenes and generate a Veo prompt for each one.&#10;&#10;Example:&#10;[HOOK]&#10;Two thousand years ago, a tomb was sealed with a secret that would shake the foundations of Christianity...&#10;&#10;[SECTION 1]&#10;In 1980, construction workers in Jerusalem made a discovery that archaeologists have debated ever since..."></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button onclick="generateVeoPrompts()" id="veoGenBtn" class="run-btn" style="margin-bottom:0;flex:1;">🎬 GENERATE VEO PROMPTS</button>
+      <button onclick="copyAllPrompts()" id="veoCopyAllBtn" style="display:none;background:var(--navy3);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1.5px;padding:13px 16px;cursor:pointer;white-space:nowrap;">📋 COPY ALL</button>
+    </div>
+  </div>
+
+  <div class="status-bar" id="veoStatusBar">
+    <div class="spinner"></div>
+    <span id="veoStatusText">Breaking script into scenes...</span>
+  </div>
+
+  <div id="veoErrorBox"></div>
+  <div id="veoResults"></div>
+
+</div>
+
+<script>
+// ─── VEO PROMPT GENERATOR ─────────────────────────────────────────────────
+
+async function generateVeoPrompts() {
+  const script = document.getElementById('veoScript').value.trim();
+  const title = document.getElementById('veoTitle').value.trim() || 'DBH Video';
+  const duration = document.getElementById('veoDuration').value;
+  const style = document.getElementById('veoStyle').value;
+  const ratio = document.getElementById('veoRatio').value;
+  const charRef = document.getElementById('veoCharRef').value.trim();
+
+  if (!script || script.length < 100) {
+    document.getElementById('veoErrorBox').innerHTML = '<div class="err">⚠️ Please paste your script (minimum 100 characters).</div>';
+    return;
+  }
+
+  document.getElementById('veoErrorBox').innerHTML = '';
+  document.getElementById('veoResults').innerHTML = '';
+  document.getElementById('veoCopyAllBtn').style.display = 'none';
+
+  const btn = document.getElementById('veoGenBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ GENERATING...';
+  document.getElementById('veoStatusBar').style.display = 'flex';
+  document.getElementById('veoStatusText').textContent = 'Sending script to AI...';
+
+  const prompt = `You are a cinematic AI video director specialising in biblical history content. Your job is to break a script into scenes and write a precise Google Flow / Veo video generation prompt for each scene.
+
+VIDEO TITLE: "${title}"
+VISUAL STYLE: ${style}
+SCENE DURATION: ${duration} seconds each
+ASPECT RATIO: ${ratio}
+CHARACTER REFERENCE: ${charRef}
+
+DBH VISUAL STANDARDS:
+- Setting: Ancient Middle East, first-century Jerusalem, Judean wilderness, Roman-era architecture
+- Lighting: Chiaroscuro — dramatic contrast, amber-gold tones, candlelight or harsh sunlight
+- Atmosphere: Dusty, ancient, cinematic weight — feels like a historical epic
+- Camera: Varied shots — slow push-ins, wide establishing shots, close-ups on faces/hands/objects
+- NO modern elements, NO text overlays, NO anachronisms
+- Characters match the character reference above unless specified otherwise
+
+SCRIPT TO BREAK INTO SCENES:
+${script}
+
+INSTRUCTIONS:
+1. Break the script into 8-15 logical scenes based on the content
+2. For each scene write:
+   - SCENE NUMBER and TITLE (short)
+   - VOICEOVER: The exact script text for that scene (copy directly from script)
+   - VEO PROMPT: A detailed, specific Google Flow/Veo prompt optimised for the visual style. Include: subject, action, setting, camera movement, lighting, atmosphere, style. Keep under 200 words.
+   - SHOT TYPE: (Wide/Medium/Close-up/Extreme close-up/Aerial/Pan/Push-in)
+   - DURATION: ${duration}s
+
+Format each scene EXACTLY like this:
+---SCENE [N]: [TITLE]---
+VOICEOVER: [exact script text]
+SHOT TYPE: [type]
+VEO PROMPT: [full optimised prompt]
+---END SCENE---
+
+Write all scenes now. Be cinematic, specific, and detailed in every Veo prompt.`;
+
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({prompt})
+    });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || 'Generation failed');
+    const text = data.text || '';
+    if (!text) throw new Error('No response from AI');
+
+    document.getElementById('veoStatusText').textContent = 'Parsing scenes...';
+    renderVeoPrompts(text, title, style, ratio, duration);
+
+  } catch(err) {
+    document.getElementById('veoErrorBox').innerHTML = `<div class="err">⚠️ ${err.message}. Make sure the Anthropic API key is set in Vercel.</div>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🎬 GENERATE VEO PROMPTS';
+  document.getElementById('veoStatusBar').style.display = 'none';
+}
+
+function renderVeoPrompts(text, title, style, ratio, duration) {
+  // Parse scenes
+  const sceneRegex = /---SCENE (\d+): (.+?)---([\s\S]*?)---END SCENE---/g;
+  const scenes = [];
+  let match;
+  while ((match = sceneRegex.exec(text)) !== null) {
+    const body = match[3];
+    const voiceMatch = body.match(/VOICEOVER:\s*([\s\S]*?)(?=SHOT TYPE:|VEO PROMPT:|$)/);
+    const shotMatch = body.match(/SHOT TYPE:\s*(.+?)(?=
+|VEO PROMPT:|$)/);
+    const promptMatch = body.match(/VEO PROMPT:\s*([\s\S]*?)(?=DURATION:|---END|$)/);
+    scenes.push({
+      num: match[1],
+      title: match[2].trim(),
+      voiceover: voiceMatch ? voiceMatch[1].trim() : '',
+      shotType: shotMatch ? shotMatch[1].trim() : '',
+      prompt: promptMatch ? promptMatch[1].trim() : body.trim()
+    });
+  }
+
+  // Fallback if regex doesn't match — split by numbered sections
+  if (scenes.length === 0) {
+    const lines = text.split('
+');
+    let currentScene = null;
+    lines.forEach(line => {
+      if (/^(SCENE|Scene)\s*\d+/.test(line) || /^---SCENE/.test(line)) {
+        if (currentScene) scenes.push(currentScene);
+        currentScene = {num: scenes.length+1, title: line.replace(/---SCENE \d+:/,'').replace('---','').trim(), voiceover:'', shotType:'', prompt:''};
+      } else if (currentScene) {
+        if (line.startsWith('VOICEOVER:')) currentScene.voiceover = line.replace('VOICEOVER:','').trim();
+        else if (line.startsWith('SHOT TYPE:')) currentScene.shotType = line.replace('SHOT TYPE:','').trim();
+        else if (line.startsWith('VEO PROMPT:')) currentScene.prompt = line.replace('VEO PROMPT:','').trim();
+        else if (currentScene.prompt && !line.startsWith('DURATION:')) currentScene.prompt += ' ' + line.trim();
+      }
+    });
+    if (currentScene) scenes.push(currentScene);
+  }
+
+  const shotColors = {
+    'Wide': 'pb', 'Medium': 'pg', 'Close-up': 'pa', 'Extreme close-up': 'pr',
+    'Aerial': 'pp', 'Pan': 'po', 'Push-in': 'pg'
+  };
+
+  const statsHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px;">
+      <div class="pstat"><div class="val">${scenes.length}</div><div class="lbl2">Scenes</div></div>
+      <div class="pstat"><div class="val">${scenes.length * parseInt(duration)}s</div><div class="lbl2">Total Duration</div></div>
+      <div class="pstat"><div class="val">${ratio}</div><div class="lbl2">Aspect Ratio</div></div>
+      <div class="pstat"><div class="val">${style.split(' ')[0]}</div><div class="lbl2">Style</div></div>
+    </div>`;
+
+  const scenesHTML = scenes.map((scene, i) => {
+    const shotClass = shotColors[scene.shotType] || 'pb';
+    return `
+      <div class="t-section" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--gold);">Scene ${scene.num}</span>
+            <span style="font-size:0.78rem;font-weight:500;color:var(--text);">${scene.title}</span>
+            ${scene.shotType ? `<span class="pill ${shotClass}">${scene.shotType}</span>` : ''}
+          </div>
+          <button onclick="copyPrompt(this, ${i})" style="background:var(--navy3);border:1px solid var(--navy3);border-radius:6px;color:var(--muted);font-size:0.69rem;padding:4px 9px;cursor:pointer;" data-prompt="${encodeURIComponent(scene.prompt)}">📋 Copy</button>
+        </div>
+        ${scene.voiceover ? `
+        <div style="margin-bottom:10px;">
+          <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">🎙 Voiceover</div>
+          <div style="background:var(--navy);border-radius:6px;padding:9px 12px;font-size:0.76rem;line-height:1.5;color:var(--muted);font-style:italic;">"${scene.voiceover.slice(0,200)}${scene.voiceover.length>200?'...':''}"</div>
+        </div>` : ''}
+        <div>
+          <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">🎬 Veo Prompt</div>
+          <div style="background:var(--navy);border:1px solid var(--navy3);border-radius:6px;padding:10px 12px;font-size:0.78rem;line-height:1.6;color:var(--text);">${scene.prompt}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Store all prompts for copy all
+  window._veoScenes = scenes;
+  window._veoTitle = title;
+
+  document.getElementById('veoResults').innerHTML = `
+    <div class="results-hdr">🎬 ${scenes.length} Scenes Generated — ${title}</div>
+    ${statsHTML}
+    <div style="background:var(--navy2);border:1px solid var(--navy3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:0.78rem;line-height:1.7;">
+      <strong style="color:var(--amber);">How to use in Google Flow:</strong><br>
+      1. Open <a href="https://labs.google/flow" target="_blank" style="color:var(--gold);">labs.google/flow</a> in Chrome<br>
+      2. Install <a href="https://chromewebstore.google.com/detail/flow-automation-bulk-ai-v/hpnlhgdmjnbceiffmbeidnnapkikonnd" target="_blank" style="color:var(--gold);">Flow Automation Chrome extension</a><br>
+      3. Click <strong style="color:var(--amber);">📋 COPY ALL</strong> below → paste into the extension's bulk import<br>
+      4. Or copy each prompt individually and paste into Google Flow one by one
+    </div>
+    ${scenesHTML}`;
+
+  document.getElementById('veoCopyAllBtn').style.display = 'inline-block';
+}
+
+function copyPrompt(btn, index) {
+  const prompt = decodeURIComponent(btn.getAttribute('data-prompt'));
+  navigator.clipboard.writeText(prompt).then(() => {
+    btn.textContent = '✅ Copied!';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => {
+      btn.textContent = '📋 Copy';
+      btn.style.borderColor = 'var(--navy3)';
+      btn.style.color = 'var(--muted)';
+    }, 2000);
+  });
+}
+
+function copyAllPrompts() {
+  const scenes = window._veoScenes || [];
+  const title = window._veoTitle || 'DBH Video';
+  const allText = scenes.map(s =>
+    `SCENE ${s.num}: ${s.title}
+${s.shotType ? `SHOT: ${s.shotType}
+` : ''}VOICEOVER: ${s.voiceover}
+
+VEO PROMPT:
+${s.prompt}
+`
+  ).join('
+---
+
+');
+
+  const full = `DBH VEO PROMPTS — ${title}
+Generated: ${new Date().toLocaleDateString()}
+Total scenes: ${scenes.length}
+
+${'='.repeat(50)}
+
+${allText}`;
+
+  navigator.clipboard.writeText(full).then(() => {
+    const btn = document.getElementById('veoCopyAllBtn');
+    btn.textContent = '✅ ALL COPIED!';
+    setTimeout(() => btn.textContent = '📋 COPY ALL', 2500);
+  });
+}
+</script>
+
 </body>
 </html>
