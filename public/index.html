@@ -12,10 +12,10 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--navy);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:20px 14px;}
 header{text-align:center;margin-bottom:24px;}
-header h1{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;color:var(--gold);line-height:1;}
+header h1{font-family:serif;font-size:2.2rem;letter-spacing:3px;color:var(--gold);line-height:1;}
 header p{color:var(--muted);font-size:0.78rem;margin-top:5px;letter-spacing:1px;text-transform:uppercase;}
 .tab-nav{display:flex;gap:3px;margin-bottom:22px;background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:4px;}
-.tab-btn{flex:1;background:transparent;border:none;border-radius:8px;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1px;padding:9px 3px;cursor:pointer;transition:all 0.2s;}
+.tab-btn{flex:1;background:transparent;border:none;border-radius:8px;color:var(--muted);font-family:serif;font-size:0.75rem;letter-spacing:1px;padding:9px 3px;cursor:pointer;transition:all 0.2s;}
 .tab-btn.active{background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--navy);}
 .tab-panel{display:none;}.tab-panel.active{display:block;}
 .card{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:18px;margin-bottom:18px;}
@@ -23,7 +23,7 @@ header p{color:var(--muted);font-size:0.78rem;margin-top:5px;letter-spacing:1px;
 input[type=text],input[type=password],select,.txt{width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.83rem;outline:none;transition:border-color 0.2s;box-sizing:border-box;}
 input:focus,select:focus,.txt:focus{border-color:var(--gold);}
 .txt{resize:vertical;min-height:90px;line-height:1.5;font-size:0.76rem;}
-.run-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;padding:13px;cursor:pointer;margin-bottom:18px;}
+.run-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:serif;font-size:1.1rem;letter-spacing:2px;padding:13px;cursor:pointer;margin-bottom:18px;}
 .run-btn:disabled{opacity:0.4;cursor:not-allowed;}
 .icon-btn{background:var(--navy3);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-family:'Inter',sans-serif;font-size:0.73rem;font-weight:600;padding:6px 11px;cursor:pointer;white-space:nowrap;}
 .icon-btn:hover{background:var(--gold);color:var(--navy);}
@@ -35,7 +35,7 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
 .spinner{width:14px;height:14px;border:2px solid var(--navy3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .err{background:#2A1A1A;border:1px solid var(--red);border-radius:8px;padding:11px 14px;color:var(--red);font-size:0.81rem;margin-bottom:14px;}
-.results-hdr{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold);margin-bottom:14px;}
+.results-hdr{font-family:serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold);margin-bottom:14px;}
 .ch-card{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;margin-bottom:18px;overflow:hidden;}
 .ch-card-hdr{background:var(--navy3);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
 .video-row{display:grid;grid-template-columns:100px 1fr;gap:10px;margin-bottom:10px;}
@@ -47,15 +47,15 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
 .tag-question{background:#1A3A2A;color:#52C78A;}.tag-number{background:#3A2A1A;color:#E8A052;}
 .tag-mystery{background:#3A1A1A;color:#E05252;}.tag-ellipsis{background:#2A2A1A;color:#C9C952;}
 .intel-section{background:var(--navy2);border:1px solid var(--gold);border-radius:12px;padding:18px;margin-bottom:16px;}
-.intel-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--navy3);}
+.intel-title{font-family:serif;font-size:1.1rem;letter-spacing:2px;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--navy3);}
 .pattern-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px;}
 .pstat{background:var(--navy3);border-radius:8px;padding:11px;text-align:center;}
-.pstat .val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--amber);line-height:1;}
+.pstat .val{font-family:serif;font-size:1.6rem;color:var(--amber);line-height:1;}
 .pstat .lbl2{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:4px;}
 .t-slot{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:15px;margin-bottom:14px;}
 .t-slot-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .t-section{background:var(--navy2);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:14px;}
-.t-title{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--navy3);}
+.t-title{font-family:serif;font-size:1.05rem;letter-spacing:2px;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--navy3);}
 .score-row{margin-bottom:9px;}
 .score-labels{display:flex;justify-content:space-between;font-size:0.74rem;margin-bottom:3px;}
 .score-track{background:var(--navy3);border-radius:4px;height:7px;overflow:hidden;}
@@ -120,7 +120,7 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
     <div id="channelCards"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:14px;">
       <div class="results-hdr" style="margin-bottom:0;">AI Intelligence Report</div>
-      <button id="downloadBtn" onclick="downloadReport()" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1.5px;padding:8px 14px;cursor:pointer;visibility:hidden;">DOWNLOAD PDF</button>
+      <button id="downloadBtn" onclick="downloadReport()" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:serif;font-size:0.9rem;letter-spacing:1.5px;padding:8px 14px;cursor:pointer;visibility:hidden;">DOWNLOAD PDF</button>
     </div>
     <div id="intelReport"></div>
   </div>
@@ -132,7 +132,7 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
   <div id="tSlots">
     <div class="t-slot">
       <div class="t-slot-hdr">
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 1</span>
+        <span style="font-family:serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 1</span>
         <button class="icon-btn" onclick="fetchTranscript(0)">Extract Transcript</button>
       </div>
       <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
@@ -141,7 +141,7 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
     </div>
     <div class="t-slot">
       <div class="t-slot-hdr">
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 2</span>
+        <span style="font-family:serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 2</span>
         <button class="icon-btn" onclick="fetchTranscript(1)">Extract Transcript</button>
       </div>
       <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
@@ -150,7 +150,7 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
     </div>
     <div class="t-slot">
       <div class="t-slot-hdr">
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 3</span>
+        <span style="font-family:serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 3</span>
         <button class="icon-btn" onclick="fetchTranscript(2)">Extract Transcript</button>
       </div>
       <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
@@ -196,12 +196,55 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
     <textarea class="txt" id="veoScript" style="min-height:160px;" placeholder="Paste your full DBH script here..."></textarea>
     <div style="display:flex;gap:8px;margin-top:10px;">
       <button onclick="generateVeoPrompts()" id="veoGenBtn" class="run-btn" style="margin-bottom:0;flex:1;">GENERATE VEO PROMPTS</button>
-      <button onclick="copyAllPrompts()" id="veoCopyAllBtn" style="display:none;background:var(--navy3);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1.5px;padding:13px 14px;cursor:pointer;white-space:nowrap;">COPY ALL</button>
+      <button onclick="copyAllPrompts()" id="veoCopyAllBtn" style="display:none;background:var(--navy3);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:serif;font-size:0.9rem;letter-spacing:1.5px;padding:13px 14px;cursor:pointer;white-space:nowrap;">COPY ALL</button>
     </div>
   </div>
   <div class="status-bar" id="veoStatusBar"><div class="spinner"></div><span id="veoStatusText">Generating...</span></div>
   <div id="veoErrorBox"></div>
   <div id="veoResults"></div>
+
+  <!-- ELEVENLABS BATCH SPLITTER -->
+  <div style="margin-top:28px;">
+    <div style="font-family:serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">VOICEOVER BATCH SPLITTER</div>
+    <div class="card">
+      <p style="font-size:0.8rem;color:var(--muted);line-height:1.6;margin-bottom:14px;">Paste your full script below. The tool splits it into ElevenLabs-ready batches — each under the character limit, split at natural sentence breaks.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label class="lbl">Number of Batches</label>
+          <select id="batchCount">
+            <option value="6">6 batches</option>
+            <option value="8">8 batches</option>
+            <option value="10">10 batches</option>
+            <option value="12" selected>12 batches (DBH standard)</option>
+            <option value="15">15 batches</option>
+            <option value="20">20 batches</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Max Chars per Batch</label>
+          <select id="batchMaxChars">
+            <option value="2500">2,500 chars</option>
+            <option value="4000" selected>4,000 chars (ElevenLabs free)</option>
+            <option value="5000">5,000 chars</option>
+            <option value="8000">8,000 chars (ElevenLabs paid)</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Split Mode</label>
+          <select id="batchSplitMode">
+            <option value="equal" selected>Equal parts</option>
+            <option value="sentence">At sentence breaks</option>
+            <option value="paragraph">At paragraph breaks</option>
+          </select>
+        </div>
+      </div>
+      <label class="lbl">Paste Script for Splitting</label>
+      <textarea class="txt" id="batchScript" style="min-height:140px;" placeholder="Paste your full DBH script here to split into ElevenLabs batches..."></textarea>
+      <button onclick="splitIntoBatches()" style="width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:serif;font-size:1.1rem;letter-spacing:2px;padding:13px;cursor:pointer;margin-top:10px;">SPLIT INTO BATCHES</button>
+    </div>
+    <div id="batchResults"></div>
+  </div>
+
 </div>
 
 <script>
@@ -445,7 +488,7 @@ function renderComparison(analyses,titles) {
   const metrics=[{name:'Word Count',fn:a=>a.wordCount},{name:'Power Words',fn:a=>a.foundPower.length},{name:'CTAs Found',fn:a=>a.ctas.length},{name:'Emotion Score',fn:a=>Math.round(Object.values(a.emotionScores).reduce((s,v)=>s+v,0)/5)},{name:'Retention Hits',fn:a=>a.retentionHits.reduce((s,r)=>s+r.count,0)},{name:'Title Alignment',fn:a=>a.titleAlignment},{name:'Pacing Score',fn:a=>a.pacingScore}];
   const cols=analyses.map((a,i)=>{
     const rows=metrics.map(m=>{const vals=analyses.map(m.fn),max=Math.max(...vals),myVal=m.fn(a),isWinner=myVal===max&&analyses.filter(x=>m.fn(x)===max).length===1;return '<div style="font-size:0.75rem;padding:5px 0;border-bottom:1px solid var(--navy2);display:flex;justify-content:space-between;"><span style="color:var(--muted);">'+m.name+'</span><span style="font-weight:600;">'+myVal+(isWinner?'<span class="winner">BEST</span>':'')+'</span></div>';}).join('');
-    return '<div class="compare-col"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:0.88rem;color:var(--amber);margin-bottom:8px;">Video '+(i+1)+': '+(titles[i]||'Untitled').slice(0,35)+'</div>'+rows+'</div>';
+    return '<div class="compare-col"><div style="font-family:serif;font-size:0.88rem;color:var(--amber);margin-bottom:8px;">Video '+(i+1)+': '+(titles[i]||'Untitled').slice(0,35)+'</div>'+rows+'</div>';
   }).join('');
   const scores=analyses.map((a,i)=>({i,score:metrics.reduce((s,m)=>{const vals=analyses.map(m.fn),max=Math.max(...vals);return s+(m.fn(a)===max?1:0);},0),title:titles[i]||'Video '+(i+1)})).sort((a,b)=>b.score-a.score);
   const winner=scores[0].score>scores[1]?.score?'<strong style="color:var(--amber);">Video '+(scores[0].i+1)+' ('+scores[0].title.slice(0,40)+')</strong> wins overall.':'Videos are closely matched.';
@@ -472,7 +515,7 @@ async function runTranscriptAnalysis() {
   html+='<div class="t-section"><div style="text-align:center;padding:16px 0;">';
   html+='<div style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">Generate a DBH script blueprint based on what is working in these transcripts</div>';
   html+='<input type="text" id="dbhTopic" placeholder="Your next video topic..." style="margin-bottom:12px;">';
-  html+='<button onclick="generateAIScript()" id="aiScriptBtn" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:\'Bebas Neue\',sans-serif;font-size:1.1rem;letter-spacing:2px;padding:12px 28px;cursor:pointer;">GENERATE SCRIPT BLUEPRINT</button>';
+  html+='<button onclick="generateAIScript()" id="aiScriptBtn" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:serif;font-size:1.1rem;letter-spacing:2px;padding:12px 28px;cursor:pointer;">GENERATE SCRIPT BLUEPRINT</button>';
   html+='</div><div id="aiScriptOutput"></div></div>';
   document.getElementById('tResults').innerHTML=html;
   document.getElementById('tStatusBar').style.display='none';
@@ -501,7 +544,7 @@ async function generateAIScript() {
     if(!text) throw new Error('No response');
     window._blueprintRaw=text;
     const formatted=text.replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--amber);">$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
-    output.innerHTML='<div style="border-top:1px solid var(--navy3);margin-top:16px;padding-top:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-family:\'Bebas Neue\',sans-serif;color:var(--gold);">Blueprint: '+topic+'</span><button onclick="copyBlueprint()" style="background:var(--navy3);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-size:0.72rem;font-weight:600;padding:5px 10px;cursor:pointer;">COPY</button></div><div style="font-size:0.8rem;line-height:1.8;">'+formatted+'</div></div>';
+    output.innerHTML='<div style="border-top:1px solid var(--navy3);margin-top:16px;padding-top:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-family:serif;color:var(--gold);">Blueprint: '+topic+'</span><button onclick="copyBlueprint()" style="background:var(--navy3);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-size:0.72rem;font-weight:600;padding:5px 10px;cursor:pointer;">COPY</button></div><div style="font-size:0.8rem;line-height:1.8;">'+formatted+'</div></div>';
   } catch(err){output.innerHTML='<div style="color:var(--red);font-size:0.8rem;margin-top:12px;">AI failed: '+err.message+'. Add ANTHROPIC_API_KEY to Vercel environment variables.</div>';}
   btn.textContent='GENERATE SCRIPT BLUEPRINT'; btn.disabled=false;
 }
@@ -604,7 +647,7 @@ function renderVeoScenes(scenes,title,duration,style,ratio) {
   const instructHTML='<div style="background:var(--navy2);border:1px solid var(--navy3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:0.78rem;line-height:1.7;"><strong style="color:var(--amber);">How to use in Google Flow:</strong><br>1. Open <a href="https://labs.google/flow" target="_blank" style="color:var(--gold);">labs.google/flow</a><br>2. Install <a href="https://chromewebstore.google.com/detail/flow-automation-bulk-ai-v/hpnlhgdmjnbceiffmbeidnnapkikonnd" target="_blank" style="color:var(--gold);">Flow Automation Chrome extension</a><br>3. Click COPY ALL below and paste into the extension bulk import</div>';
   const scenesHTML=scenes.map((s,i)=>{
     const safePrompt=encodeURIComponent(s.prompt);
-    return '<div class="veo-scene"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div><span style="font-family:\'Bebas Neue\',sans-serif;font-size:0.95rem;color:var(--gold);">Scene '+s.num+'</span> <span style="font-size:0.78rem;color:var(--text);">'+s.title+'</span>'+(s.shotType?'<span class="pill pb" style="margin-left:6px;">'+s.shotType+'</span>':'')+'</div><button onclick="copyOnePrompt(this,\''+safePrompt+'\')" style="background:var(--navy3);border:1px solid var(--navy3);border-radius:6px;color:var(--muted);font-size:0.69rem;padding:4px 9px;cursor:pointer;">Copy</button></div>'+(s.voiceover?'<div style="margin-bottom:8px;"><div style="font-size:0.67rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Voiceover</div><div style="background:var(--navy);border-radius:6px;padding:8px;font-size:0.75rem;font-style:italic;color:var(--muted);">"'+s.voiceover.slice(0,180)+(s.voiceover.length>180?'...':'')+'"</div></div>':'')+'<div><div style="font-size:0.67rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Veo Prompt</div><div style="background:var(--navy);border:1px solid var(--navy3);border-radius:6px;padding:9px;font-size:0.77rem;line-height:1.6;">'+s.prompt+'</div></div></div>';
+    return '<div class="veo-scene"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div><span style="font-family:serif;font-size:0.95rem;color:var(--gold);">Scene '+s.num+'</span> <span style="font-size:0.78rem;color:var(--text);">'+s.title+'</span>'+(s.shotType?'<span class="pill pb" style="margin-left:6px;">'+s.shotType+'</span>':'')+'</div><button onclick="copyOnePrompt(this,\''+safePrompt+'\')" style="background:var(--navy3);border:1px solid var(--navy3);border-radius:6px;color:var(--muted);font-size:0.69rem;padding:4px 9px;cursor:pointer;">Copy</button></div>'+(s.voiceover?'<div style="margin-bottom:8px;"><div style="font-size:0.67rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Voiceover</div><div style="background:var(--navy);border-radius:6px;padding:8px;font-size:0.75rem;font-style:italic;color:var(--muted);">"'+s.voiceover.slice(0,180)+(s.voiceover.length>180?'...':'')+'"</div></div>':'')+'<div><div style="font-size:0.67rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Veo Prompt</div><div style="background:var(--navy);border:1px solid var(--navy3);border-radius:6px;padding:9px;font-size:0.77rem;line-height:1.6;">'+s.prompt+'</div></div></div>';
   }).join('');
   document.getElementById('veoResults').innerHTML='<div class="results-hdr">'+scenes.length+' Scenes — '+title+'</div>'+statsHTML+instructHTML+scenesHTML;
   document.getElementById('veoCopyAllBtn').style.display='inline-block';
@@ -620,13 +663,145 @@ function copyOnePrompt(btn,encodedPrompt) {
 
 function copyAllPrompts() {
   const scenes=window._veoScenes||[], title=window._veoTitle||'DBH';
-  const text=scenes.map(s=>'SCENE '+s.num+': '+s.title+'\nSHOT: '+s.shotType+'\nVOICEOVER: '+s.voiceover+'\n\nVEO PROMPT:\n'+s.prompt).join('\n\n---\n\n');
-  navigator.clipboard.writeText('DBH VEO PROMPTS: '+title+'\n\n'+text).then(()=>{
+  // Copy ONLY the Veo prompts, one per line — ready for Flow Automation bulk import
+  const promptsOnly=scenes.map(s=>s.prompt).join('\n\n');
+  const fullText='=== DBH VEO PROMPTS: '+title+' ===\n'+'Total scenes: '+scenes.length+'\n\n'+promptsOnly;
+  navigator.clipboard.writeText(fullText).then(()=>{
     const btn=document.getElementById('veoCopyAllBtn');
-    btn.textContent='ALL COPIED!';
-    setTimeout(()=>btn.textContent='COPY ALL',2500);
+    const orig=btn.textContent;
+    btn.textContent='COPIED '+scenes.length+' PROMPTS!';
+    btn.style.background='linear-gradient(135deg,var(--green),#3DAA6A)';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';},3000);
   });
 }
+
+// ELEVENLABS BATCH SPLITTER
+function splitIntoBatches() {
+  const script = document.getElementById('batchScript').value.trim();
+  if (!script || script.length < 50) {
+    alert('Please paste your script first.');
+    return;
+  }
+
+  const numBatches = parseInt(document.getElementById('batchCount').value);
+  const maxChars = parseInt(document.getElementById('batchMaxChars').value);
+  const splitMode = document.getElementById('batchSplitMode').value;
+
+  // Split the script into units based on mode
+  let units = [];
+  if (splitMode === 'paragraph') {
+    units = script.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+  } else if (splitMode === 'sentence') {
+    units = script.match(/[^.!?]+[.!?]+/g) || [script];
+    units = units.filter(s => s.trim().length > 0);
+  } else {
+    // Equal — split by words
+    const words = script.split(/\s+/);
+    const wordsPerBatch = Math.ceil(words.length / numBatches);
+    for (let i = 0; i < words.length; i += wordsPerBatch) {
+      units.push(words.slice(i, i + wordsPerBatch).join(' '));
+    }
+  }
+
+  // Build batches respecting maxChars
+  const batches = [];
+  let current = '';
+  let batchNum = 1;
+
+  for (const unit of units) {
+    const separator = current ? ' ' : '';
+    if ((current + separator + unit).length <= maxChars) {
+      current += separator + unit;
+    } else {
+      if (current) {
+        batches.push({ num: batchNum++, text: current.trim() });
+        current = unit;
+      } else {
+        // Unit itself exceeds limit — force split
+        batches.push({ num: batchNum++, text: unit.trim().slice(0, maxChars) });
+        current = unit.slice(maxChars).trim();
+      }
+    }
+  }
+  if (current.trim()) batches.push({ num: batchNum++, text: current.trim() });
+
+  // Trim to requested number if exceeded
+  if (batches.length > numBatches * 1.5) {
+    // Merge small batches
+    const merged = [];
+    let mergeBuffer = '';
+    const targetSize = Math.ceil(script.length / numBatches);
+    for (const b of batches) {
+      if ((mergeBuffer + ' ' + b.text).trim().length <= Math.min(targetSize * 1.3, maxChars)) {
+        mergeBuffer = (mergeBuffer + ' ' + b.text).trim();
+      } else {
+        if (mergeBuffer) merged.push(mergeBuffer);
+        mergeBuffer = b.text;
+      }
+    }
+    if (mergeBuffer) merged.push(mergeBuffer);
+    const finalBatches = merged.map((text, i) => ({ num: i + 1, text }));
+    renderBatches(finalBatches, maxChars, script.length);
+  } else {
+    renderBatches(batches, maxChars, script.length);
+  }
+}
+
+function renderBatches(batches, maxChars, totalChars) {
+  window._batches = batches;
+
+  const statsHTML = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px;">' +
+    '<div class="pstat"><div class="val">' + batches.length + '</div><div class="lbl2">Batches</div></div>' +
+    '<div class="pstat"><div class="val">' + totalChars.toLocaleString() + '</div><div class="lbl2">Total Chars</div></div>' +
+    '<div class="pstat"><div class="val">' + Math.round(totalChars / batches.length).toLocaleString() + '</div><div class="lbl2">Avg per Batch</div></div>' +
+    '<div class="pstat"><div class="val">' + maxChars.toLocaleString() + '</div><div class="lbl2">Max Limit</div></div>' +
+    '</div>';
+
+  const copyAllBtn = '<button onclick="copyAllBatches()" style="width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:serif;font-size:0.95rem;letter-spacing:1.5px;padding:11px;cursor:pointer;margin-bottom:16px;" id="copyAllBatchesBtn">COPY ALL BATCHES AS TEXT FILE</button>';
+
+  const batchCards = batches.map(b => {
+    const pct = Math.round((b.text.length / maxChars) * 100);
+    const barColor = pct > 90 ? 'var(--red)' : pct > 75 ? 'var(--amber)' : 'var(--green)';
+    const wordCount = b.text.split(/\s+/).length;
+    return '<div style="background:var(--navy2);border:1px solid var(--navy3);border-radius:10px;padding:14px;margin-bottom:12px;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+      '<span style="font-family:serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Batch ' + b.num + '</span>' +
+      '<div style="display:flex;gap:8px;align-items:center;">' +
+      '<span style="font-size:0.72rem;color:var(--muted);">' + b.text.length.toLocaleString() + ' chars | ' + wordCount + ' words</span>' +
+      '<button onclick="copySingleBatch(' + b.num + ')" style="background:var(--navy3);border:1px solid var(--navy3);border-radius:6px;color:var(--muted);font-size:0.69rem;padding:4px 9px;cursor:pointer;" id="copyBatch' + b.num + '">Copy</button>' +
+      '</div></div>' +
+      '<div class="score-row"><div class="score-labels"><span style="font-size:0.7rem;color:var(--muted);">Capacity used</span><span style="color:' + barColor + ';font-size:0.7rem;font-weight:600;">' + pct + '%</span></div>' +
+      '<div class="score-track"><div class="score-fill" style="width:' + pct + '%;background:' + barColor + ';"></div></div></div>' +
+      '<div style="background:var(--navy);border:1px solid var(--navy3);border-radius:6px;padding:10px;font-size:0.76rem;line-height:1.6;max-height:120px;overflow-y:auto;margin-top:8px;">' + b.text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
+      '</div>';
+  }).join('');
+
+  document.getElementById('batchResults').innerHTML =
+    '<div style="font-family:serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">' + batches.length + ' ElevenLabs Batches Ready</div>' +
+    statsHTML + copyAllBtn + batchCards;
+}
+
+function copySingleBatch(num) {
+  const batch = (window._batches||[]).find(b => b.num === num);
+  if (!batch) return;
+  navigator.clipboard.writeText(batch.text).then(() => {
+    const btn = document.getElementById('copyBatch' + num);
+    btn.textContent = 'Copied!'; btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = 'var(--muted)'; }, 2000);
+  });
+}
+
+function copyAllBatches() {
+  const batches = window._batches || [];
+  const text = batches.map(b => '=== BATCH ' + b.num + ' of ' + batches.length + ' ===\n\n' + b.text).join('\n\n' + '='.repeat(40) + '\n\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyAllBatchesBtn');
+    btn.textContent = 'ALL ' + batches.length + ' BATCHES COPIED!';
+    btn.style.background = 'linear-gradient(135deg,var(--green),#3DAA6A)';
+    setTimeout(() => { btn.textContent = 'COPY ALL BATCHES AS TEXT FILE'; btn.style.background = ''; }, 3000);
+  });
+}
+
 </script>
 </body>
 </html>
