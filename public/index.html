@@ -1132,8 +1132,15 @@ select {
       <div><label class="lbl">Aspect Ratio</label>
         <select id="veoRatio"><option value="16:9" selected>16:9 YouTube</option><option value="9:16">9:16 Shorts</option></select></div>
     </div>
-    <div style="margin-bottom:12px;"><label class="lbl">Character Reference</label>
-      <input type="text" id="veoCharRef" value="Levantine male figure, olive skin, dark curly hair, dark eyes, weathered face, first-century wool robe, sandals"></div>
+    <div style="margin-bottom:12px;">
+      <label class="lbl">Character References</label>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+        <input type="text" id="veoCharRef" value="Levantine male figure, olive skin, dark curly hair, dark eyes, weathered face, first-century wool robe, sandals" style="flex:1;">
+        <button onclick="scanCharacters()" id="scanCharBtn" style="background:transparent;border:1px solid var(--border-bright);border-radius:10px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:1.5px;padding:9px 10px;cursor:pointer;white-space:nowrap;font-weight:700;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--navy)';" onmouseout="this.style.background='transparent';this.style.color='var(--gold)';">&#128100; SCAN CHARACTERS</button>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-bottom:8px;font-style:italic;">AI scans your script and generates 5+ character references. Click any character to use as the active reference.</p>
+      <div id="charRefResults" style="display:none;"></div>
+    </div>
     <div style="background:rgba(201,168,76,0.06);border:1px solid var(--border);border-radius:10px;padding:14px;">
       <label class="lbl" style="margin-bottom:10px;">Generation Mode</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -2249,13 +2256,213 @@ async function generateVeoPrompts() {
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CHARACTER REFERENCE GENERATOR
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function generateCharacterRefs(script, title) {
+  const prompt = `You are a visual character designer for biblical history AI video production.
+
+Analyse this script and identify all named or significant characters. Generate detailed visual reference descriptions for AI image/video generation (Google Flow / Veo / Midjourney).
+
+SCRIPT TITLE: "${title || 'Biblical History Video'}"
+SCRIPT (first 3000 words):
+${(script || '').slice(0, 3000)}
+
+Identify AT LEAST 5 main characters (or as many as appear). For each character generate:
+
+---CHARACTER [N]: [NAME]---
+ROLE: [their role in the story — protagonist/antagonist/witness/narrator etc]
+AGE: [approximate age]
+GENDER: [male/female]
+ETHNICITY: [Levantine/Egyptian/Roman/Greek/Ethiopian/Hebrew etc]
+SKIN: [specific skin tone — e.g. deep olive, warm brown, light olive, dark bronze]
+HAIR: [colour, texture, length, style — e.g. dark coarse curly hair, shoulder length]
+EYES: [colour and quality — e.g. deep brown, intense dark eyes]
+FACE: [key facial features — beard, strong jaw, weathered skin, high cheekbones etc]
+BUILD: [slender/muscular/average, height impression]
+CLOTHING: [first-century appropriate — specific fabric, colour, style, accessories]
+EXPRESSION: [default emotional quality — determined, fearful, serene, authoritative]
+VEO REFERENCE: [One complete sentence ready to paste into a Veo/Midjourney prompt. Format: "[Name], [gender], [age range], [ethnicity], [skin], [hair], [eyes], [clothing], [expression/demeanour], first-century Levantine world, [style] style"]
+---END CHARACTER---
+
+After all characters add:
+---SHARED VISUAL RULES---
+SETTING PALETTE: [dominant colours for scenes in this video]
+LIGHTING: [lighting style for this specific story]
+PERIOD: [exact historical period and location]
+CONSISTENCY NOTE: [one sentence on maintaining visual consistency across all scenes]
+---END SHARED---`;
+
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({prompt, max_tokens: 3000})
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.error || 'Character scan failed');
+
+  return parseCharacterRefs(data.text || '');
+}
+
+function parseCharacterRefs(text) {
+  const chars = [];
+  const re = /---CHARACTER (\d+): (.+?)---([\s\S]*?)---END CHARACTER---/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const body = m[3];
+    const get = (field) => {
+      const match = body.match(new RegExp(field + ':\s*(.+?)(?=\n[A-Z]+:|$)', 's'));
+      return match ? match[1].trim() : '';
+    };
+    const veoRef = get('VEO REFERENCE');
+    const name   = m[2].trim();
+    chars.push({
+      num:        parseInt(m[1]),
+      name,
+      role:       get('ROLE'),
+      age:        get('AGE'),
+      gender:     get('GENDER'),
+      ethnicity:  get('ETHNICITY'),
+      skin:       get('SKIN'),
+      hair:       get('HAIR'),
+      eyes:       get('EYES'),
+      face:       get('FACE'),
+      build:      get('BUILD'),
+      clothing:   get('CLOTHING'),
+      expression: get('EXPRESSION'),
+      ref:        veoRef || name + ', ' + get('ETHNICITY') + ', ' + get('SKIN') + ', ' + get('HAIR') + ', ' + get('CLOTHING')
+    });
+  }
+
+  // Also extract shared rules
+  const sharedMatch = text.match(/---SHARED VISUAL RULES---([\s\S]*?)---END SHARED---/);
+  if (sharedMatch) {
+    window._sharedVisualRules = sharedMatch[1].trim();
+  }
+
+  return chars.length > 0 ? chars : null;
+}
+
+function renderCharacterCards(chars) {
+  if (!chars || chars.length === 0) return;
+  const div = document.getElementById('charRefResults');
+  if (!div) return;
+
+  window._allCharRefs = chars.map(function(c) { return c.ref; }).join(' || ');
+
+  let html = '<div style="margin-bottom:10px;">';
+  html += '<div style="font-family:serif;font-size:0.68rem;letter-spacing:2px;color:var(--gold);margin-bottom:8px;">' + chars.length + ' CHARACTERS FOUND</div>';
+  html += '<button onclick="useAllCharRefs(this)" style="width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:serif;font-size:0.65rem;letter-spacing:2px;padding:10px;cursor:pointer;font-weight:700;margin-bottom:10px;">USE ALL CHARACTERS IN PROMPTS</button>';
+
+  chars.forEach(function(c, idx) {
+    const isActive = idx === 0;
+    const safeRef = encodeURIComponent(c.ref);
+    html += '<div class="char-card" data-ref="' + safeRef + '" onclick="selectCharRef(this)" style="background:' + (isActive ? 'rgba(201,168,76,0.08)' : 'var(--navy3)') + ';border:' + (isActive ? '2px solid var(--gold)' : '1px solid var(--border)') + ';border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;">';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">';
+    html += '<div><span style="font-family:serif;font-size:0.78rem;color:' + (isActive ? 'var(--gold)' : 'var(--text)') + ';">' + c.name + '</span>';
+    html += '<span style="font-size:0.75rem;color:var(--muted);margin-left:8px;font-style:italic;">' + c.role + '</span></div>';
+    if (isActive) html += '<span style="font-family:serif;font-size:0.55rem;background:var(--gold);color:var(--navy);padding:2px 7px;border-radius:10px;">ACTIVE</span>';
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;">';
+    html += '<div style="font-size:0.72rem;color:var(--muted);"><span style="color:var(--amber);">Skin:</span> ' + c.skin + '</div>';
+    html += '<div style="font-size:0.72rem;color:var(--muted);"><span style="color:var(--amber);">Hair:</span> ' + c.hair + '</div>';
+    html += '<div style="font-size:0.72rem;color:var(--muted);"><span style="color:var(--amber);">Eyes:</span> ' + c.eyes + '</div>';
+    html += '<div style="font-size:0.72rem;color:var(--muted);"><span style="color:var(--amber);">Clothing:</span> ' + c.clothing + '</div>';
+    html += '</div>';
+    html += '<div style="background:var(--navy);border-radius:7px;padding:8px;font-size:0.74rem;color:var(--muted);line-height:1.5;">';
+    html += '<span style="color:var(--gold);font-size:0.6rem;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:3px;">Veo Reference</span>';
+    html += c.ref + '</div>';
+    html += '<button onclick="event.stopPropagation();copyCharRef(this)" data-ref="' + safeRef + '" style="margin-top:7px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-family:serif;font-size:0.55rem;letter-spacing:1px;padding:4px 10px;cursor:pointer;width:100%;">COPY REFERENCE</button>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+  div.innerHTML = html;
+  div.style.display = 'block';
+}
+
+function selectCharRef(card, encodedRef) {
+  const ref = decodeURIComponent(encodedRef);
+  // Update active styling
+  document.querySelectorAll('.char-card').forEach(c => {
+    c.style.border = '1px solid var(--border)';
+    c.style.background = 'var(--navy3)';
+
+
+
+
+  });
+  card.style.border = '2px solid var(--gold)';
+  card.style.background = 'rgba(201,168,76,0.08)';
+  // Set as active character ref
+  document.getElementById('veoCharRef').value = ref;
+}
+
+function useAllCharRefs(btn) {
+  const allRefs = window._allCharRefs || '';
+  if (allRefs && btn) {
+    document.getElementById('veoCharRef').value = allRefs;
+    btn.textContent = 'ALL CHARACTERS SET!';
+    btn.style.background = 'linear-gradient(135deg,var(--green),#3DAA6A)';
+    setTimeout(function() {
+      btn.textContent = 'USE ALL CHARACTERS IN PROMPTS';
+      btn.style.background = '';
+    }, 2000);
+  }
+}
+
+function copyCharRef(btn) {
+  const ref = decodeURIComponent(btn.getAttribute('data-ref') || '');
+  navigator.clipboard.writeText(ref).then(function() {
+    btn.textContent = 'COPIED!';
+    setTimeout(function() { btn.textContent = 'COPY REFERENCE'; }, 2000);
+  });
+}
+
+async function scanCharacters() {
+  const script = document.getElementById('veoScript').value.trim();
+  const title  = document.getElementById('veoTitle').value.trim();
+
+  if (!script || script.length < 50) {
+    alert('Please paste your script in the Script Input box first, then scan for characters.');
+    return;
+  }
+
+  const btn = document.getElementById('scanCharBtn');
+  btn.innerHTML = '&#9203; Scanning...';
+  btn.disabled = true;
+
+  const div = document.getElementById('charRefResults');
+  div.style.display = 'block';
+  div.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:12px;color:var(--muted);font-size:0.85rem;font-family:serif;"><div class="spinner"></div>Scanning script for characters...</div>';
+
+  try {
+    const chars = await generateCharacterRefs(script, title);
+    if (chars && chars.length > 0) {
+      window._charRefsGenerated = chars;
+      renderCharacterCards(chars);
+      // Auto-set first character as active
+      document.getElementById('veoCharRef').value = chars[0].ref;
+    } else {
+      div.innerHTML = '<div class="err">Could not identify characters. Make sure your script mentions character names.</div>';
+    }
+  } catch(err) {
+    div.innerHTML = '<div class="err">Character scan failed: ' + err.message + '</div>';
+  }
+
+  btn.innerHTML = '&#128100; SCAN CHARACTERS';
+  btn.disabled = false;
+}
+
 async function generateVeoBySections() {
   const script=document.getElementById('veoScript').value.trim();
   const title=document.getElementById('veoTitle').value.trim()||'DBH Video';
   const duration=document.getElementById('veoDuration').value;
   const style=document.getElementById('veoStyle').value;
   const ratio=document.getElementById('veoRatio').value;
-  const charRef=document.getElementById('veoCharRef').value.trim();
+  let charRef=document.getElementById('veoCharRef').value.trim();
   if(!script||script.length<100){document.getElementById('veoErrorBox').innerHTML='<div class="err">Please paste your script (minimum 100 characters).</div>';return;}
   document.getElementById('veoErrorBox').innerHTML='';
   document.getElementById('veoResults').innerHTML='';
@@ -2263,6 +2470,24 @@ async function generateVeoBySections() {
   const btn=document.getElementById('veoGenBtn');
   btn.disabled=true;
   document.getElementById('veoStatusBar').style.display='flex';
+
+  // Auto-scan characters if not done yet
+  if (!window._charRefsGenerated) {
+    document.getElementById('veoStatusText').textContent='Step 1/2: Scanning characters from script...';
+    try {
+      const chars = await generateCharacterRefs(script, title);
+      if (chars) {
+        window._charRefsGenerated = chars;
+        // Use all character refs in prompts
+        charRef = chars.map(c => c.ref).join(' | ');
+        document.getElementById('veoCharRef').value = chars[0].ref;
+        renderCharacterCards(chars);
+      }
+    } catch(e) {
+      console.log('Character scan skipped:', e.message);
+    }
+    document.getElementById('veoStatusText').textContent='Step 2/2: Generating Veo scenes...';
+  }
 
   const wordCount=script.split(/\s+/).length;
   const expectedScenes=Math.ceil(wordCount/70);
