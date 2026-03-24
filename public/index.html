@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DBH Channel Intelligence</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://apis.google.com/js/api.js" onload="gapiLoaded()" async defer></script>
+<script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
@@ -989,6 +991,47 @@ select {
 </head>
 <body>
 
+<!-- FLOATING CLOUD SAVE BUTTON — bottom right corner -->
+<div id="cloudWidget" style="position:fixed;bottom:24px;right:20px;z-index:8000;">
+
+  <!-- Toggle button -->
+  <button onclick="toggleCloudPanel()" id="cloudToggleBtn"
+    style="width:44px;height:44px;border-radius:50%;background:var(--navy2);border:1px solid var(--border);color:var(--muted);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.4);transition:all 0.2s;position:relative;"
+    title="Cloud Save Settings">
+    &#9729;
+    <!-- Connected indicator dot -->
+    <div id="driveIndicator" style="position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:var(--muted);border:2px solid var(--navy2);"></div>
+  </button>
+
+  <!-- Slide-up panel -->
+  <div id="cloudPanel" style="display:none;position:absolute;bottom:54px;right:0;width:260px;background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+    <div style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:3px;color:var(--gold);margin-bottom:12px;">CLOUD SAVE</div>
+
+    <!-- Drive status -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--navy3);border-radius:8px;">
+      <div id="driveDotPanel" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;"></div>
+      <span id="driveStatusText" style="font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:1px;color:var(--muted);">NOT CONNECTED</span>
+    </div>
+
+    <!-- Connect button -->
+    <button onclick="connectGoogleDrive()" id="driveConnectBtn"
+      style="width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:9px;color:var(--navy);font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:2px;padding:10px;cursor:pointer;font-weight:700;margin-bottom:8px;">
+      &#9729; CONNECT GOOGLE DRIVE
+    </button>
+
+    <!-- Disconnect button -->
+    <button onclick="disconnectDrive()" id="driveDisconnectBtn"
+      style="display:none;width:100%;background:transparent;border:1px solid var(--border);border-radius:9px;color:var(--muted);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:1.5px;padding:8px;cursor:pointer;margin-bottom:8px;">
+      DISCONNECT DRIVE
+    </button>
+
+    <p style="font-size:0.72rem;color:var(--muted);line-height:1.5;font-family:'Crimson Pro',serif;font-style:italic;">
+      Connect once to save scripts, SEO descriptions and Veo prompts directly to Google Drive.
+      Or use the &#11015; Download button on any result to save locally.
+    </p>
+  </div>
+</div>
+
 <!-- PASSWORD GATE -->
 <div id="gateOverlay" style="position:fixed;inset:0;background:var(--navy);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
   <div style="width:100%;max-width:420px;text-align:center;">
@@ -1895,6 +1938,311 @@ select {
 
 
 <script>
+
+// ═══════════════════════════════════════════════════════════════════════════
+// GOOGLE DRIVE + DOWNLOAD SAVE SYSTEM
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── CONFIGURATION ─────────────────────────────────────────────────────────
+// Replace with your Google Cloud OAuth Client ID
+// Get one free at: console.cloud.google.com
+// Enable: Google Drive API + Google Picker API
+// Add authorised JS origins: https://deepbiblehist.vercel.app
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE';
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const DBH_FOLDER_NAME = 'DBH Intelligence';
+
+let gapiInited = false;
+let gisInited  = false;
+let tokenClient = null;
+let accessToken = null;
+let dbhFolderId = null;
+
+// ── GAPI + GIS INIT ───────────────────────────────────────────────────────
+function gapiLoaded() {
+  gapi.load('client', function() {
+    gapi.client.init({}).then(function() {
+      gapiInited = true;
+      maybeEnableDrive();
+    });
+  });
+}
+
+function gisLoaded() {
+  if (typeof google === 'undefined' || !google.accounts) return;
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: DRIVE_SCOPE,
+    callback: function(resp) {
+      if (resp.error) {
+        showDriveError('Auth failed: ' + resp.error);
+        return;
+      }
+      accessToken = resp.access_token;
+      gapi.client.setToken({access_token: accessToken});
+      onDriveConnected();
+    }
+  });
+  gisInited = true;
+  maybeEnableDrive();
+}
+
+function maybeEnableDrive() {
+  if (gapiInited && gisInited) {
+    document.getElementById('driveConnectBtn').style.opacity = '1';
+    document.getElementById('driveConnectBtn').style.pointerEvents = 'auto';
+    // Check if already authenticated this session
+    const savedToken = sessionStorage.getItem('dbh_drive_token');
+    if (savedToken) {
+      accessToken = savedToken;
+      gapi.client.setToken({access_token: accessToken});
+      onDriveConnected();
+    }
+  }
+}
+
+function connectGoogleDrive() {
+  if (GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE') {
+    alert('Google Drive integration requires setup.\n\n1. Go to console.cloud.google.com\n2. Create a project and enable Drive API\n3. Create OAuth 2.0 credentials\n4. Add your Client ID to the app\n\nFor now, use the DOWNLOAD button to save files locally.');
+    return;
+  }
+  if (!gapiInited || !gisInited) {
+    showDriveError('Google APIs still loading. Try again in a moment.');
+    return;
+  }
+  tokenClient.requestAccessToken({prompt: 'consent'});
+}
+
+function disconnectDrive() {
+  if (accessToken && typeof google !== 'undefined') {
+    google.accounts.oauth2.revoke(accessToken);
+  }
+  accessToken = null;
+  dbhFolderId = null;
+  sessionStorage.removeItem('dbh_drive_token');
+  ['driveIndicator','driveDotPanel'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.background = 'var(--muted)';
+  });
+  const statusEl = document.getElementById('driveStatusText');
+  if (statusEl) { statusEl.textContent = 'NOT CONNECTED'; statusEl.style.color = 'var(--muted)'; }
+  const connectBtn = document.getElementById('driveConnectBtn');
+  if (connectBtn) connectBtn.style.display = 'block';
+  const disconnectBtn = document.getElementById('driveDisconnectBtn');
+  if (disconnectBtn) disconnectBtn.style.display = 'none';
+  const toggleBtn = document.getElementById('cloudToggleBtn');
+  if (toggleBtn) { toggleBtn.style.borderColor = 'var(--border)'; toggleBtn.style.color = 'var(--muted)'; }
+}
+
+async function onDriveConnected() {
+  sessionStorage.setItem('dbh_drive_token', accessToken);
+  // Update both indicator dots
+  ['driveIndicator','driveDotPanel'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.background = 'var(--green)';
+  });
+  const statusEl = document.getElementById('driveStatusText');
+  if (statusEl) { statusEl.textContent = 'CONNECTED'; statusEl.style.color = 'var(--green)'; }
+  const connectBtn = document.getElementById('driveConnectBtn');
+  if (connectBtn) connectBtn.style.display = 'none';
+  const disconnectBtn = document.getElementById('driveDisconnectBtn');
+  if (disconnectBtn) disconnectBtn.style.display = 'block';
+  // Update cog button colour
+  const toggleBtn = document.getElementById('cloudToggleBtn');
+  if (toggleBtn) { toggleBtn.style.borderColor = 'var(--green)'; toggleBtn.style.color = 'var(--green)'; }
+  dbhFolderId = await getOrCreateFolder(DBH_FOLDER_NAME);
+}
+
+// ── DRIVE FOLDER MANAGEMENT ───────────────────────────────────────────────
+async function getOrCreateFolder(name) {
+  try {
+    const search = await gapi.client.request({
+      path: 'https://www.googleapis.com/drive/v3/files',
+      params: {
+        q: "name='" + name + "' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+        fields: 'files(id,name)'
+      }
+    });
+    if (search.result.files && search.result.files.length > 0) {
+      return search.result.files[0].id;
+    }
+    // Create folder
+    const create = await gapi.client.request({
+      path: 'https://www.googleapis.com/drive/v3/files',
+      method: 'POST',
+      body: {
+        name,
+        mimeType: 'application/vnd.google-apps.folder'
+      }
+    });
+    return create.result.id;
+  } catch(e) {
+    console.error('Folder error:', e);
+    return null;
+  }
+}
+
+// ── SAVE TO DRIVE ─────────────────────────────────────────────────────────
+async function saveToDrive(title, content, type) {
+  if (!accessToken) {
+    alert('Connect Google Drive first using the button at the top of the page.');
+    return false;
+  }
+
+  const timestamp = new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
+  const filename = 'DBH — ' + title + ' [' + timestamp + ']';
+
+  try {
+    // Create subfolder for type if needed
+    const subfolderName = {
+      script: 'Scripts',
+      veo: 'Veo Prompts',
+      seo: 'SEO Descriptions',
+      thumbnail: 'Thumbnails',
+      research: 'Research',
+      series: 'Series Plans'
+    }[type] || 'General';
+
+    let parentId = dbhFolderId;
+    if (dbhFolderId) {
+      // Get or create subfolder
+      const search = await gapi.client.request({
+        path: 'https://www.googleapis.com/drive/v3/files',
+        params: {
+          q: "name='" + subfolderName + "' and '" + dbhFolderId + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+          fields: 'files(id)'
+        }
+      });
+      if (search.result.files && search.result.files.length > 0) {
+        parentId = search.result.files[0].id;
+      } else {
+        const create = await gapi.client.request({
+          path: 'https://www.googleapis.com/drive/v3/files',
+          method: 'POST',
+          body: { name: subfolderName, mimeType: 'application/vnd.google-apps.folder', parents: [dbhFolderId] }
+        });
+        parentId = create.result.id;
+      }
+    }
+
+    // Upload as Google Doc
+    const boundary = 'DBH_BOUNDARY_' + Date.now();
+    const metadata = JSON.stringify({
+      name: filename,
+      mimeType: 'application/vnd.google-apps.document',
+      parents: parentId ? [parentId] : []
+    });
+
+    const body =
+      '--' + boundary + '\r\n' +
+      'Content-Type: application/json\r\n\r\n' +
+      metadata + '\r\n' +
+      '--' + boundary + '\r\n' +
+      'Content-Type: text/plain\r\n\r\n' +
+      content + '\r\n' +
+      '--' + boundary + '--';
+
+    const response = await gapi.client.request({
+      path: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+      method: 'POST',
+      headers: { 'Content-Type': 'multipart/related; boundary=' + boundary },
+      body
+    });
+
+    const fileId = response.result.id;
+    const fileUrl = 'https://docs.google.com/document/d/' + fileId + '/edit';
+
+    // Show success toast
+    showSaveToast(filename, fileUrl, 'drive');
+    return true;
+
+  } catch(err) {
+    showDriveError('Save failed: ' + (err.message || 'Unknown error'));
+    return false;
+  }
+}
+
+// ── DOWNLOAD AS FILE ──────────────────────────────────────────────────────
+function downloadAsFile(title, content, type) {
+  const timestamp = new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
+  const filename = 'DBH — ' + title + ' [' + timestamp + '].txt';
+  const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  showSaveToast(filename, null, 'download');
+}
+
+// ── SAVE TOAST NOTIFICATION ───────────────────────────────────────────────
+function showSaveToast(filename, url, method) {
+  const existing = document.getElementById('saveToast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'saveToast';
+  toast.style.cssText = 'position:fixed;bottom:24px;right:20px;background:var(--navy2);border:1px solid var(--green);border-radius:12px;padding:14px 18px;z-index:9998;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideInToast 0.3s ease;';
+  toast.innerHTML =
+    '<div style="display:flex;align-items:flex-start;gap:10px;">' +
+    '<div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:4px;"></div>' +
+    '<div>' +
+    '<div style="font-family:\'Cinzel\',serif;font-size:0.65rem;letter-spacing:1.5px;color:var(--green);margin-bottom:4px;">' + (method === 'drive' ? 'SAVED TO GOOGLE DRIVE' : 'DOWNLOADED') + '</div>' +
+    '<div style="font-size:0.8rem;color:var(--text);margin-bottom:6px;">' + filename.slice(0, 50) + (filename.length > 50 ? '...' : '') + '</div>' +
+    (url ? '<a href="' + url + '" target="_blank" style="font-size:0.72rem;color:var(--gold);text-decoration:none;">Open in Google Docs &#8599;</a>' : '') +
+    '</div>' +
+    '<button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0;margin-left:auto;">&#10005;</button>' +
+    '</div>';
+
+  document.body.appendChild(toast);
+  setTimeout(function() { if (toast.parentNode) toast.remove(); }, 5000);
+}
+
+function showDriveError(msg) {
+  document.getElementById('driveIndicator').style.background = 'var(--red)';
+  document.getElementById('driveStatusText').textContent = msg;
+  document.getElementById('driveStatusText').style.color = 'var(--red)';
+  setTimeout(function() {
+    document.getElementById('driveStatusText').textContent = 'NOT CONNECTED';
+    document.getElementById('driveStatusText').style.color = 'var(--muted)';
+    document.getElementById('driveIndicator').style.background = 'var(--muted)';
+  }, 4000);
+}
+
+// ── SAVE BUTTONS — added to result cards ──────────────────────────────────
+function addSaveButtons(resultDivId, title, contentKey, type) {
+  const div = document.getElementById(resultDivId);
+  if (!div) return;
+
+  // Check if save buttons already exist
+  if (div.querySelector('.save-btn-row')) return;
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'save-btn-row';
+  btnRow.style.cssText = 'display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;';
+
+  btnRow.innerHTML =
+    '<button onclick="saveToDrive(' +
+      JSON.stringify(title) + ',' +
+      'window.' + contentKey + '||\'\',' +
+      JSON.stringify(type) +
+    ')" style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:\'Cinzel\',serif;font-size:0.58rem;letter-spacing:1.5px;padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;"><span>&#9729;</span> SAVE TO DRIVE</button>' +
+    '<button onclick="downloadAsFile(' +
+      JSON.stringify(title) + ',' +
+      'window.' + contentKey + '||\'\',' +
+      JSON.stringify(type) +
+    ')" style="background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:\'Cinzel\',serif;font-size:0.58rem;letter-spacing:1.5px;padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;"><span>&#11015;</span> DOWNLOAD .TXT</button>';
+
+  div.appendChild(btnRow);
+}
+
+// Toast animation
+const toastStyle = document.createElement('style');
+toastStyle.textContent = '@keyframes slideInToast { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }';
+document.head.appendChild(toastStyle);
+
+
 // ── ACCESS GATE ───────────────────────────────────────────────────────────
 // Add or remove keys from this list to control access
 const ACCESS_KEYS = [
@@ -2616,6 +2964,19 @@ function renderVeoScenes(scenes, title, duration, style, ratio) {
     statsHTML + instructHTML + scenesHTML;
 
   document.getElementById('veoCopyAllBtn').style.display = 'inline-block';
+  // Add save buttons
+  setTimeout(function() {
+    const veoDiv = document.getElementById('veoResults');
+    if (veoDiv && !veoDiv.querySelector('.save-btn-row')) {
+      const btnRow = document.createElement('div');
+      btnRow.className = 'save-btn-row';
+      btnRow.style.cssText = 'display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;';
+      btnRow.innerHTML =
+        '<button onclick="saveToDrive(window._veoTitle||\'DBH Veo Prompts\', copyAllPromptsText(), \'veo\')" style="background:transparent;border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:serif;font-size:0.58rem;letter-spacing:1.5px;padding:7px 12px;cursor:pointer;">&#9729; SAVE TO DRIVE</button>' +
+        '<button onclick="downloadAsFile(window._veoTitle||\'DBH Veo Prompts\', copyAllPromptsText(), \'veo\')" style="background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:serif;font-size:0.58rem;letter-spacing:1.5px;padding:7px 12px;cursor:pointer;">&#11015; DOWNLOAD .TXT</button>';
+      veoDiv.appendChild(btnRow);
+    }
+  }, 100);
 }
 
 function copyOnePrompt(btn, encodedPrompt) {
@@ -2944,6 +3305,7 @@ Follow YouTube 2026 compliance: NO words like massacre/slaughter/genocide/killed
   } catch(err) {
     document.getElementById('seoResults').innerHTML = '<div class="err">SEO generation failed: ' + err.message + '. Ensure ANTHROPIC_API_KEY is set in Vercel.</div>';
   }
+  addSaveButtons('seoResults', title + ' SEO', '_seoDescription', 'seo');
   btn.textContent = 'Generate SEO Description';
   btn.disabled = false;
 }
@@ -3361,6 +3723,7 @@ Text position: [Exact zone — top-left, bottom-right, across centre etc]
         <div style="font-size:0.88rem;line-height:1.8;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
       </div>`;
   } catch(err) { errCard('Thumbnail generation failed: ' + err.message, 'thumbResults'); }
+  addSaveButtons('thumbResults', (document.getElementById('thumbTitle').value.trim() || 'Thumbnail') + ' Concept', '_thumbText', 'thumbnail');
 }
 
 function copyMJPrompt() {
@@ -4323,6 +4686,7 @@ Rate this script: Hook strength /20, Retention mechanics /20, Emotional journey 
         <div style="font-size:0.88rem;line-height:1.9;font-family:'Crimson Pro',serif;">${fmtAI(result)}</div>
       </div>`;
   } catch(err) { errCard('Script writing failed: ' + err.message, 'swResults'); }
+  addSaveButtons('swResults', topic + ' Script', '_swResult', 'script');
 }
 
 function copyScriptSection(section) {
@@ -4789,6 +5153,40 @@ Top 3 things DBH should do RIGHT NOW to increase revenue.`;
   } catch(err) { errCard('Calculation failed: ' + err.message, 'revResults'); }
 }
 
+
+
+function copyAllPromptsText() {
+  const scenes = window._veoScenes || [];
+  const title  = window._veoTitle  || 'DBH';
+  const sep    = '\n' + '-'.repeat(50) + '\n\n';
+  return '=== DBH VEO PROMPTS: ' + title + ' ===\nTotal scenes: ' + scenes.length + '\n\n' +
+    scenes.map(function(s) {
+      return 'SCENE ' + s.num + ': ' + s.title + '\n' +
+             (s.shotType ? 'SHOT: ' + s.shotType + '\n' : '') +
+             'VOICEOVER: ' + s.voiceover + '\n\n' +
+             'VEO PROMPT:\n' + s.prompt;
+    }).join(sep);
+}
+
+
+function toggleCloudPanel() {
+  const panel = document.getElementById('cloudPanel');
+  const btn   = document.getElementById('cloudToggleBtn');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  btn.style.borderColor = isOpen ? 'var(--border)' : 'var(--gold)';
+  btn.style.color       = isOpen ? 'var(--muted)'  : 'var(--gold)';
+}
+
+// Close panel when clicking outside
+document.addEventListener('click', function(e) {
+  const widget = document.getElementById('cloudWidget');
+  if (widget && !widget.contains(e.target)) {
+    document.getElementById('cloudPanel').style.display = 'none';
+    document.getElementById('cloudToggleBtn').style.borderColor = 'var(--border)';
+    document.getElementById('cloudToggleBtn').style.color = 'var(--muted)';
+  }
+});
 
 </script>
 </body>
