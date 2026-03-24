@@ -1279,6 +1279,15 @@ function copyBlueprint() {
 
 // VEO PROMPT GENERATOR
 async function generateVeoPrompts() {
+  const mode = (document.querySelector('input[name="veoMode"]:checked') || {}).value || 'sections';
+  if (mode === 'linebytime' || mode === 'paragraph') {
+    await generateVeoLineByLine(mode);
+  } else {
+    await generateVeoBySections();
+  }
+}
+
+async function generateVeoBySections() {
   const script=document.getElementById('veoScript').value.trim();
   const title=document.getElementById('veoTitle').value.trim()||'DBH Video';
   const duration=document.getElementById('veoDuration').value;
@@ -1293,13 +1302,8 @@ async function generateVeoPrompts() {
   btn.disabled=true;
   document.getElementById('veoStatusBar').style.display='flex';
 
-  // Calculate expected scenes based on script length
-  // Average: 1 scene per 60-80 words for a 38-min video
   const wordCount=script.split(/\s+/).length;
   const expectedScenes=Math.ceil(wordCount/70);
-  const wordsPerChunk=Math.ceil(wordCount/Math.ceil(wordCount/70));
-
-  // Split script into chunks of ~1500 words for long scripts
   const CHUNK_SIZE=1500;
   const words=script.split(/\s+/);
   const chunks=[];
@@ -1312,93 +1316,118 @@ async function generateVeoPrompts() {
 
   for(let ci=0;ci<chunks.length;ci++){
     document.getElementById('veoStatusText').textContent='Processing part '+(ci+1)+' of '+chunks.length+'... ('+allScenes.length+' scenes so far)';
-
     const scenesInChunk=Math.ceil((chunks[ci].split(/\s+/).length/wordCount)*expectedScenes);
+    const prompt='You are a cinematic AI video director for biblical history content.\n\nVIDEO: "'+title+'" (Part '+(ci+1)+' of '+chunks.length+')\nSTYLE: '+style+'\nDURATION: '+duration+' seconds per scene\nRATIO: '+ratio+'\nCHARACTER: '+charRef+'\nSTARTING SCENE NUMBER: '+(sceneOffset+1)+'\n\nDBH VISUAL RULES:\n- Ancient Middle East, first-century Jerusalem, Judean wilderness\n- Chiaroscuro lighting, amber-gold tones, candlelight or sunlight\n- Dusty, cinematic, historically authentic atmosphere\n- NO modern elements, NO text overlays\n\nSCRIPT SECTION:\n'+chunks[ci]+'\n\nGenerate approximately '+scenesInChunk+' scenes. Use EXACTLY this format:\n---SCENE [N]: [TITLE]---\nVOICEOVER: [exact script text for this scene]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in]\nVEO PROMPT: [detailed cinematic prompt, 80-120 words]\n---END SCENE---\n\nWrite all scenes now.';
 
-    const prompt='You are a cinematic AI video director for biblical history content.\n\nVIDEO: "'+title+'" (Part '+(ci+1)+' of '+chunks.length+')\nSTYLE: '+style+'\nDURATION: '+duration+' seconds per scene\nRATIO: '+ratio+'\nCHARACTER: '+charRef+'\nSTARTING SCENE NUMBER: '+(sceneOffset+1)+'\n\nDBH VISUAL RULES:\n- Ancient Middle East, first-century Jerusalem, Judean wilderness\n- Chiaroscuro lighting, amber-gold tones\n- Dusty, cinematic atmosphere\n- NO modern elements, NO text overlays\n\nSCRIPT SECTION:\n'+chunks[ci]+'\n\nGenerate approximately '+scenesInChunk+' scenes for this section. Use EXACTLY this format:\n---SCENE [N]: [TITLE]---\nVOICEOVER: [exact script text for this scene]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in]\nVEO PROMPT: [detailed cinematic prompt, 80-120 words]\n---END SCENE---\n\nWrite all scenes now.';
-
-    try{
-      const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:8000})});
-      const data=await res.json();
-      if(!data.success) throw new Error(data.error||'Generation failed');
-      const parsed=parseScenes(data.text||'',sceneOffset);
-      allScenes.push(...parsed);
-      sceneOffset+=parsed.length;
-    } catch(err){
-      if(allScenes.length>0){
-        document.getElementById('veoErrorBox').innerHTML='<div class="err">Part '+(ci+1)+' failed: '+err.message+'. Showing '+allScenes.length+' scenes generated so far.</div>';
-        break;
-      } else {
-        document.getElementById('veoErrorBox').innerHTML='<div class="err">'+err.message+'</div>';
-        btn.disabled=false; btn.textContent='GENERATE VEO PROMPTS';
-        document.getElementById('veoStatusBar').style.display='none';
-        return;
+    let chunkDone = false;
+    for (let retry = 0; retry < 3 && !chunkDone; retry++) {
+      try {
+        if (retry > 0) {
+          document.getElementById('veoStatusText').textContent='API overloaded — waiting '+(retry*15)+'s before retry '+retry+'/3...';
+          await new Promise(r=>setTimeout(r,retry*15000));
+          document.getElementById('veoStatusText').textContent='Retrying part '+(ci+1)+' of '+chunks.length+'...';
+        }
+        const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:8000})});
+        const data=await res.json();
+        if(!data.success){
+          const isOverload=data.error&&(data.error.includes('overload')||data.error.includes('529')||data.error.includes('rate'));
+          if(isOverload&&retry<2) continue;
+          throw new Error(data.error||'Generation failed');
+        }
+        const parsed=parseScenes(data.text||'',sceneOffset);
+        allScenes.push(...parsed);
+        sceneOffset+=parsed.length;
+        chunkDone=true;
+      } catch(err){
+        if(retry===2){
+          if(allScenes.length>0){
+            document.getElementById('veoErrorBox').innerHTML='<div class="err">Part '+(ci+1)+' failed after retries: '+err.message+'. Showing '+allScenes.length+' scenes so far.</div>';
+          } else {
+            document.getElementById('veoErrorBox').innerHTML='<div class="err">'+err.message+'</div>';
+            btn.disabled=false;btn.textContent='Generate Veo Prompts';
+            document.getElementById('veoStatusBar').style.display='none';
+            return;
+          }
+        }
       }
     }
+    if(!chunkDone&&allScenes.length>0) break;
+    if(ci<chunks.length-1) await new Promise(r=>setTimeout(r,3000));
   }
 
   if(allScenes.length>0) renderVeoScenes(allScenes,title,duration,style,ratio);
   else document.getElementById('veoErrorBox').innerHTML='<div class="err">Could not parse any scenes. Try again.</div>';
 
-  btn.disabled=false; btn.textContent='GENERATE VEO PROMPTS';
+  btn.disabled=false;btn.textContent='Generate Veo Prompts';
   document.getElementById('veoStatusBar').style.display='none';
 }
 
-function parseScenes(text, offset) {
-  const scenes=[];
-  const re=/---SCENE (\d+): (.+?)---([\s\S]*?)---END SCENE---/g;
-  let m;
-  while((m=re.exec(text))!==null){
-    const body=m[3];
-    const vo=(body.match(/VOICEOVER:\s*([\s\S]*?)(?=SHOT TYPE:|VEO PROMPT:|$)/)||[])[1]||'';
-    const shot=(body.match(/SHOT TYPE:\s*(.+?)(?:\n|$)/)||[])[1]||'';
-    const vp=(body.match(/VEO PROMPT:\s*([\s\S]*?)(?=---END|$)/)||[])[1]||body.trim();
-    scenes.push({num:offset+scenes.length+1,title:m[2].trim(),voiceover:vo.trim(),shotType:shot.trim(),prompt:vp.trim()});
+async function generateVeoLineByLine(mode) {
+  const script=document.getElementById('veoScript').value.trim();
+  const title=document.getElementById('veoTitle').value.trim()||'DBH Video';
+  const duration=document.getElementById('veoDuration').value;
+  const style=document.getElementById('veoStyle').value;
+  const ratio=document.getElementById('veoRatio').value;
+  const charRef=document.getElementById('veoCharRef').value.trim();
+  if(!script||script.length<50){document.getElementById('veoErrorBox').innerHTML='<div class="err">Please paste your script first.</div>';return;}
+  document.getElementById('veoErrorBox').innerHTML='';
+  document.getElementById('veoResults').innerHTML='';
+  document.getElementById('veoCopyAllBtn').style.display='none';
+  const btn=document.getElementById('veoGenBtn');
+  btn.disabled=true;
+  document.getElementById('veoStatusBar').style.display='flex';
+
+  let units=[];
+  if(mode==='linebytime'){
+    units=script.match(/[^.!?]+[.!?]+/g)||script.split('\n').filter(l=>l.trim().length>10);
+    units=units.filter(u=>u.trim().length>15);
+  } else {
+    units=script.split(/\n\s*\n/).filter(p=>p.trim().length>20);
+
+
+    if(units.length<3) units=script.split('\n').filter(l=>l.trim().length>20);
+
   }
-  return scenes;
-}
 
-function renderVeoScenes(scenes,title,duration,style,ratio) {
-  if(!scenes||scenes.length===0){
-    document.getElementById('veoErrorBox').innerHTML='<div class="err">Could not parse scenes. Try again.</div>';
-    return;
+  document.getElementById('veoStatusText').textContent='Generating '+units.length+' prompts...';
+  const BATCH=15;
+  const allScenes=[];
+
+  for(let i=0;i<units.length;i+=BATCH){
+    const chunk=units.slice(i,i+BATCH);
+    const startN=i+1;
+    document.getElementById('veoStatusText').textContent='Generating scenes '+startN+'-'+Math.min(i+BATCH,units.length)+' of '+units.length+'...';
+    const numberedLines=chunk.map((u,j)=>'LINE '+(startN+j)+': '+u.trim()).join('\n');
+
+    const prompt='You are a cinematic AI video director for biblical history content.\nVIDEO: "'+title+'"\nSTYLE: '+style+'\nDURATION: '+duration+' seconds per scene\nRATIO: '+ratio+'\nCHARACTER: '+charRef+'\n\nDBH VISUAL RULES:\n- Ancient Middle East, first-century Jerusalem\n- Chiaroscuro lighting, amber-gold tones\n- NO modern elements, NO text overlays\n\nFor EACH line generate one scene:\n---SCENE [N]: [SHORT TITLE]---\nVOICEOVER: [copy line exactly]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan]\nVEO PROMPT: [80-120 word cinematic prompt]\n---END SCENE---\n\nLINES:\n'+numberedLines+'\n\nOne scene per line now.';
+
+    let done=false;
+    for(let retry=0;retry<3&&!done;retry++){
+      try{
+        if(retry>0){
+          document.getElementById('veoStatusText').textContent='Rate limited — waiting '+(retry*10)+'s...';
+          await new Promise(r=>setTimeout(r,retry*10000));
+        }
+        const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:8000})});
+        const data=await res.json();
+        if(!data.success) throw new Error(data.error||'Failed');
+        const parsed=parseScenes(data.text||'',allScenes.length);
+        allScenes.push(...parsed);
+        done=true;
+      }catch(err){
+        if(retry===2){
+          document.getElementById('veoErrorBox').innerHTML='<div class="err">Batch failed at scene '+startN+': '+err.message+'. Showing '+allScenes.length+' scenes so far.</div>';
+        }
+      }
+    }
+    if(!done) break;
+    if(i+BATCH<units.length) await new Promise(r=>setTimeout(r,3000));
   }
-  window._veoScenes=scenes; window._veoTitle=title;
-  const statsHTML='<div class="pattern-grid" style="margin-bottom:16px;"><div class="pstat"><div class="val">'+scenes.length+'</div><div class="lbl2">Scenes</div></div><div class="pstat"><div class="val">'+(scenes.length*parseInt(duration))+'s</div><div class="lbl2">Total Duration</div></div><div class="pstat"><div class="val">'+ratio+'</div><div class="lbl2">Ratio</div></div></div>';
-  const instructHTML='<div style="background:var(--navy2);border:1px solid var(--navy3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:0.78rem;line-height:1.7;"><strong style="color:var(--amber);">How to use in Google Flow:</strong><br>1. Open <a href="https://labs.google/flow" target="_blank" style="color:var(--gold);">labs.google/flow</a><br>2. Install <a href="https://chromewebstore.google.com/detail/flow-automation-bulk-ai-v/hpnlhgdmjnbceiffmbeidnnapkikonnd" target="_blank" style="color:var(--gold);">Flow Automation Chrome extension</a><br>3. Click COPY ALL below and paste into the extension bulk import</div>';
-  const scenesHTML=scenes.map((s,i)=>{
-    const safePrompt=encodeURIComponent(s.prompt);
-    return '<div class="veo-scene"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div><span style="font-family:serif;font-size:0.95rem;color:var(--gold);">Scene '+s.num+'</span> <span style="font-size:0.78rem;color:var(--text);">'+s.title+'</span>'+(s.shotType?'<span class="pill pb" style="margin-left:6px;">'+s.shotType+'</span>':'')+'</div><button onclick="copyOnePrompt(this,\''+safePrompt+'\')" style="background:var(--navy3);border:1px solid var(--navy3);border-radius:6px;color:var(--muted);font-size:0.69rem;padding:4px 9px;cursor:pointer;">Copy</button></div>'+(s.voiceover?'<div style="margin-bottom:8px;"><div style="font-size:0.67rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Voiceover</div><div style="background:var(--navy);border-radius:6px;padding:8px;font-size:0.75rem;font-style:italic;color:var(--muted);">"'+s.voiceover.slice(0,180)+(s.voiceover.length>180?'...':'')+'"</div></div>':'')+'<div><div style="font-size:0.67rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Veo Prompt</div><div style="background:var(--navy);border:1px solid var(--navy3);border-radius:6px;padding:9px;font-size:0.77rem;line-height:1.6;">'+s.prompt+'</div></div></div>';
-  }).join('');
-  document.getElementById('veoResults').innerHTML='<div class="results-hdr">'+scenes.length+' Scenes — '+title+'</div>'+statsHTML+instructHTML+scenesHTML;
-  document.getElementById('veoCopyAllBtn').style.display='inline-block';
-}
 
-function copyOnePrompt(btn,encodedPrompt) {
-  const prompt=decodeURIComponent(encodedPrompt);
-  navigator.clipboard.writeText(prompt).then(()=>{
-    btn.textContent='Copied!'; btn.style.color='var(--green)';
-    setTimeout(()=>{btn.textContent='Copy'; btn.style.color='var(--muted)';},2000);
-  });
-}
-
-function copyAllPrompts() {
-  const scenes=window._veoScenes||[], title=window._veoTitle||'DBH';
-  const sep='\n'+'─'.repeat(50)+'\n\n';
-  const fullText='=== DBH VEO PROMPTS: '+title+' ===\nTotal scenes: '+scenes.length+'\n\n'+
-    scenes.map(s=>
-      'SCENE '+s.num+': '+s.title+'\n'+
-      (s.shotType?'SHOT: '+s.shotType+'\n':'')+
-      'VOICEOVER: '+s.voiceover+'\n\n'+
-      'VEO PROMPT:\n'+s.prompt
-    ).join(sep);
-  navigator.clipboard.writeText(fullText).then(()=>{
-    const btn=document.getElementById('veoCopyAllBtn');
-    const orig=btn.textContent;
-    btn.textContent='COPIED '+scenes.length+' SCENES!';
-    btn.style.background='linear-gradient(135deg,var(--green),#3DAA6A)';
-    setTimeout(()=>{btn.textContent=orig;btn.style.background='';},3000);
-  });
+  if(allScenes.length>0) renderVeoScenes(allScenes,title+' [Line-by-Line — '+allScenes.length+' scenes]',duration,style,ratio);
+  else document.getElementById('veoErrorBox').innerHTML='<div class="err">Could not generate scenes. Try section mode instead.</div>';
+  btn.disabled=false;btn.textContent='Generate Veo Prompts';
+  document.getElementById('veoStatusBar').style.display='none';
 }
 
 // ELEVENLABS BATCH SPLITTER
@@ -1650,16 +1679,6 @@ function copySEOSection(section) {
 
 // ─── LINE-BY-LINE MODE in Veo Generator ──────────────────────────────────
 // Modify generateVeoPrompts to check the mode radio
-const _origGenerateVeo = generateVeoPrompts;
-async function generateVeoPrompts() {
-  const mode = document.querySelector('input[name="veoMode"]:checked')?.value || 'sections';
-
-  if (mode === 'linebytime' || mode === 'paragraph') {
-    await generateVeoLineByLine(mode);
-  } else {
-    await _origGenerateVeo();
-  }
-}
 
 async function generateVeoLineByLine(mode) {
   const script = document.getElementById('veoScript').value.trim();
@@ -1709,20 +1728,27 @@ async function generateVeoLineByLine(mode) {
 
     const prompt = 'You are a cinematic AI video director for biblical history content.\n\nVIDEO: "' + title + '"\nSTYLE: ' + style + '\nDURATION: ' + duration + ' seconds per scene\nRATIO: ' + ratio + '\nCHARACTER: ' + charRef + '\n\nDBH VISUAL RULES:\n- Ancient Middle East, first-century Jerusalem, Judean wilderness\n- Chiaroscuro lighting, amber-gold tones, candlelight or sunlight\n- Dusty, cinematic, historically authentic atmosphere\n- NO modern elements, NO text overlays\n\nFor EACH line below, generate one Veo scene using EXACTLY this format:\n---SCENE [N]: [SHORT TITLE]---\nVOICEOVER: [copy the line exactly]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in]\nVEO PROMPT: [80-120 word cinematic Veo prompt]\n---END SCENE---\n\nLINES TO PROCESS:\n' + numberedLines + '\n\nGenerate one scene per line. Write all scenes now.';
 
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({prompt, max_tokens: 8000})
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || 'Failed');
-      const parsed = parseScenes(data.text || '', allScenes.length);
-      allScenes.push(...parsed);
-    } catch(err) {
-      document.getElementById('veoErrorBox').innerHTML = '<div class="err">Batch failed at scene ' + startN + ': ' + err.message + '. Showing ' + allScenes.length + ' scenes so far.</div>';
-      break;
+    let lblSuccess = false;
+    for (let retry = 0; retry < 3; retry++) {
+      try {
+        if (retry > 0) {
+          document.getElementById('veoStatusText').textContent = 'Rate limited — waiting ' + (retry * 10) + 's, then retrying scene ' + startN + '...';
+          await new Promise(r => setTimeout(r, retry * 10000));
+        }
+        const text = await apiCallWithRetry(prompt, 8000, 2);
+        const parsed = parseScenes(text, allScenes.length);
+        allScenes.push(...parsed);
+        lblSuccess = true;
+        break;
+      } catch(err) {
+        if (retry === 2) {
+          document.getElementById('veoErrorBox').innerHTML = '<div class="err">Batch failed at scene ' + startN + ' after 3 retries: ' + err.message + '. Showing ' + allScenes.length + ' scenes so far.</div>';
+        }
+      }
     }
+    if (!lblSuccess) break;
+    // Pause between batches
+    if (i + BATCH < units.length) await new Promise(r => setTimeout(r, 3000));
   }
 
   if (allScenes.length > 0) {
@@ -1816,20 +1842,47 @@ Return only the comma-separated keywords list now.`;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Shared helper: call /api/generate
+async function apiCallWithRetry(prompt, maxTokens, retries) {
+  const MAX = retries || 3;
+  for (let attempt = 1; attempt <= MAX; attempt++) {
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({prompt, max_tokens: maxTokens || 1500})
+      });
+      const data = await res.json();
+      if (!data.success) {
+        const isOverload = data.error && (
+          data.error.toLowerCase().includes('overload') ||
+          data.error.toLowerCase().includes('rate') ||
+          data.error.toLowerCase().includes('529') ||
+          data.error.toLowerCase().includes('capacity')
+        );
+        if (isOverload && attempt < MAX) {
+          const wait = attempt * 8000;
+          console.log('Overloaded, waiting ' + (wait/1000) + 's before retry ' + attempt + '/' + MAX);
+          await new Promise(r => setTimeout(r, wait));
+          continue;
+        }
+        throw new Error(data.error || 'AI call failed');
+      }
+      return data.text || '';
+    } catch(err) {
+      if (attempt === MAX) throw err;
+      const wait = attempt * 8000;
+      await new Promise(r => setTimeout(r, wait));
+    }
+  }
+}
+
 async function aiCall(prompt, maxTokens, btnId, loadingText) {
   const btn = document.getElementById(btnId);
   const orig = btn.textContent;
   btn.textContent = loadingText || 'Generating...';
   btn.disabled = true;
   try {
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({prompt, max_tokens: maxTokens || 1500})
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error || 'AI call failed');
-    return data.text || '';
+    return await apiCallWithRetry(prompt, maxTokens);
   } finally {
     btn.textContent = orig;
     btn.disabled = false;
@@ -2502,6 +2555,68 @@ function copyChaptersResult(btn) {
     setTimeout(() => btn.textContent = 'COPY CHAPTERS', 2000);
   });
 }
+
+// ─── THUMBNAIL TEXT SCANNER ───────────────────────────────────────────────
+async function scanThumbText() {
+  const script = document.getElementById('veoScript').value.trim() ||
+                 document.getElementById('seoScript').value.trim() ||
+                 document.getElementById('thumbScene').value.trim() ||
+                 document.getElementById('thumbTitle').value.trim();
+
+  if (!script) {
+    alert('Please paste your script in the Veo Prompts tab or enter a video title/scene first.');
+    return;
+  }
+
+  const btn = document.getElementById('scanThumbBtn');
+  const optionsDiv = document.getElementById('thumbTextOptions');
+  btn.innerHTML = '&#9203; Scanning...';
+  btn.disabled = true;
+  optionsDiv.style.display = 'none';
+  optionsDiv.innerHTML = '';
+
+  const prompt = 'You are a YouTube thumbnail copywriter for biblical history content targeting US Christians.\n\nAnalyse this script/title and suggest exactly 4 baked-in thumbnail text options.\n\nSCRIPT/TITLE:\n' + script.slice(0, 1500) + '\n\nRules:\n- Each option must be 1-3 words MAXIMUM\n- ALL CAPS only\n- Must create instant curiosity or shock\n- Must be relevant to the content\n- No generic words like VIDEO or WATCH\n- Think: FORBIDDEN / HIDDEN TRUTH / THEY LIED / EXPOSED / REAL STORY / LOST FOR YEARS / NEVER TOLD / SHOCKING FIND\n\nReturn ONLY 4 options, one per line, nothing else. No numbering, no explanation.';
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt, max_tokens: 80})
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    const options = data.text.trim().split('\n')
+      .map(o => o.replace(/^\d+\.\s*/, '').replace(/[^A-Z\s]/g, '').trim())
+      .filter(o => o.length > 0 && o.length <= 25)
+      .slice(0, 4);
+
+    optionsDiv.style.display = 'flex';
+    optionsDiv.innerHTML = options.map(opt =>
+      '<button onclick="selectThumbText(this)" style="background:rgba(201,168,76,0.1);border:1px solid var(--border-bright);border-radius:8px;color:var(--gold);font-family:\'Cinzel\',serif;font-size:0.7rem;letter-spacing:1.5px;padding:7px 12px;cursor:pointer;font-weight:700;transition:all 0.2s;" onmouseover="this.style.background=\'var(--gold)\';this.style.color=\'var(--navy)\';" onmouseout="this.style.background=\'rgba(201,168,76,0.1)\';this.style.color=\'var(--gold)\';"><span>' + opt + '</span></button>'
+    ).join('');
+
+  } catch(err) {
+    optionsDiv.style.display = 'block';
+    optionsDiv.innerHTML = '<span style="color:var(--red);font-size:0.78rem;">Scan failed. Type manually above.</span>';
+  }
+
+  btn.innerHTML = '&#128269; SCAN';
+  btn.disabled = false;
+}
+
+function selectThumbText(btn) {
+  document.getElementById('thumbText').value = btn.querySelector('span').textContent;
+  document.querySelectorAll('#thumbTextOptions button').forEach(b => {
+    b.style.background = 'rgba(201,168,76,0.1)';
+    b.style.color = 'var(--gold)';
+    b.style.border = '1px solid var(--border-bright)';
+  });
+  btn.style.background = 'var(--gold)';
+  btn.style.color = 'var(--navy)';
+  btn.style.border = '1px solid var(--gold)';
+}
+
 </script>
 
 <!-- TAB 4: PRODUCTION TOOLS -->
@@ -2600,7 +2715,15 @@ function copyChaptersResult(btn) {
       <input type="hidden" id="thumbStyleSelected" value="dbh_oil">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
         <div><label class="lbl">Video Title</label><input type="text" id="thumbTitle" placeholder="e.g. The FORBIDDEN Tomb of Jesus"></div>
-        <div><label class="lbl">Baked-in Hook Text</label><input type="text" id="thumbText" placeholder="e.g. FORBIDDEN / HIDDEN / EXPOSED"></div>
+        <div>
+          <label class="lbl">Baked-in Hook Text</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="thumbText" placeholder="Click Scan or type your own..." style="flex:1;">
+            <button onclick="scanThumbText()" id="scanThumbBtn" style="background:transparent;border:1px solid var(--border-bright);border-radius:10px;color:var(--gold);font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:1.5px;padding:9px 10px;cursor:pointer;white-space:nowrap;font-weight:700;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--navy)';" onmouseout="this.style.background='transparent';this.style.color='var(--gold)';">&#128269; SCAN</button>
+          </div>
+          <div id="thumbTextOptions" style="display:none;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+          <p style="font-size:0.75rem;color:var(--muted);margin-top:5px;font-style:italic;">AI scans your script for 4 hook text options (max 2-3 words each)</p>
+        </div>
       </div>
       <div style="margin-bottom:10px;"><label class="lbl">Key Scene / Visual Element</label><input type="text" id="thumbScene" placeholder="e.g. ancient stone tomb entrance, torchlight, Jerusalem ruins"></div>
       <button onclick="generateThumbnail()" id="thumbBtn" class="run-btn" style="margin-bottom:0;">&#127912; Generate Thumbnail Concept</button>
