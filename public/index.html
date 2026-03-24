@@ -3,82 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DBH Channel Intelligence Tool</title>
+<title>DBH Channel Intelligence</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap');
-:root {
-  --gold:#C9A84C; --amber:#E8B84B; --navy:#0D1B2A; --navy2:#152235;
-  --navy3:#1E2F45; --text:#E8E8E8; --muted:#8A9BB0; --red:#E05252; --green:#52C78A;
-}
+:root{--gold:#C9A84C;--amber:#E8B84B;--navy:#0D1B2A;--navy2:#152235;--navy3:#1E2F45;--text:#E8E8E8;--muted:#8A9BB0;--red:#E05252;--green:#52C78A;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--navy);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:20px 14px;}
 header{text-align:center;margin-bottom:24px;}
 header h1{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;color:var(--gold);line-height:1;}
 header p{color:var(--muted);font-size:0.78rem;margin-top:5px;letter-spacing:1px;text-transform:uppercase;}
-
-/* Tabs */
-.tab-nav{display:flex;gap:4px;margin-bottom:22px;background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:5px;}
-.tab-btn{flex:1;background:transparent;border:none;border-radius:8px;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:1.5px;padding:10px 4px;cursor:pointer;transition:all 0.2s;}
+.tab-nav{display:flex;gap:3px;margin-bottom:22px;background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:4px;}
+.tab-btn{flex:1;background:transparent;border:none;border-radius:8px;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1px;padding:9px 3px;cursor:pointer;transition:all 0.2s;}
 .tab-btn.active{background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--navy);}
-.tab-panel{display:none;} .tab-panel.active{display:block;}
-
-/* Shared inputs */
+.tab-panel{display:none;}.tab-panel.active{display:block;}
 .card{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:18px;margin-bottom:18px;}
 .lbl{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:7px;}
-input[type=text],input[type=password],select,.txt{width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.83rem;outline:none;transition:border-color 0.2s;}
+input[type=text],input[type=password],select,.txt{width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.83rem;outline:none;transition:border-color 0.2s;box-sizing:border-box;}
 input:focus,select:focus,.txt:focus{border-color:var(--gold);}
 .txt{resize:vertical;min-height:90px;line-height:1.5;font-size:0.76rem;}
-.hint{font-size:0.71rem;color:var(--muted);margin-top:5px;}
-.hint a{color:var(--amber);text-decoration:none;}
-
-/* Buttons */
-.run-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:2px;padding:13px;cursor:pointer;margin-bottom:18px;transition:opacity 0.2s;}
+.run-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;padding:13px;cursor:pointer;margin-bottom:18px;}
 .run-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.icon-btn{background:var(--navy3);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-family:'Inter',sans-serif;font-size:0.73rem;font-weight:600;padding:6px 11px;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+.icon-btn{background:var(--navy3);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-family:'Inter',sans-serif;font-size:0.73rem;font-weight:600;padding:6px 11px;cursor:pointer;white-space:nowrap;}
 .icon-btn:hover{background:var(--gold);color:var(--navy);}
-.remove-btn{background:transparent;border:1px solid var(--navy3);border-radius:6px;color:var(--muted);cursor:pointer;padding:7px 10px;font-size:0.82rem;transition:all 0.2s;}
-.remove-btn:hover{border-color:var(--red);color:var(--red);}
-.add-btn{background:transparent;border:1px dashed var(--navy3);border-radius:8px;color:var(--muted);cursor:pointer;padding:9px;font-size:0.81rem;width:100%;margin-top:6px;transition:all 0.2s;}
+.add-btn{background:transparent;border:1px dashed var(--navy3);border-radius:8px;color:var(--muted);cursor:pointer;padding:9px;font-size:0.81rem;width:100%;margin-top:6px;}
 .add-btn:hover{border-color:var(--gold);color:var(--gold);}
-
-/* Status / error */
+.remove-btn{background:transparent;border:1px solid var(--navy3);border-radius:6px;color:var(--muted);cursor:pointer;padding:7px 10px;font-size:0.82rem;}
+.remove-btn:hover{border-color:var(--red);color:var(--red);}
 .status-bar{background:var(--navy2);border:1px solid var(--navy3);border-radius:8px;padding:10px 14px;font-size:0.78rem;color:var(--muted);margin-bottom:18px;display:none;align-items:center;gap:8px;}
 .spinner{width:14px;height:14px;border:2px solid var(--navy3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .err{background:#2A1A1A;border:1px solid var(--red);border-radius:8px;padding:11px 14px;color:var(--red);font-size:0.81rem;margin-bottom:14px;}
-
-/* Channel analysis */
 .results-hdr{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold);margin-bottom:14px;}
 .ch-card{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;margin-bottom:18px;overflow:hidden;}
 .ch-card-hdr{background:var(--navy3);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
-.ch-name-lbl{font-weight:600;font-size:0.93rem;color:var(--amber);}
-.ch-stats{font-size:0.71rem;color:var(--muted);}
-.videos-grid{padding:13px;}
 .video-row{display:grid;grid-template-columns:100px 1fr;gap:10px;margin-bottom:10px;}
 .thumb-wrap{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:16/9;background:var(--navy3);}
 .thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
 .view-badge{position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,0.85);color:#fff;font-size:0.6rem;padding:1px 4px;border-radius:3px;font-weight:500;}
-.video-title{font-size:0.77rem;font-weight:500;line-height:1.4;margin-bottom:4px;}
-.video-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
-.tag{font-size:0.6rem;padding:2px 6px;border-radius:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;}
-.tag-caps{background:#2A1F4A;color:#A78BFA;} .tag-colon{background:#1A2F3A;color:#5BC4E8;}
-.tag-question{background:#1A3A2A;color:#52C78A;} .tag-number{background:#3A2A1A;color:#E8A052;}
-.tag-mystery{background:#3A1A1A;color:#E05252;} .tag-ellipsis{background:#2A2A1A;color:#C9C952;}
-
-/* Intel report */
+.tag{font-size:0.6rem;padding:2px 6px;border-radius:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;display:inline-block;margin:2px 2px 0 0;}
+.tag-caps{background:#2A1F4A;color:#A78BFA;}.tag-colon{background:#1A2F3A;color:#5BC4E8;}
+.tag-question{background:#1A3A2A;color:#52C78A;}.tag-number{background:#3A2A1A;color:#E8A052;}
+.tag-mystery{background:#3A1A1A;color:#E05252;}.tag-ellipsis{background:#2A2A1A;color:#C9C952;}
 .intel-section{background:var(--navy2);border:1px solid var(--gold);border-radius:12px;padding:18px;margin-bottom:16px;}
 .intel-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--navy3);}
 .pattern-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px;}
 .pstat{background:var(--navy3);border-radius:8px;padding:11px;text-align:center;}
 .pstat .val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--amber);line-height:1;}
 .pstat .lbl2{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:4px;}
-
-/* Transcript Tab */
 .t-slot{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:15px;margin-bottom:14px;}
 .t-slot-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.t-slot-label{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);}
 .t-section{background:var(--navy2);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:14px;}
 .t-title{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--navy3);}
 .score-row{margin-bottom:9px;}
@@ -86,160 +61,151 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
 .score-track{background:var(--navy3);border-radius:4px;height:7px;overflow:hidden;}
 .score-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--amber));}
 .pill{display:inline-block;font-size:0.67rem;padding:3px 8px;border-radius:10px;margin:2px;font-weight:500;}
-.pp{background:#2A1F4A;color:#A78BFA;} .pb{background:#1A2F3A;color:#5BC4E8;}
-.pr{background:#3A1A1A;color:#E05252;} .pg{background:#1A3A2A;color:#52C78A;}
-.pa{background:#3A2A1A;color:#E8A052;} .po{background:#2A2A1A;color:#C9C952;}
+.pp{background:#2A1F4A;color:#A78BFA;}.pb{background:#1A2F3A;color:#5BC4E8;}
+.pr{background:#3A1A1A;color:#E05252;}.pg{background:#1A3A2A;color:#52C78A;}
+.pa{background:#3A2A1A;color:#E8A052;}.po{background:#2A2A1A;color:#C9C952;}
 .cta-item{background:var(--navy3);border-radius:8px;padding:9px 12px;margin-bottom:7px;font-size:0.77rem;border-left:3px solid var(--amber);}
-.hook-box{background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:11px;font-size:0.77rem;line-height:1.6;font-style:italic;color:var(--text);margin-bottom:10px;}
-.compare-grid{display:grid;gap:10px;}
 .compare-col{background:var(--navy3);border-radius:8px;padding:12px;}
-.cc-title{font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:1px;color:var(--amber);margin-bottom:8px;}
-.winner{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--navy);font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;margin-left:5px;}
+.winner{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--navy);font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:10px;text-transform:uppercase;margin-left:5px;}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
-.ctrl-group label{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:6px;}
-.section-title{font-size:0.73rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;}
 .channel-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;}
-.channel-row input{background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;}
+.channel-row input{background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;box-sizing:border-box;}
 .channel-row input:focus{border-color:var(--gold);}
-.channel-inputs{margin-bottom:0;}
-.api-setup{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:18px;margin-bottom:18px;}
-.api-setup label{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:7px;}
-.api-setup input{width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.84rem;outline:none;transition:border-color .2s;}
-.api-setup input:focus{border-color:var(--gold);}
-.channels-section{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:18px;margin-bottom:18px;}
+.veo-scene{background:var(--navy2);border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:12px;}
 </style>
 </head>
 <body>
-
 <header>
   <h1>DBH Channel Intelligence</h1>
-  <p>YouTube Competitor Analysis &amp; Transcript Analyzer</p>
+  <p>YouTube Analysis, Transcript Analyzer &amp; Veo Prompt Generator</p>
 </header>
 
-<!-- TAB NAV -->
 <div class="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('tab-channel',this)">📊 Channel Analysis</button>
-  <button class="tab-btn" onclick="switchTab('tab-transcript',this)">📝 Transcript Analyzer</button>
-  <button class="tab-btn" onclick="switchTab('tab-veo',this)">🎬 Veo Prompt Generator</button>
+  <button class="tab-btn active" onclick="switchTab('tab-channel',this)">CHANNEL ANALYSIS</button>
+  <button class="tab-btn" onclick="switchTab('tab-transcript',this)">TRANSCRIPT ANALYZER</button>
+  <button class="tab-btn" onclick="switchTab('tab-veo',this)">VEO PROMPTS</button>
 </div>
 
-<!-- ═══════════════════════════════════════════════════ TAB 1: CHANNEL ANALYSIS -->
+<!-- TAB 1: CHANNEL ANALYSIS -->
 <div id="tab-channel" class="tab-panel active">
-
-  <div class="api-setup">
-    <label>YouTube Data API v3 Key</label>
+  <div class="card">
+    <label class="lbl">YouTube Data API v3 Key</label>
     <input type="password" id="ytApiKey" placeholder="AIza...">
-    <p class="hint">Free key from <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> → Enable YouTube Data API v3 → Create credentials</p>
+    <p style="font-size:0.71rem;color:var(--muted);margin-top:5px;">Free key from <a href="https://console.cloud.google.com/" target="_blank" style="color:var(--amber);">Google Cloud Console</a> - Enable YouTube Data API v3 - Create credentials</p>
   </div>
-
-  <div class="channels-section">
-    <div class="section-title">Competitor Channels</div>
-    <div class="channel-inputs" id="channelInputs">
+  <div class="card">
+    <div style="font-size:0.73rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;">Competitor Channels</div>
+    <div id="channelInputs">
       <div class="channel-row">
         <input type="text" placeholder="Channel ID (UCxxxxxx)" class="ch-id">
         <input type="text" placeholder="Nickname (e.g. Bible Origins)" class="ch-name">
-        <button class="remove-btn" onclick="removeRow(this)">✕</button>
+        <button class="remove-btn" onclick="removeRow(this)">x</button>
       </div>
     </div>
     <button class="add-btn" onclick="addRow()">+ Add Channel</button>
   </div>
-
   <div class="controls">
-    <div class="ctrl-group">
-      <label>Videos per channel</label>
-      <select id="vidCount">
-        <option value="10">10 videos</option>
-        <option value="20" selected>20 videos</option>
-        <option value="30">30 videos</option>
-        <option value="50">50 videos</option>
-      </select>
+    <div><label class="lbl">Videos per channel</label>
+      <select id="vidCount"><option value="10">10 videos</option><option value="20" selected>20 videos</option><option value="30">30 videos</option><option value="50">50 videos</option></select>
     </div>
-    <div class="ctrl-group">
-      <label>Sort by</label>
-      <select id="sortOrder">
-        <option value="date">Most Recent</option>
-        <option value="viewCount">Most Viewed</option>
-      </select>
+    <div><label class="lbl">Sort by</label>
+      <select id="sortOrder"><option value="date">Most Recent</option><option value="viewCount">Most Viewed</option></select>
     </div>
   </div>
-
-  <button class="run-btn" id="runBtn" onclick="runAnalysis()">🔍 ANALYSE CHANNELS</button>
-
-  <div class="status-bar" id="statusBar">
-    <div class="spinner"></div>
-    <span id="statusText">Fetching channel data...</span>
-  </div>
-
+  <button class="run-btn" id="runBtn" onclick="runAnalysis()">ANALYSE CHANNELS</button>
+  <div class="status-bar" id="statusBar"><div class="spinner"></div><span id="statusText">Fetching...</span></div>
   <div id="errorBox"></div>
-
   <div id="results" style="display:none;">
-    <div class="results-hdr">📊 Channel Data</div>
+    <div class="results-hdr">Channel Data</div>
     <div id="channelCards"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:14px;">
-      <div class="results-hdr" style="margin-bottom:0;">🧠 AI Intelligence Report</div>
-      <button id="downloadBtn" onclick="downloadReport()" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:0.92rem;letter-spacing:1.5px;padding:8px 14px;cursor:pointer;visibility:hidden;">⬇ DOWNLOAD PDF</button>
+      <div class="results-hdr" style="margin-bottom:0;">AI Intelligence Report</div>
+      <button id="downloadBtn" onclick="downloadReport()" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1.5px;padding:8px 14px;cursor:pointer;visibility:hidden;">DOWNLOAD PDF</button>
     </div>
     <div id="intelReport"></div>
   </div>
-
 </div>
 
-<!-- ═══════════════════════════════════════════════════ TAB 2: TRANSCRIPT ANALYZER -->
+<!-- TAB 2: TRANSCRIPT ANALYZER -->
 <div id="tab-transcript" class="tab-panel">
-
-  <div class="card" style="margin-bottom:14px;">
-    <p style="font-size:0.8rem;color:var(--muted);line-height:1.6;">
-      Add up to 3 video transcripts — paste text manually or auto-fetch from a YouTube URL. The tool analyses each individually then compares them side by side.
-    </p>
-  </div>
-
-  <!-- Transcript Slots -->
+  <div class="card"><p style="font-size:0.8rem;color:var(--muted);line-height:1.6;">Add up to 3 video transcripts. Extract from YouTube URL or paste manually. Analyses each individually then compares side by side.</p></div>
   <div id="tSlots">
-    <div class="t-slot" data-slot="0">
+    <div class="t-slot">
       <div class="t-slot-hdr">
-        <span class="t-slot-label">📹 Video 1</span>
-        <button class="icon-btn" onclick="fetchTranscript(0)">⬇ Extract Transcript</button>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 1</span>
+        <button class="icon-btn" onclick="fetchTranscript(0)">Extract Transcript</button>
       </div>
-      <input type="text" class="t-title-input" placeholder="Video title (e.g. The FORBIDDEN Verse in Genesis...)" style="width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;margin-bottom:8px;">
-      <input type="text" class="t-url-input" placeholder="YouTube URL (optional — for auto-fetch)" style="width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;margin-bottom:8px;">
-      <textarea class="txt t-text-input" placeholder="Paste transcript text here... or click ⬇ Extract Transcript above"></textarea>
+      <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
+      <input type="text" class="t-url-input" placeholder="YouTube URL (for auto-extract)" style="margin-bottom:8px;">
+      <textarea class="txt t-text-input" placeholder="Paste transcript here or use Extract above..."></textarea>
     </div>
-
-    <div class="t-slot" data-slot="1">
+    <div class="t-slot">
       <div class="t-slot-hdr">
-        <span class="t-slot-label">📹 Video 2</span>
-        <button class="icon-btn" onclick="fetchTranscript(1)">⬇ Extract Transcript</button>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 2</span>
+        <button class="icon-btn" onclick="fetchTranscript(1)">Extract Transcript</button>
       </div>
-      <input type="text" class="t-title-input" placeholder="Video title..." style="width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;margin-bottom:8px;">
-      <input type="text" class="t-url-input" placeholder="YouTube URL (optional)" style="width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;margin-bottom:8px;">
-      <textarea class="txt t-text-input" placeholder="Paste transcript text here..."></textarea>
+      <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
+      <input type="text" class="t-url-input" placeholder="YouTube URL (for auto-extract)" style="margin-bottom:8px;">
+      <textarea class="txt t-text-input" placeholder="Paste transcript here..."></textarea>
     </div>
-
-    <div class="t-slot" data-slot="2">
+    <div class="t-slot">
       <div class="t-slot-hdr">
-        <span class="t-slot-label">📹 Video 3</span>
-        <button class="icon-btn" onclick="fetchTranscript(2)">⬇ Extract Transcript</button>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 3</span>
+        <button class="icon-btn" onclick="fetchTranscript(2)">Extract Transcript</button>
       </div>
-      <input type="text" class="t-title-input" placeholder="Video title..." style="width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;margin-bottom:8px;">
-      <input type="text" class="t-url-input" placeholder="YouTube URL (optional)" style="width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;margin-bottom:8px;">
-      <textarea class="txt t-text-input" placeholder="Paste transcript text here..."></textarea>
+      <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
+      <input type="text" class="t-url-input" placeholder="YouTube URL (for auto-extract)" style="margin-bottom:8px;">
+      <textarea class="txt t-text-input" placeholder="Paste transcript here..."></textarea>
     </div>
   </div>
-
-  <button class="run-btn" id="tRunBtn" onclick="runTranscriptAnalysis()">🔬 ANALYSE TRANSCRIPTS</button>
-
-  <div class="status-bar" id="tStatusBar">
-    <div class="spinner"></div>
-    <span id="tStatusText">Analysing transcripts...</span>
-  </div>
-
+  <button class="run-btn" id="tRunBtn" onclick="runTranscriptAnalysis()">ANALYSE TRANSCRIPTS</button>
+  <div class="status-bar" id="tStatusBar"><div class="spinner"></div><span id="tStatusText">Analysing...</span></div>
   <div id="tErrorBox"></div>
   <div id="tResults"></div>
+</div>
 
+<!-- TAB 3: VEO PROMPT GENERATOR -->
+<div id="tab-veo" class="tab-panel">
+  <div class="card"><p style="font-size:0.8rem;color:var(--muted);line-height:1.6;">Paste your DBH script below. The AI breaks it into scenes and generates an optimised Google Flow / Veo prompt for every scene.</p></div>
+  <div class="card">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div><label class="lbl">Video Topic / Title</label><input type="text" id="veoTitle" placeholder="e.g. The Lost Tomb of Jesus"></div>
+      <div><label class="lbl">Scene Duration</label>
+        <select id="veoDuration"><option value="5">5 seconds</option><option value="8" selected>8 seconds</option><option value="10">10 seconds</option></select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div><label class="lbl">Visual Style</label>
+        <select id="veoStyle">
+          <option value="oil painting cinematic" selected>Oil Painting Cinematic</option>
+          <option value="cinematic photorealistic">Cinematic Photorealistic</option>
+          <option value="documentary style">Documentary Style</option>
+          <option value="epic historical drama">Epic Historical Drama</option>
+        </select>
+      </div>
+      <div><label class="lbl">Aspect Ratio</label>
+        <select id="veoRatio"><option value="16:9" selected>16:9 YouTube</option><option value="9:16">9:16 Shorts</option></select>
+      </div>
+    </div>
+    <div><label class="lbl">Character Reference</label>
+      <input type="text" id="veoCharRef" value="Levantine male figure, olive skin, dark curly hair, dark eyes, weathered face, first-century wool robe, sandals">
+    </div>
+  </div>
+  <div class="card">
+    <label class="lbl">Paste Your Script</label>
+    <textarea class="txt" id="veoScript" style="min-height:160px;" placeholder="Paste your full DBH script here..."></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button onclick="generateVeoPrompts()" id="veoGenBtn" class="run-btn" style="margin-bottom:0;flex:1;">GENERATE VEO PROMPTS</button>
+      <button onclick="copyAllPrompts()" id="veoCopyAllBtn" style="display:none;background:var(--navy3);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1.5px;padding:13px 14px;cursor:pointer;white-space:nowrap;">COPY ALL</button>
+    </div>
+  </div>
+  <div class="status-bar" id="veoStatusBar"><div class="spinner"></div><span id="veoStatusText">Generating...</span></div>
+  <div id="veoErrorBox"></div>
+  <div id="veoResults"></div>
 </div>
 
 <script>
-// ─── Tab switching ─────────────────────────────────────────────────────────
+// TAB SWITCHING
 function switchTab(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -247,977 +213,380 @@ function switchTab(id, btn) {
   btn.classList.add('active');
 }
 
-// ─── Channel Analysis helpers ──────────────────────────────────────────────
+// UTILITIES
 let channelData = [];
-
-function fv(n) {
-  if (n >= 1000000) return (n/1000000).toFixed(1)+'M';
-  if (n >= 1000) return (n/1000).toFixed(1)+'K';
-  return String(n);
-}
-
-function detectTags(title) {
-  const tags = [];
-  if (/[A-Z]{3,}/.test(title)) tags.push({cls:'tag-caps',label:'ALLCAPS'});
-  if (title.includes(':')) tags.push({cls:'tag-colon',label:'Colon'});
-  if (title.includes('?')) tags.push({cls:'tag-question',label:'Question'});
-  if (/\d+/.test(title)) tags.push({cls:'tag-number',label:'Number'});
-  if (/forbidden|secret|hidden|lost|dark|mystery|reveal|truth/i.test(title)) tags.push({cls:'tag-mystery',label:'Mystery'});
-  if (title.includes('…')||title.endsWith('...')) tags.push({cls:'tag-ellipsis',label:'Ellipsis'});
+function fv(n) { if(n>=1000000) return (n/1000000).toFixed(1)+'M'; if(n>=1000) return (n/1000).toFixed(1)+'K'; return String(n); }
+function detectTags(t) {
+  const tags=[];
+  if(/[A-Z]{3,}/.test(t)) tags.push({cls:'tag-caps',label:'ALLCAPS'});
+  if(t.includes(':')) tags.push({cls:'tag-colon',label:'Colon'});
+  if(t.includes('?')) tags.push({cls:'tag-question',label:'Question'});
+  if(/\d+/.test(t)) tags.push({cls:'tag-number',label:'Number'});
+  if(/forbidden|secret|hidden|lost|dark|mystery|reveal|truth/i.test(t)) tags.push({cls:'tag-mystery',label:'Mystery'});
   return tags;
 }
 
+// CHANNEL ANALYSIS
 function addRow() {
-  const row = document.createElement('div');
-  row.className = 'channel-row';
-  row.innerHTML = `<input type="text" placeholder="Channel ID (UCxxxxxx)" class="ch-id"><input type="text" placeholder="Nickname" class="ch-name"><button class="remove-btn" onclick="removeRow(this)">✕</button>`;
-  document.getElementById('channelInputs').appendChild(row);
+  const r=document.createElement('div'); r.className='channel-row';
+  r.innerHTML='<input type="text" placeholder="Channel ID" class="ch-id"><input type="text" placeholder="Nickname" class="ch-name"><button class="remove-btn" onclick="removeRow(this)">x</button>';
+  document.getElementById('channelInputs').appendChild(r);
 }
+function removeRow(btn) { if(document.querySelectorAll('.channel-row').length>1) btn.parentElement.remove(); }
+function showError(msg) { document.getElementById('errorBox').innerHTML='<div class="err">'+msg+'</div>'; }
+function clearError() { document.getElementById('errorBox').innerHTML=''; }
 
-function removeRow(btn) {
-  if (document.querySelectorAll('.channel-row').length > 1) btn.parentElement.remove();
-}
-
-function setStatus(msg, show=true) {
-  const bar = document.getElementById('statusBar');
-  bar.style.display = show ? 'flex' : 'none';
-  document.getElementById('statusText').textContent = msg;
-}
-
-function showError(msg) { document.getElementById('errorBox').innerHTML = `<div class="err">⚠️ ${msg}</div>`; }
-function clearError() { document.getElementById('errorBox').innerHTML = ''; }
-
-async function fetchChannelVideos(apiKey, channelId, nickname, maxResults, order) {
-  const base = 'https://www.googleapis.com/youtube/v3';
-  const chRes = await fetch(`${base}/channels?part=contentDetails,snippet,statistics&id=${channelId}&key=${apiKey}`);
-  const chData = await chRes.json();
-  if (!chData.items?.length) throw new Error(`Channel not found: ${channelId}`);
-  const ch = chData.items[0];
-  const uploadsId = ch.contentDetails.relatedPlaylists.uploads;
-  const chTitle = nickname || ch.snippet.title;
-  const subCount = parseInt(ch.statistics.subscriberCount||0);
-  const plRes = await fetch(`${base}/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=${maxResults}&key=${apiKey}`);
-  const plData = await plRes.json();
-  if (!plData.items) throw new Error(`Could not fetch videos for ${chTitle}`);
-  const videoIds = plData.items.map(i=>i.snippet.resourceId.videoId).join(',');
-  const vRes = await fetch(`${base}/videos?part=snippet,statistics,contentDetails&id=${videoIds}&key=${apiKey}`);
-  const vData = await vRes.json();
-  let videos = (vData.items||[]).map(v=>({
-    id:v.id, title:v.snippet.title,
-    thumbnail:v.snippet.thumbnails?.mqdefault?.url||v.snippet.thumbnails?.default?.url,
-    views:parseInt(v.statistics.viewCount||0),
-    publishedAt:v.snippet.publishedAt,
-  }));
-  if (order==='viewCount') videos.sort((a,b)=>b.views-a.views);
-  return {channelId, chTitle, subCount, videos};
+async function fetchChannelVideos(apiKey,channelId,nickname,maxResults,order) {
+  const base='https://www.googleapis.com/youtube/v3';
+  const ch=await(await fetch(base+'/channels?part=contentDetails,snippet,statistics&id='+channelId+'&key='+apiKey)).json();
+  if(!ch.items?.length) throw new Error('Channel not found: '+channelId);
+  const c=ch.items[0], uploadsId=c.contentDetails.relatedPlaylists.uploads;
+  const chTitle=nickname||c.snippet.title, subCount=parseInt(c.statistics.subscriberCount||0);
+  const pl=await(await fetch(base+'/playlistItems?part=snippet&playlistId='+uploadsId+'&maxResults='+maxResults+'&key='+apiKey)).json();
+  if(!pl.items) throw new Error('Could not fetch videos for '+chTitle);
+  const videoIds=pl.items.map(i=>i.snippet.resourceId.videoId).join(',');
+  const vd=await(await fetch(base+'/videos?part=snippet,statistics,contentDetails&id='+videoIds+'&key='+apiKey)).json();
+  let videos=(vd.items||[]).map(v=>({id:v.id,title:v.snippet.title,thumbnail:v.snippet.thumbnails?.mqdefault?.url||v.snippet.thumbnails?.default?.url,views:parseInt(v.statistics.viewCount||0)}));
+  if(order==='viewCount') videos.sort((a,b)=>b.views-a.views);
+  return {channelId,chTitle,subCount,videos};
 }
 
 function renderChannelCard(data) {
-  document.getElementById('results').style.display = 'block';
-  const card = document.createElement('div');
-  card.className = 'ch-card';
-  const videoRows = data.videos.slice(0,10).map(v=>{
-    const tags = detectTags(v.title);
-    const tagHTML = tags.map(t=>`<span class="tag ${t.cls}">${t.label}</span>`).join('');
-    return `<div class="video-row"><div class="thumb-wrap"><img src="${v.thumbnail}" alt="" loading="lazy"><span class="view-badge">${fv(v.views)}</span></div><div><div class="video-title">${v.title}</div><div class="video-tags">${tagHTML}</div></div></div>`;
+  document.getElementById('results').style.display='block';
+  const card=document.createElement('div'); card.className='ch-card';
+  const rows=data.videos.slice(0,10).map(v=>{
+    const tags=detectTags(v.title).map(t=>'<span class="tag '+t.cls+'">'+t.label+'</span>').join('');
+    return '<div class="video-row"><div class="thumb-wrap"><img src="'+v.thumbnail+'" loading="lazy"><span class="view-badge">'+fv(v.views)+'</span></div><div><div style="font-size:0.77rem;font-weight:500;line-height:1.4;margin-bottom:4px;">'+v.title+'</div><div>'+tags+'</div></div></div>';
   }).join('');
-  card.innerHTML = `<div class="ch-card-hdr"><span class="ch-name-lbl">${data.chTitle}</span><span class="ch-stats">${fv(data.subCount)} subs · ${data.videos.length} videos</span></div><div class="videos-grid">${videoRows}</div>`;
+  card.innerHTML='<div class="ch-card-hdr"><span style="font-weight:600;color:var(--amber);">'+data.chTitle+'</span><span style="font-size:0.71rem;color:var(--muted);">'+fv(data.subCount)+' subs</span></div><div style="padding:13px;">'+rows+'</div>';
   document.getElementById('channelCards').appendChild(card);
 }
 
 async function runAnalysis() {
   clearError();
-  const apiKey = document.getElementById('ytApiKey').value.trim();
-  if (!apiKey) { showError('Please enter your YouTube API key.'); return; }
-  const rows = document.querySelectorAll('.channel-row');
-  const channels = [];
-  rows.forEach(r=>{
-    const id = r.querySelector('.ch-id').value.trim();
-    const name = r.querySelector('.ch-name').value.trim();
-    if (id) channels.push({id,name});
-  });
-  if (!channels.length) { showError('Please add at least one channel ID.'); return; }
-  const maxResults = parseInt(document.getElementById('vidCount').value);
-  const order = document.getElementById('sortOrder').value;
-  document.getElementById('runBtn').disabled = true;
-  document.getElementById('downloadBtn').style.visibility = 'hidden';
-  setStatus('Fetching channel data...');
-  document.getElementById('results').style.display = 'none';
-  document.getElementById('channelCards').innerHTML = '';
-  document.getElementById('intelReport').innerHTML = '';
-  channelData = [];
+  const apiKey=document.getElementById('ytApiKey').value.trim();
+  if(!apiKey){showError('Please enter your YouTube API key.');return;}
+  const rows=document.querySelectorAll('.channel-row');
+  const channels=[];
+  rows.forEach(r=>{const id=r.querySelector('.ch-id').value.trim(),name=r.querySelector('.ch-name').value.trim();if(id)channels.push({id,name});});
+  if(!channels.length){showError('Please add at least one channel ID.');return;}
+  const maxResults=parseInt(document.getElementById('vidCount').value);
+  const order=document.getElementById('sortOrder').value;
+  document.getElementById('runBtn').disabled=true;
+  document.getElementById('downloadBtn').style.visibility='hidden';
+  const sb=document.getElementById('statusBar'); sb.style.display='flex';
+  document.getElementById('results').style.display='none';
+  document.getElementById('channelCards').innerHTML='';
+  document.getElementById('intelReport').innerHTML='';
+  channelData=[];
   try {
-    for (let i=0; i<channels.length; i++) {
-      setStatus(`Fetching ${channels[i].name||channels[i].id} (${i+1}/${channels.length})...`);
-      const data = await fetchChannelVideos(apiKey,channels[i].id,channels[i].name,maxResults,order);
-      channelData.push(data);
-      renderChannelCard(data);
+    for(let i=0;i<channels.length;i++){
+      document.getElementById('statusText').textContent='Fetching '+(channels[i].name||channels[i].id)+' ('+(i+1)+'/'+channels.length+')...';
+      const data=await fetchChannelVideos(apiKey,channels[i].id,channels[i].name,maxResults,order);
+      channelData.push(data); renderChannelCard(data);
     }
-    document.getElementById('results').style.display = 'block';
-    setStatus('Running intelligence analysis...');
+    document.getElementById('results').style.display='block';
+    document.getElementById('statusText').textContent='Running analysis...';
     runIntelAnalysis();
-  } catch(err) {
-    showError(err.message||'Something went wrong. Check your API key and channel IDs.');
-  } finally {
-    document.getElementById('runBtn').disabled = false;
-    setStatus('',false);
-  }
+  } catch(err){showError(err.message||'Something went wrong.');}
+  finally{document.getElementById('runBtn').disabled=false;sb.style.display='none';}
 }
 
 function runIntelAnalysis() {
-  const allVideos = channelData.flatMap(ch=>ch.videos.map(v=>({...v,channel:ch.chTitle})));
-  const allTitles = allVideos.map(v=>v.title);
-  const total = allTitles.length;
-  const stats = {
-    caps:allTitles.filter(t=>/[A-Z]{3,}/.test(t)).length,
-    colon:allTitles.filter(t=>t.includes(':')||t.includes('|')).length,
-    question:allTitles.filter(t=>t.includes('?')).length,
-    number:allTitles.filter(t=>/\d+/.test(t)).length,
-    mystery:allTitles.filter(t=>/forbidden|secret|hidden|lost|dark|mystery|reveal|truth/i.test(t)).length,
-    thePrefix:allTitles.filter(t=>/^the /i.test(t)).length,
-  };
-  const sorted = [...allVideos].sort((a,b)=>b.views-a.views);
-  const topQ = sorted.slice(0,Math.max(1,Math.floor(sorted.length/4)));
-  const top5 = sorted.slice(0,5);
-  const topCaps = topQ.filter(v=>/[A-Z]{3,}/.test(v.title)).length;
-  const topColon = topQ.filter(v=>v.title.includes(':')||v.title.includes('|')).length;
-  const topMystery = topQ.filter(v=>/forbidden|secret|hidden|lost|truth|reveal/i.test(v.title)).length;
-  const avgLen = Math.round(allTitles.reduce((s,t)=>s+t.length,0)/total);
-  const topAvgLen = Math.round(topQ.reduce((s,v)=>s+v.title.length,0)/topQ.length);
-  const topicWords = ['nephilim','giant','flood','jesus','mary','gospel','forbidden','ark','temple','solomon','angel','devil','apocrypha','lost','tomb','resurrection','heaven','hell','judas','revelation','genesis','exodus','prophet','secret','hidden'];
-  const topicMap = {};
-  allVideos.forEach(v=>topicWords.forEach(w=>{
-    if(v.title.toLowerCase().includes(w)){
-      if(!topicMap[w]) topicMap[w]={count:0,totalViews:0};
-      topicMap[w].count++; topicMap[w].totalViews+=v.views;
-    }
-  }));
-  const topTopics = Object.entries(topicMap).filter(([,v])=>v.count>=1).sort((a,b)=>b[1].totalViews-a[1].totalViews).slice(0,8);
-  const templates = [
-    {t:'The [KEYWORD] [Topic]: [Payoff Clause]',e:'The FORBIDDEN Secret About Mary Magdalene: What They Never Taught You',n:'ALLCAPS keyword + colon payoff — dominant in top performers'},
-    {t:'[ALLCAPS HOOK]: How [Subject] [Action] [Outcome]',e:'THEY NEVER TOLD YOU: How Jesus Funded His Ministry Through These Women',n:'Declaration hook + colon + revelation — drives high CTR'},
-    {t:'The [Number] [Mystery Words] of [Biblical Figure/Event]',e:'The 7 Hidden Truths About the Lost Gospel of Judas',n:'Number + mystery combo — proven pattern across the niche'},
-  ];
-  const gaps = [
-    'Women of the Bible deep dives — underrepresented despite high search volume',
-    'Ethiopian/African Bible traditions — 1M+ views on trending channel, almost nobody owns this',
-    "Archaeological evidence videos — 'proof' angle drives high trust clicks",
-    "First-person narrative style ('What Jesus actually said about...') — almost absent in niche",
-    'Short mystery drops under 15 mins — most channels run 20-40 mins, gap for mobile viewers',
-  ];
-
-  const statBoxes = (items) => items.map(([v,l])=>`<div class="pstat"><div class="val">${v}</div><div class="lbl2">${l}</div></div>`).join('');
-  const top5HTML = top5.map((v,i)=>`<div style="padding:7px 0;border-bottom:1px solid var(--navy3);font-size:0.77rem;"><span style="color:var(--amber);font-weight:600;">#${i+1}</span> <span style="color:var(--muted);font-size:0.69rem;">${v.channel}</span><div style="margin-top:2px;">${v.title}</div><div style="color:var(--green);font-size:0.69rem;margin-top:1px;">${fv(v.views)} views</div></div>`).join('');
-  const topicsHTML = topTopics.map(([w,d])=>`<div class="pstat"><div class="val">${fv(d.totalViews)}</div><div class="lbl2">${w.toUpperCase()} (${d.count})</div></div>`).join('');
-  const templatesHTML = templates.map((t,i)=>`<div style="background:var(--navy3);border-radius:8px;padding:11px;margin-bottom:9px;"><div style="color:var(--amber);font-size:0.69rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Template ${i+1}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1px;color:var(--gold);margin-bottom:3px;">${t.t}</div><div style="font-size:0.76rem;font-style:italic;margin-bottom:5px;">"${t.e}"</div><div style="font-size:0.69rem;color:var(--muted);">${t.n}</div></div>`).join('');
-  const gapsHTML = gaps.map(g=>`<div style="padding:6px 0;border-bottom:1px solid var(--navy3);font-size:0.77rem;">✦ ${g}</div>`).join('');
-
-  document.getElementById('intelReport').innerHTML = `
-    <div class="intel-section">
-      <div class="intel-title">📈 Pattern Statistics (${total} videos)</div>
-      <div class="pattern-grid">
-        ${statBoxes([[`${Math.round(stats.caps/total*100)}%`,'ALLCAPS'],[`${Math.round(stats.colon/total*100)}%`,'Colon/Pipe'],[`${Math.round(stats.question/total*100)}%`,'Questions'],[`${Math.round(stats.mystery/total*100)}%`,'Mystery Words'],[`${Math.round(stats.number/total*100)}%`,'Has Number'],[`${Math.round(stats.thePrefix/total*100)}%`,'Starts "The"'],[avgLen,'Avg Chars'],[topAvgLen,'Top Vids Chars']])}
-      </div>
-      <div style="font-size:0.73rem;color:var(--muted);padding:8px 10px;background:var(--navy);border-radius:7px;">⚡ Top quarter: <strong style="color:var(--amber);">${Math.round(topCaps/topQ.length*100)}%</strong> ALLCAPS · <strong style="color:var(--amber);">${Math.round(topColon/topQ.length*100)}%</strong> colon/pipe · <strong style="color:var(--amber);">${Math.round(topMystery/topQ.length*100)}%</strong> mystery words</div>
+  const allV=channelData.flatMap(ch=>ch.videos.map(v=>({...v,channel:ch.chTitle})));
+  const allT=allV.map(v=>v.title), total=allT.length;
+  const stats={caps:allT.filter(t=>/[A-Z]{3,}/.test(t)).length,colon:allT.filter(t=>t.includes(':')||t.includes('|')).length,question:allT.filter(t=>t.includes('?')).length,mystery:allT.filter(t=>/forbidden|secret|hidden|lost|mystery|reveal|truth/i.test(t)).length,number:allT.filter(t=>/\d+/.test(t)).length};
+  const sorted=[...allV].sort((a,b)=>b.views-a.views);
+  const topQ=sorted.slice(0,Math.max(1,Math.floor(sorted.length/4))), top5=sorted.slice(0,5);
+  const topCaps=topQ.filter(v=>/[A-Z]{3,}/.test(v.title)).length;
+  const topColon=topQ.filter(v=>v.title.includes(':')||v.title.includes('|')).length;
+  const topMystery=topQ.filter(v=>/forbidden|secret|hidden|lost|truth|reveal/i.test(v.title)).length;
+  const avgLen=Math.round(allT.reduce((s,t)=>s+t.length,0)/total);
+  const topAvgLen=Math.round(topQ.reduce((s,v)=>s+v.title.length,0)/topQ.length);
+  const topicWords=['nephilim','giant','flood','jesus','mary','gospel','forbidden','ark','temple','solomon','angel','devil','lost','tomb','resurrection','heaven','hell','judas','revelation','genesis','secret','hidden'];
+  const tm={};
+  allV.forEach(v=>topicWords.forEach(w=>{if(v.title.toLowerCase().includes(w)){if(!tm[w])tm[w]={count:0,totalViews:0};tm[w].count++;tm[w].totalViews+=v.views;}}));
+  const topTopics=Object.entries(tm).sort((a,b)=>b[1].totalViews-a[1].totalViews).slice(0,6);
+  const sb=(v,l)=>'<div class="pstat"><div class="val">'+v+'</div><div class="lbl2">'+l+'</div></div>';
+  const top5HTML=top5.map((v,i)=>'<div style="padding:7px 0;border-bottom:1px solid var(--navy3);font-size:0.77rem;"><span style="color:var(--amber);font-weight:600;">#'+(i+1)+'</span> <span style="color:var(--muted);font-size:0.69rem;">'+v.channel+'</span><div style="margin-top:2px;">'+v.title+'</div><div style="color:var(--green);font-size:0.69rem;">'+fv(v.views)+' views</div></div>').join('');
+  const topicsHTML=topTopics.map(([w,d])=>sb(fv(d.totalViews),w.toUpperCase()+' ('+d.count+')')).join('');
+  document.getElementById('intelReport').innerHTML=`
+    <div class="intel-section"><div class="intel-title">Pattern Statistics (${total} videos)</div>
+      <div class="pattern-grid">${sb(Math.round(stats.caps/total*100)+'%','ALLCAPS')+sb(Math.round(stats.colon/total*100)+'%','Colon/Pipe')+sb(Math.round(stats.question/total*100)+'%','Questions')+sb(Math.round(stats.mystery/total*100)+'%','Mystery Words')+sb(Math.round(stats.number/total*100)+'%','Has Number')+sb(avgLen,'Avg Chars')}</div>
+      <div style="font-size:0.73rem;color:var(--muted);padding:8px 10px;background:var(--navy);border-radius:7px;">Top quarter: <strong style="color:var(--amber);">${Math.round(topCaps/topQ.length*100)}%</strong> ALLCAPS, <strong style="color:var(--amber);">${Math.round(topColon/topQ.length*100)}%</strong> colon/pipe, <strong style="color:var(--amber);">${Math.round(topMystery/topQ.length*100)}%</strong> mystery words</div>
     </div>
-    <div class="intel-section"><div class="intel-title">🏆 Top 5 Performing Videos</div>${top5HTML}</div>
-    <div class="intel-section"><div class="intel-title">🔥 Topics by Total Views</div><div class="pattern-grid">${topicsHTML}</div></div>
-    <div class="intel-section"><div class="intel-title">🎯 3 Winning Title Templates for DBH</div>${templatesHTML}</div>
-    <div class="intel-section"><div class="intel-title">💡 Gaps DBH Can Own</div>${gapsHTML}</div>
-    <div class="intel-section">
-      <div class="intel-title">📋 DBH Action Plan</div>
+    <div class="intel-section"><div class="intel-title">Top 5 Performing Videos</div>${top5HTML}</div>
+    <div class="intel-section"><div class="intel-title">Topics by Total Views</div><div class="pattern-grid">${topicsHTML}</div></div>
+    <div class="intel-section"><div class="intel-title">DBH Action Plan</div>
       <div style="font-size:0.81rem;line-height:1.95;">
-        ${[`Lead every title with ALLCAPS hook — top performers do this ${Math.round(topCaps/topQ.length*100)}% of the time`,
-           'Use colon or pipe as your separator — splits hook from payoff cleanly',
-           'Include at least one mystery/truth word — forbidden, hidden, secret, reveal, truth',
-           `Target title length around ${topAvgLen} characters — that's what top videos average`,
-           'Nephilim, Flood, Gospel and Temple are the highest view-generating topics',
-           'African/Ethiopian Bible angle — almost no one owns this, massive search demand'
-        ].map((item,i)=>`<div><strong style="color:var(--amber);">${i+1}.</strong> ${item}</div>`).join('')}
+        <div><strong style="color:var(--amber);">1.</strong> Lead every title with ALLCAPS hook</div>
+        <div><strong style="color:var(--amber);">2.</strong> Use colon or pipe as separator</div>
+        <div><strong style="color:var(--amber);">3.</strong> Include mystery/truth word: forbidden, hidden, secret, reveal</div>
+        <div><strong style="color:var(--amber);">4.</strong> Target title length ~${topAvgLen} characters</div>
+        <div><strong style="color:var(--amber);">5.</strong> Nephilim, Flood, Gospel and Temple drive highest views</div>
+        <div><strong style="color:var(--amber);">6.</strong> Ethiopian/African Bible angle - almost no one owns this</div>
       </div>
     </div>`;
-
-  const btn = document.getElementById('downloadBtn');
-  btn.style.visibility = 'visible';
-  btn.style.display = 'inline-block';
+  const btn=document.getElementById('downloadBtn');
+  btn.style.visibility='visible'; btn.style.display='inline-block';
 }
 
-// ─── PDF Download ──────────────────────────────────────────────────────────
+// PDF DOWNLOAD
 function downloadReport() {
-  const reportEl = document.getElementById('intelReport');
-  const date = new Date().toLocaleDateString('en-GB');
-  const channels = channelData.map(c=>c.chTitle).join(', ');
-  const btn = document.getElementById('downloadBtn');
-  const orig = btn.innerText;
-  btn.innerText = '⏳ GENERATING...';
-  btn.disabled = true;
-  const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'position:fixed;top:-9999px;left:0;width:750px;background:#0D1B2A;color:#E8E8E8;font-family:Arial,sans-serif;padding:40px;box-sizing:border-box;';
-  wrapper.innerHTML = `<div style="font-size:26px;font-weight:900;letter-spacing:3px;color:#C9A84C;margin-bottom:4px;">DBH CHANNEL INTELLIGENCE REPORT</div><div style="color:#8A9BB0;font-size:11px;margin-bottom:22px;text-transform:uppercase;letter-spacing:1px;">Generated: ${date} | Channels: ${channels}</div>`;
-  const clone = reportEl.cloneNode(true);
+  const reportEl=document.getElementById('intelReport');
+  const date=new Date().toLocaleDateString('en-GB');
+  const channels=channelData.map(c=>c.chTitle).join(', ');
+  const btn=document.getElementById('downloadBtn');
+  const orig=btn.innerText; btn.innerText='GENERATING...'; btn.disabled=true;
+  const wrapper=document.createElement('div');
+  wrapper.style.cssText='position:fixed;top:-9999px;left:0;width:750px;background:#0D1B2A;color:#E8E8E8;font-family:Arial,sans-serif;padding:40px;box-sizing:border-box;';
+  wrapper.innerHTML='<div style="font-size:26px;font-weight:900;letter-spacing:3px;color:#C9A84C;margin-bottom:4px;">DBH CHANNEL INTELLIGENCE REPORT</div><div style="color:#8A9BB0;font-size:11px;margin-bottom:22px;text-transform:uppercase;">Generated: '+date+' | Channels: '+channels+'</div>';
+  const clone=reportEl.cloneNode(true);
   clone.querySelectorAll('.intel-section').forEach(el=>{el.style.background='#152235';el.style.border='1px solid #1E2F45';el.style.borderRadius='10px';el.style.padding='14px';el.style.marginBottom='12px';});
   clone.querySelectorAll('.intel-title').forEach(el=>{el.style.color='#C9A84C';el.style.fontWeight='900';el.style.fontSize='12px';el.style.textTransform='uppercase';el.style.marginBottom='10px';el.style.paddingBottom='7px';el.style.borderBottom='1px solid #1E2F45';});
-  clone.querySelectorAll('.pattern-grid').forEach(el=>{el.style.display='grid';el.style.gridTemplateColumns='repeat(4,1fr)';el.style.gap='7px';el.style.marginBottom='9px';});
+  clone.querySelectorAll('.pattern-grid').forEach(el=>{el.style.display='grid';el.style.gridTemplateColumns='repeat(3,1fr)';el.style.gap='7px';el.style.marginBottom='9px';});
   clone.querySelectorAll('.pstat').forEach(el=>{el.style.background='#1E2F45';el.style.borderRadius='6px';el.style.padding='9px';el.style.textAlign='center';});
   clone.querySelectorAll('.val').forEach(el=>{el.style.color='#E8B84B';el.style.fontSize='20px';el.style.fontWeight='900';});
   clone.querySelectorAll('.lbl2').forEach(el=>{el.style.color='#8A9BB0';el.style.fontSize='9px';el.style.textTransform='uppercase';el.style.marginTop='3px';});
-  wrapper.appendChild(clone);
-  document.body.appendChild(wrapper);
+  wrapper.appendChild(clone); document.body.appendChild(wrapper);
   html2canvas(wrapper,{scale:1.5,backgroundColor:'#0D1B2A',useCORS:true,logging:false,width:750}).then(canvas=>{
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    const pageW=pdf.internal.pageSize.getWidth(), pageH=pdf.internal.pageSize.getHeight(), margin=10;
-    const imgW=pageW-margin*2, imgH=(canvas.height*imgW)/canvas.width;
-    let yPos=margin, remainH=imgH, srcY=0;
+    const pageW=pdf.internal.pageSize.getWidth(),pageH=pdf.internal.pageSize.getHeight(),margin=10;
+    const imgW=pageW-margin*2,imgH=(canvas.height*imgW)/canvas.width;
+    let yPos=margin,remainH=imgH,srcY=0;
     while(remainH>0){
       const sliceH=Math.min(pageH-margin*2,remainH);
-      const sc=document.createElement('canvas');
-      sc.width=canvas.width; sc.height=(sliceH/imgW)*canvas.width;
-      const ctx=sc.getContext('2d');
-      ctx.drawImage(canvas,0,srcY*canvas.width/imgW,canvas.width,sc.height,0,0,canvas.width,sc.height);
+      const sc=document.createElement('canvas'); sc.width=canvas.width; sc.height=(sliceH/imgW)*canvas.width;
+      sc.getContext('2d').drawImage(canvas,0,srcY*canvas.width/imgW,canvas.width,sc.height,0,0,canvas.width,sc.height);
       pdf.addImage(sc.toDataURL('image/jpeg',0.92),'JPEG',margin,yPos,imgW,sliceH);
-      remainH-=sliceH; srcY+=sliceH;
-      if(remainH>0){pdf.addPage();yPos=margin;}
+      remainH-=sliceH; srcY+=sliceH; if(remainH>0){pdf.addPage();yPos=margin;}
     }
-    pdf.save(`DBH-Intelligence-Report-${date.replace(/\//g,'-')}.pdf`);
-    document.body.removeChild(wrapper);
-    btn.innerText=orig; btn.disabled=false;
-  }).catch(err=>{
-    document.body.removeChild(wrapper);
-    btn.innerText=orig; btn.disabled=false;
-    alert('PDF error: '+err.message);
-  });
+    pdf.save('DBH-Intelligence-Report-'+date.replace(/\//g,'-')+'.pdf');
+    document.body.removeChild(wrapper); btn.innerText=orig; btn.disabled=false;
+  }).catch(err=>{document.body.removeChild(wrapper);btn.innerText=orig;btn.disabled=false;alert('PDF error: '+err.message);});
 }
 
-// ─── TRANSCRIPT ANALYZER ──────────────────────────────────────────────────
-
+// TRANSCRIPT EXTRACTION
 async function fetchTranscript(slotIndex) {
-  const slots = document.querySelectorAll('.t-slot');
-  const slot = slots[slotIndex];
-  const url = slot.querySelector('.t-url-input').value.trim();
-  if (!url) { alert('Please enter a YouTube URL first.'); return; }
-
-  const match = url.match(/(?:v=|youtu\.be\/|shorts\/)([a-zA-Z0-9_-]{11})/);
-  if (!match) { alert('Invalid YouTube URL. Please check and try again.'); return; }
-  const videoId = match[1];
-
-  const btn = slot.querySelector('.icon-btn');
-  const textarea = slot.querySelector('.t-text-input');
-  const titleInput = slot.querySelector('.t-title-input');
-
-  btn.textContent = '⏳ Extracting...';
-  btn.disabled = true;
-  textarea.value = '';
-
+  const slots=document.querySelectorAll('.t-slot');
+  const slot=slots[slotIndex];
+  const url=slot.querySelector('.t-url-input').value.trim();
+  if(!url){alert('Please enter a YouTube URL first.');return;}
+  const match=url.match(/(?:v=|youtu\.be\/|shorts\/)([a-zA-Z0-9_-]{11})/);
+  if(!match){alert('Invalid YouTube URL.');return;}
+  const videoId=match[1];
+  const btn=slot.querySelector('.icon-btn');
+  const textarea=slot.querySelector('.t-text-input');
+  const titleInput=slot.querySelector('.t-title-input');
+  btn.textContent='Extracting...'; btn.disabled=true; textarea.value='';
   try {
-    const res = await fetch(`/api/transcript?videoId=${videoId}`);
-    const data = await res.json();
-
-    if (data.success) {
-      textarea.value = data.transcript;
-      if (data.title && !titleInput.value) titleInput.value = data.title;
-      if (data.isAutoGenerated) {
-        textarea.value += '\n\n[Note: This is an auto-generated transcript — may contain minor errors]';
-      }
-    } else if (data.error === 'NO_TRANSCRIPT' || data.error === 'NO_ENGLISH_TRANSCRIPT') {
-      if (data.title && !titleInput.value) titleInput.value = data.title;
-      textarea.value = getManualInstructions(data.message);
+    const res=await fetch('/api/transcript?videoId='+videoId);
+    const data=await res.json();
+    if(data.success){
+      textarea.value=data.transcript;
+      if(data.title&&!titleInput.value) titleInput.value=data.title;
     } else {
-      textarea.value = getManualInstructions(data.message || 'Unknown error');
+      textarea.value='Auto-extraction failed: '+(data.message||'Unknown error')+'\n\nTo get manually:\n1. Open YouTube video\n2. Click "..." below video\n3. Select "Open transcript"\n4. Toggle timestamps OFF\n5. Select all, copy, paste here';
     }
-  } catch (err) {
-    textarea.value = getManualInstructions('Network error: ' + err.message);
-  } finally {
-    btn.textContent = '⬇ Extract Transcript';
-    btn.disabled = false;
-  }
+  } catch(err){textarea.value='Network error. Please paste transcript manually.';}
+  btn.textContent='Extract Transcript'; btn.disabled=false;
 }
 
-function getManualInstructions(reason) {
-  return `❌ Auto-extraction failed: ${reason || 'Unknown error'}
-
-✅ GET TRANSCRIPT MANUALLY (takes 60 seconds):
-
-1. Open the YouTube video in your browser
-2. Click the "..." button below the video player
-3. Select "Open transcript"
-4. In the transcript panel — click ⋮ → "Toggle timestamps" OFF
-5. Click inside the transcript → Ctrl+A → Ctrl+C
-6. Paste here and click 🔬 ANALYSE TRANSCRIPTS`;
+// TRANSCRIPT ANALYSIS
+function analyseTranscript(text,title) {
+  const words=text.toLowerCase().split(/\s+/).filter(Boolean);
+  const wc=words.length;
+  const sentences=text.split(/[.!?]+/).filter(s=>s.trim().length>10);
+  const sc=sentences.length;
+  const hookText=text.split(/\s+/).slice(0,200).join(' ');
+  const hookQ=(hookText.match(/\?/g)||[]).length;
+  const POWER=['never','secret','hidden','forbidden','truth','reveal','shocking','ancient','mystery','proof','real','untold','buried','lost','evidence','finally','exposed'];
+  const foundPower=[...new Set(words.filter(w=>POWER.includes(w)))];
+  const EMOTIONS={curiosity:['wonder','curious','secret','hidden','mystery','discovered','finally'],fear:['warn','danger','evil','dark','devil','demon','fear','wrath'],awe:['incredible','amazing','supernatural','miracle','divine','holy','glory'],urgency:['now','today','urgent','must','critical','never'],validation:['truth','real','proof','evidence','confirm','proven']};
+  const emotionScores={};
+  Object.entries(EMOTIONS).forEach(([e,triggers])=>{const hits=words.filter(w=>triggers.includes(w));emotionScores[e]=Math.min(100,Math.round((hits.length/Math.max(wc/100,1))*20));});
+  const CTA_PATTERNS=[{pattern:/subscribe|hit.*subscribe/i,type:'Subscribe CTA'},{pattern:/like.*video|smash.*like/i,type:'Like CTA'},{pattern:/comment.*below|let.*know/i,type:'Comment CTA'},{pattern:/watch.*next|check.*out/i,type:'Next Video CTA'},{pattern:/stay.*tuned|keep.*watching/i,type:'Retention CTA'}];
+  const ctas=[];
+  sentences.forEach((s,idx)=>{CTA_PATTERNS.forEach(({pattern,type})=>{if(pattern.test(s))ctas.push({type,sentence:s.trim().slice(0,100),position:Math.round((idx/Math.max(sc,1))*100)});});});
+  const RETENTION=[{name:'Open loops',pattern:/\b(but first|before we get to|coming up|stay with me)\b/gi},{name:'Cliffhangers',pattern:/\b(you won.t believe|wait until|here.s the shocking)\b/gi},{name:'Proof drops',pattern:/\b(according to|historians say|the bible says|records show)\b/gi},{name:'Re-engagement',pattern:/\b(pay attention|this is important|write this down)\b/gi}];
+  const retentionHits=RETENTION.map(r=>({name:r.name,count:(text.match(r.pattern)||[]).length,score:Math.min(100,(text.match(r.pattern)||[]).length*25)}));
+  let titleAlignment=0;
+  if(title){const tw=title.toLowerCase().replace(/[^a-z0-9\s]/g,'').split(/\s+/).filter(w=>w.length>3);const tl=text.toLowerCase();titleAlignment=Math.round((tw.filter(w=>tl.includes(w)).length/Math.max(tw.length,1))*100);}
+  const avgSL=Math.round(wc/Math.max(sc,1));
+  const pacingScore=Math.max(0,Math.min(100,Math.round(100-(Math.abs(avgSL-15)*3))));
+  return {wordCount:wc,sentCount:sc,hookText,hookQ,foundPower,emotionScores,ctas,retentionHits,titleAlignment,pacingScore,avgSentLen:avgSL};
 }
 
-function analyseTranscript(text, title) {
-  const words = text.toLowerCase().split(/\s+/).filter(Boolean);
-  const wordCount = words.length;
-  const sentences = text.split(/[.!?]+/).filter(s=>s.trim().length>10);
-  const sentCount = sentences.length;
-
-  // ── Hook (first ~200 words) ──
-  const hookWords = words.slice(0,200);
-  const hookText = text.split(/\s+/).slice(0,200).join(' ');
-  const hookQuestions = (hookText.match(/\?/g)||[]).length;
-  const hookSentences = hookText.split(/[.!?]+/).filter(s=>s.trim().length>5);
-
-  // ── Power words ──
-  const POWER_WORDS = ['never','secret','hidden','forbidden','truth','reveal','discover','shocking','ancient','mystery','proof','real','untold','buried','lost','dark','evidence','finally','exposed','warning','urgent','incredible','jaw-dropping','astonishing','mind-blowing','actually','really','truly'];
-  const foundPower = [...new Set(words.filter(w=>POWER_WORDS.includes(w)))];
-
-  // ── Emotional triggers ──
-  const EMOTIONS = {
-    curiosity: ['wonder','curious','secret','hidden','mystery','discovered','finally','actually'],
-    fear: ['warn','danger','evil','dark','devil','demon','terror','fear','judgement','wrath'],
-    awe: ['incredible','amazing','astonishing','supernatural','miracle','divine','holy','glory'],
-    urgency: ['now','today','immediately','urgent','must','critical','before','never','last'],
-    validation: ['truth','real','actual','proof','evidence','confirm','certain','proven'],
-  };
-  const emotionScores = {};
-  const emotionExamples = {};
-  Object.entries(EMOTIONS).forEach(([emotion, triggers]) => {
-    const hits = words.filter(w=>triggers.includes(w));
-    emotionScores[emotion] = Math.min(100, Math.round((hits.length / Math.max(wordCount/100,1)) * 20));
-    emotionExamples[emotion] = [...new Set(hits)].slice(0,4);
-  });
-
-  // ── CTAs ──
-  const CTA_PATTERNS = [
-    {pattern:/subscribe|hit.*subscribe|click.*subscribe/i, type:'Subscribe CTA'},
-    {pattern:/like.*video|smash.*like|hit.*like/i, type:'Like CTA'},
-    {pattern:/comment.*below|let.*know.*comment|tell.*comment/i, type:'Comment CTA'},
-    {pattern:/watch.*next|check.*out|also.*watch/i, type:'Next Video CTA'},
-    {pattern:/notification|bell/i, type:'Notification Bell CTA'},
-    {pattern:/share.*video|share.*with/i, type:'Share CTA'},
-    {pattern:/stay.*tuned|don.?t.*go|keep.*watching|stay.*end/i, type:'Retention CTA'},
-  ];
-  const ctas = [];
-  sentences.forEach((sentence, idx) => {
-    CTA_PATTERNS.forEach(({pattern, type}) => {
-      if (pattern.test(sentence)) {
-        const position = Math.round((idx/Math.max(sentCount,1))*100);
-        ctas.push({type, sentence:sentence.trim().slice(0,120), position});
-      }
-    });
-  });
-
-  // ── Retention patterns ──
-  const RETENTION = [
-    {name:'Open loops', pattern:/\b(but first|before we get to|coming up|later in this video|we.ll get to that|stay with me)\b/gi},
-    {name:'Cliffhangers', pattern:/\b(you won.t believe|wait until you hear|this is where it gets|here.s the shocking part|but here.s the thing)\b/gi},
-    {name:'Story transitions', pattern:/\b(and then|so what happened|but here.s what|this is when|fast forward)\b/gi},
-    {name:'Re-engagement prompts', pattern:/\b(now here.s the key|pay attention|this is important|don.t miss this|write this down)\b/gi},
-    {name:'Proof/evidence drops', pattern:/\b(according to|historians say|the bible says|archaeologists found|records show|scripture confirms)\b/gi},
-  ];
-  const retentionHits = RETENTION.map(r=>{
-    const matches = (text.match(r.pattern)||[]);
-    return {name:r.name, count:matches.length, score:Math.min(100,matches.length*20)};
-  });
-
-  // ── Title alignment ──
-  let titleAlignment = 0;
-  if (title) {
-    const titleWords = title.toLowerCase().replace(/[^a-z0-9\s]/g,'').split(/\s+/).filter(w=>w.length>3);
-    const transcriptLower = text.toLowerCase();
-    const matchedWords = titleWords.filter(w=>transcriptLower.includes(w));
-    titleAlignment = Math.round((matchedWords.length/Math.max(titleWords.length,1))*100);
-  }
-
-  // ── Pacing score ──
-  const avgSentLen = wordCount/Math.max(sentCount,1);
-  const pacingScore = Math.max(0,Math.min(100,Math.round(100-(Math.abs(avgSentLen-15)*3))));
-
-  return {
-    wordCount, sentCount, hookText, hookSentences, hookQuestions,
-    foundPower, emotionScores, emotionExamples,
-    ctas, retentionHits, titleAlignment, pacingScore, avgSentLen: Math.round(avgSentLen)
-  };
+function renderTranscriptReport(a,title,index) {
+  const sb=(label,score,color)=>'<div class="score-row"><div class="score-labels"><span>'+label+'</span><span style="color:var(--amber);font-weight:600;">'+score+'/100</span></div><div class="score-track"><div class="score-fill" style="width:'+score+'%;'+(color?'background:'+color:'')+'"></div></div></div>';
+  const eColors={curiosity:'var(--gold)',fear:'var(--red)',awe:'#A78BFA',urgency:'var(--amber)',validation:'var(--green)'};
+  const eBars=Object.entries(a.emotionScores).map(([e,s])=>sb(e.charAt(0).toUpperCase()+e.slice(1)+' triggers',s,eColors[e]||'')).join('');
+  const rBars=a.retentionHits.map(r=>sb(r.name,r.score,'')).join('');
+  const powerPills=a.foundPower.length?a.foundPower.map(w=>'<span class="pill pp">'+w+'</span>').join(''):'<span style="color:var(--muted);font-size:0.76rem;">No strong power words detected</span>';
+  const ctasHTML=a.ctas.length?a.ctas.map(c=>'<div class="cta-item"><strong style="color:var(--amber);">'+c.type+'</strong> <span style="color:var(--muted);font-size:0.7rem;">(~'+c.position+'%)</span><div style="margin-top:4px;">"...'+c.sentence+'..."</div></div>').join(''):'<div style="color:var(--muted);font-size:0.77rem;">No CTAs detected</div>';
+  const bestR=a.retentionHits.reduce((best,r)=>r.count>best.count?r:best,{count:0,name:''});
+  return '<div class="t-section"><div class="t-title">Video '+(index+1)+': '+(title||'Untitled')+'</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;"><div class="pstat"><div class="val">'+a.wordCount.toLocaleString()+'</div><div class="lbl2">Words</div></div><div class="pstat"><div class="val">'+a.sentCount+'</div><div class="lbl2">Sentences</div></div><div class="pstat"><div class="val">'+a.avgSentLen+'</div><div class="lbl2">Avg Sentence</div></div></div>'+
+    '<div class="t-title" style="font-size:0.85rem;margin-top:12px;">Hook (First 200 words)</div>'+
+    '<div style="background:var(--navy);border-radius:6px;padding:9px 12px;font-size:0.76rem;font-style:italic;margin-bottom:8px;">"'+a.hookText.slice(0,250)+'..."</div>'+
+    '<span class="pill pb">Questions in hook: '+a.hookQ+'</span><span class="pill '+(a.hookQ>=2?'pg':'pa')+'">Urgency: '+(a.hookQ>=2?'HIGH':'LOW')+'</span>'+
+    '<div class="t-title" style="font-size:0.85rem;margin-top:12px;">Emotional Triggers</div>'+eBars+
+    '<div class="t-title" style="font-size:0.85rem;margin-top:12px;">Retention Patterns</div>'+rBars+
+    '<div style="font-size:0.74rem;color:var(--muted);margin-top:4px;">Strongest: <strong style="color:var(--amber);">'+bestR.name+'</strong> ('+bestR.count+' uses)</div>'+
+    '<div class="t-title" style="font-size:0.85rem;margin-top:12px;">Power Words</div><div style="margin-bottom:10px;">'+powerPills+'</div>'+
+    '<div class="t-title" style="font-size:0.85rem;margin-top:12px;">CTA Analysis</div>'+ctasHTML+
+    '<div class="t-title" style="font-size:0.85rem;margin-top:12px;">Title vs Content Alignment</div>'+sb('Keyword coverage',a.titleAlignment,'')+
+    '<div class="t-title" style="font-size:0.85rem;margin-top:12px;">Pacing Score</div>'+sb('Script pacing',a.pacingScore,'')+'</div>';
 }
 
-function renderTranscriptReport(analysis, title, index) {
-  const {wordCount,sentCount,hookText,hookSentences,hookQuestions,foundPower,emotionScores,emotionExamples,ctas,retentionHits,titleAlignment,pacingScore,avgSentLen} = analysis;
-
-  const scoreBar = (label,score,color='') => `
-    <div class="score-row">
-      <div class="score-labels"><span>${label}</span><span style="color:var(--amber);font-weight:600;">${score}/100</span></div>
-      <div class="score-track"><div class="score-fill" style="width:${score}%;${color?'background:'+color:''}"></div></div>
-    </div>`;
-
-  const emotionColors = {curiosity:'var(--gold)',fear:'var(--red)',awe:'#A78BFA',urgency:'var(--amber)',validation:'var(--green)'};
-
-  const emotionBars = Object.entries(emotionScores).map(([e,s])=>scoreBar(`${e.charAt(0).toUpperCase()+e.slice(1)} triggers`,s,emotionColors[e]||'')).join('');
-
-  const retentionBars = retentionHits.map(r=>scoreBar(r.name,r.score)).join('');
-
-  const powerPills = foundPower.length
-    ? foundPower.map(w=>`<span class="pill pp">${w}</span>`).join('')
-    : '<span style="color:var(--muted);font-size:0.76rem;">No strong power words detected</span>';
-
-  const ctasHTML = ctas.length
-    ? ctas.map(c=>`<div class="cta-item"><strong style="color:var(--amber);">${c.type}</strong> <span style="color:var(--muted);font-size:0.7rem;">(at ~${c.position}% of video)</span><div style="margin-top:4px;color:var(--text);">"...${c.sentence}..."</div></div>`).join('')
-    : '<div style="color:var(--muted);font-size:0.77rem;">No standard CTAs detected — consider adding subscribe, like, and retention CTAs.</div>';
-
-  const retentionTip = retentionHits.reduce((a,b)=>a.count>b.count?a:b);
-
-  return `
-    <div class="t-section">
-      <div class="t-title">📹 Video ${index+1}: ${title||'Untitled'}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
-        <div class="pstat"><div class="val">${wordCount.toLocaleString()}</div><div class="lbl2">Words</div></div>
-        <div class="pstat"><div class="val">${sentCount}</div><div class="lbl2">Sentences</div></div>
-        <div class="pstat"><div class="val">${avgSentLen}</div><div class="lbl2">Avg Sent Len</div></div>
-      </div>
-
-      <div class="t-title" style="font-size:0.85rem;margin-top:12px;">🎣 Hook Structure (First ~200 words)</div>
-      <div class="hook-box">${hookText.slice(0,300)}${hookText.length>300?'...':''}</div>
-      <div style="font-size:0.77rem;margin-bottom:10px;">
-        <span class="pill pb">Questions in hook: ${hookQuestions}</span>
-        <span class="pill ${hookSentences.length<=3?'pr':'pg'}">Hook sentences: ${hookSentences.length}</span>
-        <span class="pill ${hookQuestions>=2?'pg':'pa'}">Hook urgency: ${hookQuestions>=2?'HIGH':'LOW'}</span>
-      </div>
-
-      <div class="t-title" style="font-size:0.85rem;margin-top:12px;">🎭 Emotional Trigger Patterns</div>
-      ${emotionBars}
-
-      <div class="t-title" style="font-size:0.85rem;margin-top:12px;">🔁 Retention Patterns</div>
-      ${retentionBars}
-      <div style="font-size:0.74rem;color:var(--muted);margin-top:6px;">Strongest pattern: <strong style="color:var(--amber);">${retentionTip.name}</strong> (${retentionTip.count} uses)</div>
-
-      <div class="t-title" style="font-size:0.85rem;margin-top:12px;">💪 Power Words Found</div>
-      <div style="margin-bottom:10px;">${powerPills}</div>
-
-      <div class="t-title" style="font-size:0.85rem;margin-top:12px;">📣 CTA Analysis</div>
-      ${ctasHTML}
-
-      <div class="t-title" style="font-size:0.85rem;margin-top:12px;">🎯 Title vs Content Alignment</div>
-      <div class="score-row">
-        <div class="score-labels"><span>Title keyword coverage in script</span><span style="color:var(--amber);font-weight:600;">${titleAlignment}%</span></div>
-        <div class="score-track"><div class="score-fill" style="width:${titleAlignment}%"></div></div>
-      </div>
-      <div style="font-size:0.73rem;color:var(--muted);margin-top:4px;">${titleAlignment>=70?'✅ Strong alignment — title promises are delivered in the script':'⚠️ Low alignment — title may be overpromising or script diverges from topic'}</div>
-
-      <div class="t-title" style="font-size:0.85rem;margin-top:12px;">⚡ Pacing Score</div>
-      ${scoreBar('Script pacing',pacingScore)}
-      <div style="font-size:0.73rem;color:var(--muted);">Average sentence: ${avgSentLen} words. ${avgSentLen<=12?'Good — short punchy sentences keep attention.':avgSentLen<=18?'Moderate — mix shorter sentences in key sections.':'Long sentences — break down into shorter bursts for better retention.'}</div>
-    </div>`;
-}
-
-function renderComparison(analyses, titles) {
-  if (analyses.length < 2) return '';
-
-  const metrics = [
-    {name:'Word Count',fn:a=>a.wordCount,higher:'More depth'},
-    {name:'Power Words',fn:a=>a.foundPower.length,higher:'More persuasive'},
-    {name:'CTAs Found',fn:a=>a.ctas.length,higher:'Better optimised'},
-    {name:'Emotional Score',fn:a=>Math.round(Object.values(a.emotionScores).reduce((s,v)=>s+v,0)/5),higher:'More emotional'},
-    {name:'Retention Patterns',fn:a=>a.retentionHits.reduce((s,r)=>s+r.count,0),higher:'Better retention'},
-    {name:'Title Alignment',fn:a=>a.titleAlignment,higher:'More aligned'},
-    {name:'Pacing Score',fn:a=>a.pacingScore,higher:'Better paced'},
-  ];
-
-  const colsHTML = analyses.map((a,i)=>`
-    <div class="compare-col">
-      <div class="cc-title">Video ${i+1}: ${(titles[i]||'Untitled').slice(0,40)}${titles[i]?.length>40?'...':''}</div>
-      ${metrics.map(m=>{
-        const vals = analyses.map(m.fn);
-        const max = Math.max(...vals);
-        const myVal = m.fn(a);
-        const isWinner = myVal===max && analyses.filter(x=>m.fn(x)===max).length===1;
-        return `<div style="font-size:0.75rem;padding:5px 0;border-bottom:1px solid var(--navy2);display:flex;justify-content:space-between;align-items:center;"><span style="color:var(--muted);">${m.name}</span><span style="color:var(--text);font-weight:600;">${myVal}${isWinner?'<span class="winner">BEST</span>':''}</span></div>`;
-      }).join('')}
-    </div>`).join('');
-
-  // Overall winner
-  const overallScores = analyses.map((a,i)=>{
-    const score = metrics.reduce((s,m)=>{
-      const vals = analyses.map(m.fn);
-      const max = Math.max(...vals);
-      return s+(m.fn(a)===max?1:0);
-    },0);
-    return {i,score,title:titles[i]||`Video ${i+1}`};
-  }).sort((a,b)=>b.score-a.score);
-
-  const winnerText = overallScores[0].score > overallScores[1]?.score
-    ? `<strong style="color:var(--amber);">Video ${overallScores[0].i+1} (${overallScores[0].title.slice(0,40)})</strong> wins overall with ${overallScores[0].score}/${metrics.length} metrics.`
-    : 'No clear overall winner — videos are closely matched.';
-
-  // Key insights
-  const allEmotionAvg = (a) => Math.round(Object.values(a.emotionScores).reduce((s,v)=>s+v,0)/5);
-  const bestEmotion = analyses.reduce((best,a,i)=>allEmotionAvg(a)>allEmotionAvg(best.a)?{a,i}:{a:best.a,i:best.i},{a:analyses[0],i:0});
-  const bestRetention = analyses.reduce((best,a,i)=>{const s=a.retentionHits.reduce((ss,r)=>ss+r.count,0);return s>best.s?{s,i}:{s:best.s,i:best.i}},{s:0,i:0});
-  const bestCTA = analyses.reduce((best,a,i)=>a.ctas.length>best.c?{c:a.ctas.length,i}:{c:best.c,i:best.i},{c:0,i:0});
-
-  return `
-    <div class="t-section">
-      <div class="t-title">⚖️ Side-by-Side Comparison</div>
-      <div class="compare-grid" style="grid-template-columns:${'1fr '.repeat(analyses.length).trim()};">
-        ${colsHTML}
-      </div>
-      <div style="background:var(--navy);border-radius:8px;padding:12px;margin-top:12px;font-size:0.8rem;line-height:1.7;">
-        <div style="color:var(--gold);font-weight:600;margin-bottom:6px;">🏆 VERDICT</div>
-        <div>${winnerText}</div>
-        <div style="margin-top:8px;color:var(--muted);">
-          • Best emotional triggers: <strong style="color:var(--text);">Video ${bestEmotion.i+1}</strong><br>
-          • Best retention patterns: <strong style="color:var(--text);">Video ${bestRetention.i+1}</strong><br>
-          • Best CTA structure: <strong style="color:var(--text);">Video ${bestCTA.i+1}</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="t-section">
-      <div class="t-title">📋 What DBH Should Steal From These Scripts</div>
-      <div style="font-size:0.8rem;line-height:1.9;">
-        ${[
-          `Hook pattern: Open with a <strong style="color:var(--amber);">bold declaration + question</strong> in first 3 sentences — highest-performing scripts do this`,
-          `Emotion mix: Lead with <strong style="color:var(--amber);">curiosity + awe</strong>, then transition to <strong style="color:var(--amber);">validation</strong> (proof/evidence) in middle`,
-          `Retention: Use <strong style="color:var(--amber);">open loops</strong> every 3-4 minutes ("but wait — there's something they didn't tell you...")`,
-          `CTAs: Place <strong style="color:var(--amber);">first subscribe CTA at 20-25%</strong> of video, second at 70%, retention ask at 50%`,
-          `Power words: Weave <strong style="color:var(--amber);">forbidden, hidden, truth, revealed, ancient</strong> throughout — not just in the title`,
-          `Pacing: <strong style="color:var(--amber);">Keep sentences under 15 words</strong> in hook and CTA sections, longer in evidence sections`,
-        ].map((item,i)=>`<div><strong style="color:var(--amber);">${i+1}.</strong> ${item}</div>`).join('')}
-      </div>
-    </div>`;
+function renderComparison(analyses,titles) {
+  if(analyses.length<2) return '';
+  const metrics=[{name:'Word Count',fn:a=>a.wordCount},{name:'Power Words',fn:a=>a.foundPower.length},{name:'CTAs Found',fn:a=>a.ctas.length},{name:'Emotion Score',fn:a=>Math.round(Object.values(a.emotionScores).reduce((s,v)=>s+v,0)/5)},{name:'Retention Hits',fn:a=>a.retentionHits.reduce((s,r)=>s+r.count,0)},{name:'Title Alignment',fn:a=>a.titleAlignment},{name:'Pacing Score',fn:a=>a.pacingScore}];
+  const cols=analyses.map((a,i)=>{
+    const rows=metrics.map(m=>{const vals=analyses.map(m.fn),max=Math.max(...vals),myVal=m.fn(a),isWinner=myVal===max&&analyses.filter(x=>m.fn(x)===max).length===1;return '<div style="font-size:0.75rem;padding:5px 0;border-bottom:1px solid var(--navy2);display:flex;justify-content:space-between;"><span style="color:var(--muted);">'+m.name+'</span><span style="font-weight:600;">'+myVal+(isWinner?'<span class="winner">BEST</span>':'')+'</span></div>';}).join('');
+    return '<div class="compare-col"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:0.88rem;color:var(--amber);margin-bottom:8px;">Video '+(i+1)+': '+(titles[i]||'Untitled').slice(0,35)+'</div>'+rows+'</div>';
+  }).join('');
+  const scores=analyses.map((a,i)=>({i,score:metrics.reduce((s,m)=>{const vals=analyses.map(m.fn),max=Math.max(...vals);return s+(m.fn(a)===max?1:0);},0),title:titles[i]||'Video '+(i+1)})).sort((a,b)=>b.score-a.score);
+  const winner=scores[0].score>scores[1]?.score?'<strong style="color:var(--amber);">Video '+(scores[0].i+1)+' ('+scores[0].title.slice(0,40)+')</strong> wins overall.':'Videos are closely matched.';
+  return '<div class="t-section"><div class="t-title">Side-by-Side Comparison</div><div style="display:grid;grid-template-columns:'+'1fr '.repeat(analyses.length).trim()+';gap:10px;">'+cols+'</div><div style="background:var(--navy);border-radius:8px;padding:12px;margin-top:12px;font-size:0.8rem;line-height:1.7;"><strong style="color:var(--gold);">VERDICT</strong><br>'+winner+'</div></div>';
 }
 
 async function runTranscriptAnalysis() {
-  document.getElementById('tErrorBox').innerHTML = '';
-  document.getElementById('tResults').innerHTML = '';
-  const slots = document.querySelectorAll('.t-slot');
-  const transcripts = [];
-  slots.forEach(slot=>{
-    const title = slot.querySelector('.t-title-input').value.trim();
-    const text = slot.querySelector('.t-text-input').value.trim();
-    if (text && text.length > 100) transcripts.push({title, text});
-  });
-  if (!transcripts.length) {
-    document.getElementById('tErrorBox').innerHTML = '<div class="err">⚠️ Please add at least one transcript (minimum 100 characters).</div>';
-    return;
-  }
-  const btn = document.getElementById('tRunBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ ANALYSING...';
-  document.getElementById('tStatusBar').style.display = 'flex';
-  document.getElementById('tStatusText').textContent = `Analysing ${transcripts.length} transcript${transcripts.length>1?'s':''}...`;
+  document.getElementById('tErrorBox').innerHTML='';
+  document.getElementById('tResults').innerHTML='';
+  const slots=document.querySelectorAll('.t-slot');
+  const transcripts=[];
+  slots.forEach(slot=>{const title=slot.querySelector('.t-title-input').value.trim(),text=slot.querySelector('.t-text-input').value.trim();if(text&&text.length>100)transcripts.push({title,text});});
+  if(!transcripts.length){document.getElementById('tErrorBox').innerHTML='<div class="err">Please add at least one transcript.</div>';return;}
+  const btn=document.getElementById('tRunBtn');
+  btn.disabled=true; btn.textContent='ANALYSING...';
+  document.getElementById('tStatusBar').style.display='flex';
   await new Promise(r=>setTimeout(r,100));
-  const analyses = transcripts.map(t=>analyseTranscript(t.text,t.title));
-  const titles = transcripts.map(t=>t.title);
-  let html = `<div class="results-hdr">🔬 Individual Analysis</div>`;
-  analyses.forEach((a,i)=>{ html += renderTranscriptReport(a,titles[i],i); });
-  if (analyses.length >= 2) {
-    html += `<div class="results-hdr" style="margin-top:8px;">⚖️ Comparative Analysis</div>`;
-    html += renderComparison(analyses,titles);
-  }
-  html += `
-    <div class="results-hdr" style="margin-top:8px;">🤖 AI Script Recommendation for DBH</div>
-    <div class="t-section" id="aiScriptSection">
-      <div style="text-align:center;padding:20px 0;">
-        <div style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;">Generate a DBH-specific script structure based on what is working in these transcripts</div>
-        <div style="margin-bottom:12px;">
-          <label style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:6px;">Your next video topic</label>
-          <input type="text" id="dbhTopic" placeholder="e.g. The Lost Tomb of Jesus, The Gospel of Judas..." style="width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:9px 12px;color:var(--text);font-family:Inter,sans-serif;font-size:0.83rem;outline:none;">
-        </div>
-        <button onclick="generateAIScript()" id="aiScriptBtn" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:Bebas Neue,sans-serif;font-size:1.1rem;letter-spacing:2px;padding:12px 28px;cursor:pointer;">✨ GENERATE DBH SCRIPT BLUEPRINT</button>
-      </div>
-      <div id="aiScriptOutput"></div>
-    </div>`;
-  document.getElementById('tResults').innerHTML = html;
-  document.getElementById('tStatusBar').style.display = 'none';
-  btn.disabled = false;
-  btn.textContent = '🔬 ANALYSE TRANSCRIPTS';
-  window._lastAnalyses = analyses;
-  window._lastTitles = titles;
-  window._lastTranscripts = transcripts;
+  const analyses=transcripts.map(t=>analyseTranscript(t.text,t.title));
+  const titles=transcripts.map(t=>t.title);
+  let html='<div class="results-hdr">Individual Analysis</div>';
+  analyses.forEach((a,i)=>{html+=renderTranscriptReport(a,titles[i],i);});
+  if(analyses.length>=2){html+='<div class="results-hdr" style="margin-top:8px;">Comparative Analysis</div>';html+=renderComparison(analyses,titles);}
+  html+='<div class="results-hdr" style="margin-top:8px;">AI Script Recommendation</div>';
+  html+='<div class="t-section"><div style="text-align:center;padding:16px 0;">';
+  html+='<div style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;">Generate a DBH script blueprint based on what is working in these transcripts</div>';
+  html+='<input type="text" id="dbhTopic" placeholder="Your next video topic..." style="margin-bottom:12px;">';
+  html+='<button onclick="generateAIScript()" id="aiScriptBtn" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:\'Bebas Neue\',sans-serif;font-size:1.1rem;letter-spacing:2px;padding:12px 28px;cursor:pointer;">GENERATE SCRIPT BLUEPRINT</button>';
+  html+='</div><div id="aiScriptOutput"></div></div>';
+  document.getElementById('tResults').innerHTML=html;
+  document.getElementById('tStatusBar').style.display='none';
+  btn.disabled=false; btn.textContent='ANALYSE TRANSCRIPTS';
+  window._lastAnalyses=analyses; window._lastTitles=titles; window._lastTranscripts=transcripts;
 }
 
 async function generateAIScript() {
-  const topic = document.getElementById('dbhTopic').value.trim();
-  if (!topic) { alert('Please enter your next video topic first.'); return; }
-  const btn = document.getElementById('aiScriptBtn');
-  const output = document.getElementById('aiScriptOutput');
-  btn.textContent = '⏳ GENERATING...';
-  btn.disabled = true;
-  output.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:0.82rem;">AI is analysing the transcripts and crafting your DBH script blueprint...</div>';
-  const analyses = window._lastAnalyses || [];
-  const titles = window._lastTitles || [];
-  const transcripts = window._lastTranscripts || [];
-  const bestHook = analyses.reduce((best,a,i) => a.hookQuestions > best.q ? {q:a.hookQuestions,title:titles[i],hook:a.hookText} : best, {q:0,title:'',hook:''});
-  const allPowerWords = [...new Set(analyses.flatMap(a => a.foundPower))];
-  const bestRetention = analyses.map((a,i) => ({title:titles[i],patterns:a.retentionHits.filter(r=>r.count>0).map(r=>r.name).join(', ')}));
-  const bestCTAs = analyses.flatMap(a => a.ctas).slice(0,5);
-  const topEmotions = analyses.map(a => Object.entries(a.emotionScores).sort((x,y)=>y[1]-x[1]).slice(0,2).map(([e])=>e).join(' + '));
-  const hookSamples = transcripts.slice(0,2).map((t,i) => `VIDEO "${titles[i]||`Video ${i+1}`}" HOOK:\n${t.text.split(' ').slice(0,80).join(' ')}...`).join('\n\n');
-  const prompt = `You are a YouTube script strategist specialising in biblical history content for US Christian audiences. You have analysed ${analyses.length} top-performing competitor transcript(s).
-
-COMPETITOR INTELLIGENCE:
-- Best hook: "${bestHook.title}" used ${bestHook.q} questions in first 200 words
-- Top power words: ${allPowerWords.slice(0,15).join(', ')}
-- Dominant emotions: ${topEmotions.join(' | ')}
-- Retention patterns: ${bestRetention.map(r => `"${r.title}": ${r.patterns}`).join(' | ')}
-- CTA timing: ${bestCTAs.map(c => `${c.type} at ${c.position}%`).join(', ')}
-
-SAMPLE COMPETITOR HOOK:
-${hookSamples}
-
-DBH CHANNEL CONTEXT:
-- Channel: Deep Bible History (DBH), targeting US Christians aged 35-65
-- Style: Evidence-based biblical scholarship with DETECTIVE framing
-- Format: ElevenLabs voiceover + AI-generated visuals (Google Flow/Veo)
-- Target: 35-40 min full version, 18-20 min short version
-- Thumbnail: Oil painting, chiaroscuro, amber-gold palette, figure forward-left
-
-DBH NEXT VIDEO TOPIC: "${topic}"
-
-Generate a complete DBH Script Blueprint:
-
-1. HOOK (First 60 seconds) - Write the actual opening words. Open with shocking statement + question. Use DETECTIVE frame.
-
-2. FULL SCRIPT STRUCTURE - 8-10 sections each with: title, duration, what to cover, emotional trigger, retention device to use
-
-3. 6 CTA SCRIPTS - Exact words for all 6 CTAs at the right timestamps based on competitor data
-
-4. 15 POWER WORDS - Specific power words to weave throughout this script
-
-5. THUMBNAIL CONCEPT - Exact description following DBH oil painting style
-
-6. 3 TITLE OPTIONS - Following ALLCAPS hook + colon + payoff formula
-
-Be specific and practical. Write as if handing directly to a scriptwriter.`;
-
+  const topic=document.getElementById('dbhTopic').value.trim();
+  if(!topic){alert('Please enter your next video topic first.');return;}
+  const btn=document.getElementById('aiScriptBtn');
+  const output=document.getElementById('aiScriptOutput');
+  btn.textContent='GENERATING...'; btn.disabled=true;
+  output.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);">Crafting your DBH script blueprint...</div>';
+  const analyses=window._lastAnalyses||[], titles=window._lastTitles||[], transcripts=window._lastTranscripts||[];
+  const allPowerWords=[...new Set(analyses.flatMap(a=>a.foundPower))];
+  const bestRetention=analyses.map((a,i)=>titles[i]+': '+a.retentionHits.filter(r=>r.count>0).map(r=>r.name).join(', ')).join(' | ');
+  const topEmotions=analyses.map(a=>Object.entries(a.emotionScores).sort((x,y)=>y[1]-x[1]).slice(0,2).map(([e])=>e).join('+')).join(' | ');
+  const hookSample=transcripts.slice(0,1).map((t,i)=>'HOOK SAMPLE from "'+titles[i]+'": '+t.text.split(' ').slice(0,60).join(' ')+'...').join('');
+  const prompt='You are a YouTube script strategist for biblical history content targeting US Christians.\n\nCOMPETITOR INTELLIGENCE:\n- Power words found: '+allPowerWords.slice(0,12).join(', ')+'\n- Top emotions: '+topEmotions+'\n- Retention patterns: '+bestRetention+'\n- '+hookSample+'\n\nDBH CONTEXT: Evidence-based biblical scholarship, DETECTIVE framing, ElevenLabs voiceover, AI visuals, 35-40 min full version.\n\nTOPIC: "'+topic+'"\n\nGenerate:\n1. HOOK (first 60 seconds) - write actual opening words\n2. SCRIPT STRUCTURE - 8 sections with title, duration, what to cover, emotion to hit\n3. 6 CTA SCRIPTS - exact words at right timestamps\n4. 15 POWER WORDS to weave throughout\n5. THUMBNAIL CONCEPT - following DBH oil painting style\n6. 3 TITLE OPTIONS - ALLCAPS hook + colon + payoff format\n\nBe specific and practical.';
   try {
-    const response = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({prompt})
-    });
-    const data = await response.json();
-    if (!data.success) throw new Error(data.error || 'Generation failed');
-    const text = data.text || '';
-    if (!text) throw new Error('No response from AI');
-    const formatted = text
-      .replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--amber);">$1</strong>')
-      .replace(/^(#{1,3} .+)$/gm,'<div style="font-family:Bebas Neue,sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--gold);margin:14px 0 6px;padding-top:10px;border-top:1px solid var(--navy3);">$1</div>')
-      .replace(/^(\d+\..+)$/gm,'<div style="padding:4px 0;font-size:0.8rem;">$1</div>')
-      .replace(/^[-] (.+)$/gm,'<div style="padding:3px 0 3px 12px;font-size:0.79rem;border-left:2px solid var(--navy3);margin:2px 0;">$1</div>')
-      .replace(/\n\n/g,'<br>').replace(/\n/g,' ');
-    window._blueprintRaw = text;
-    output.innerHTML = `
-      <div style="border-top:1px solid var(--navy3);margin-top:16px;padding-top:16px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-          <div style="font-family:Bebas Neue,sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--gold);">📄 DBH Script Blueprint: ${topic}</div>
-          <button onclick="copyScriptBlueprint()" style="background:var(--navy3);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-size:0.72rem;font-weight:600;padding:5px 10px;cursor:pointer;">📋 COPY</button>
-        </div>
-        <div id="blueprintContent" style="font-size:0.8rem;line-height:1.8;color:var(--text);">${formatted}</div>
-      </div>`;
-  } catch(err) {
-    output.innerHTML = `<div style="color:var(--red);font-size:0.8rem;margin-top:12px;">⚠️ AI generation failed: ${err.message}</div>`;
-  }
-  btn.textContent = '✨ GENERATE DBH SCRIPT BLUEPRINT';
-  btn.disabled = false;
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const data=await res.json();
+    if(!data.success) throw new Error(data.error||'Generation failed');
+    const text=data.text||'';
+    if(!text) throw new Error('No response');
+    window._blueprintRaw=text;
+    const formatted=text.replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--amber);">$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    output.innerHTML='<div style="border-top:1px solid var(--navy3);margin-top:16px;padding-top:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-family:\'Bebas Neue\',sans-serif;color:var(--gold);">Blueprint: '+topic+'</span><button onclick="copyBlueprint()" style="background:var(--navy3);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-size:0.72rem;font-weight:600;padding:5px 10px;cursor:pointer;">COPY</button></div><div style="font-size:0.8rem;line-height:1.8;">'+formatted+'</div></div>';
+  } catch(err){output.innerHTML='<div style="color:var(--red);font-size:0.8rem;margin-top:12px;">AI failed: '+err.message+'. Add ANTHROPIC_API_KEY to Vercel environment variables.</div>';}
+  btn.textContent='GENERATE SCRIPT BLUEPRINT'; btn.disabled=false;
 }
 
-function copyScriptBlueprint() {
-  const text = window._blueprintRaw || document.getElementById('blueprintContent')?.innerText || '';
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = event.target;
-    btn.textContent = '✅ COPIED!';
-    setTimeout(()=>btn.textContent='📋 COPY',2000);
+function copyBlueprint() {
+  navigator.clipboard.writeText(window._blueprintRaw||'').then(()=>{
+    event.target.textContent='COPIED!';
+    setTimeout(()=>event.target.textContent='COPY',2000);
   });
 }
-</script>
 
-<!-- ═══════════════════════════════════════════════════ TAB 3: VEO PROMPT GENERATOR -->
-<div id="tab-veo" class="tab-panel">
-
-  <div class="card">
-    <p style="font-size:0.8rem;color:var(--muted);line-height:1.6;">
-      Paste your DBH script below — the AI breaks it into cinematic scenes and generates an optimised <strong style="color:var(--amber);">Google Flow / Veo prompt</strong> for every scene, ready to paste directly into Google Flow.
-    </p>
-  </div>
-
-  <!-- Settings -->
-  <div class="card">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-      <div>
-        <label class="lbl">Video Topic / Title</label>
-        <input type="text" id="veoTitle" placeholder="e.g. The Lost Tomb of Jesus">
-      </div>
-      <div>
-        <label class="lbl">Scene Duration</label>
-        <select id="veoDuration">
-          <option value="5">5 seconds</option>
-          <option value="8" selected>8 seconds</option>
-          <option value="10">10 seconds</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-      <div>
-        <label class="lbl">Visual Style</label>
-        <select id="veoStyle">
-          <option value="cinematic photorealistic">Cinematic Photorealistic</option>
-          <option value="oil painting cinematic" selected>Oil Painting Cinematic</option>
-          <option value="documentary style">Documentary Style</option>
-          <option value="epic historical drama">Epic Historical Drama</option>
-        </select>
-      </div>
-      <div>
-        <label class="lbl">Aspect Ratio</label>
-        <select id="veoRatio">
-          <option value="16:9" selected>16:9 (YouTube)</option>
-          <option value="9:16">9:16 (Shorts)</option>
-          <option value="1:1">1:1 (Square)</option>
-        </select>
-      </div>
-    </div>
-    <div>
-      <label class="lbl">Character Reference (DBH Standard)</label>
-      <input type="text" id="veoCharRef" placeholder="e.g. Levantine man, olive skin, dark curly hair, dark eyes, first-century wool robe..." value="Levantine male figure, olive skin, dark curly hair, dark eyes, weathered face, first-century wool robe, sandals">
-    </div>
-  </div>
-
-  <!-- Script Input -->
-  <div class="card">
-    <label class="lbl">Paste Your Script</label>
-    <textarea class="txt" id="veoScript" style="min-height:180px;" placeholder="Paste your full DBH script here... The tool will automatically break it into scenes and generate a Veo prompt for each one.&#10;&#10;Example:&#10;[HOOK]&#10;Two thousand years ago, a tomb was sealed with a secret that would shake the foundations of Christianity...&#10;&#10;[SECTION 1]&#10;In 1980, construction workers in Jerusalem made a discovery that archaeologists have debated ever since..."></textarea>
-    <div style="display:flex;gap:8px;margin-top:10px;">
-      <button onclick="generateVeoPrompts()" id="veoGenBtn" class="run-btn" style="margin-bottom:0;flex:1;">🎬 GENERATE VEO PROMPTS</button>
-      <button onclick="copyAllPrompts()" id="veoCopyAllBtn" style="display:none;background:var(--navy3);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1.5px;padding:13px 16px;cursor:pointer;white-space:nowrap;">📋 COPY ALL</button>
-    </div>
-  </div>
-
-  <div class="status-bar" id="veoStatusBar">
-    <div class="spinner"></div>
-    <span id="veoStatusText">Breaking script into scenes...</span>
-  </div>
-
-  <div id="veoErrorBox"></div>
-  <div id="veoResults"></div>
-
-</div>
-
-<script>
-// ─── VEO PROMPT GENERATOR ─────────────────────────────────────────────────
-
+// VEO PROMPT GENERATOR
 async function generateVeoPrompts() {
-  const script = document.getElementById('veoScript').value.trim();
-  const title = document.getElementById('veoTitle').value.trim() || 'DBH Video';
-  const duration = document.getElementById('veoDuration').value;
-  const style = document.getElementById('veoStyle').value;
-  const ratio = document.getElementById('veoRatio').value;
-  const charRef = document.getElementById('veoCharRef').value.trim();
+  const script=document.getElementById('veoScript').value.trim();
+  const title=document.getElementById('veoTitle').value.trim()||'DBH Video';
+  const duration=document.getElementById('veoDuration').value;
+  const style=document.getElementById('veoStyle').value;
+  const ratio=document.getElementById('veoRatio').value;
+  const charRef=document.getElementById('veoCharRef').value.trim();
+  if(!script||script.length<100){document.getElementById('veoErrorBox').innerHTML='<div class="err">Please paste your script (minimum 100 characters).</div>';return;}
+  document.getElementById('veoErrorBox').innerHTML='';
+  document.getElementById('veoResults').innerHTML='';
+  document.getElementById('veoCopyAllBtn').style.display='none';
+  const btn=document.getElementById('veoGenBtn');
+  btn.disabled=true; btn.textContent='GENERATING...';
+  document.getElementById('veoStatusBar').style.display='flex';
+  document.getElementById('veoStatusText').textContent='Sending to AI...';
 
-  if (!script || script.length < 100) {
-    document.getElementById('veoErrorBox').innerHTML = '<div class="err">⚠️ Please paste your script (minimum 100 characters).</div>';
-    return;
-  }
-
-  document.getElementById('veoErrorBox').innerHTML = '';
-  document.getElementById('veoResults').innerHTML = '';
-  document.getElementById('veoCopyAllBtn').style.display = 'none';
-
-  const btn = document.getElementById('veoGenBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ GENERATING...';
-  document.getElementById('veoStatusBar').style.display = 'flex';
-  document.getElementById('veoStatusText').textContent = 'Sending script to AI...';
-
-  const prompt = `You are a cinematic AI video director specialising in biblical history content. Your job is to break a script into scenes and write a precise Google Flow / Veo video generation prompt for each scene.
-
-VIDEO TITLE: "${title}"
-VISUAL STYLE: ${style}
-SCENE DURATION: ${duration} seconds each
-ASPECT RATIO: ${ratio}
-CHARACTER REFERENCE: ${charRef}
-
-DBH VISUAL STANDARDS:
-- Setting: Ancient Middle East, first-century Jerusalem, Judean wilderness, Roman-era architecture
-- Lighting: Chiaroscuro — dramatic contrast, amber-gold tones, candlelight or harsh sunlight
-- Atmosphere: Dusty, ancient, cinematic weight — feels like a historical epic
-- Camera: Varied shots — slow push-ins, wide establishing shots, close-ups on faces/hands/objects
-- NO modern elements, NO text overlays, NO anachronisms
-- Characters match the character reference above unless specified otherwise
-
-SCRIPT TO BREAK INTO SCENES:
-${script}
-
-INSTRUCTIONS:
-1. Break the script into 8-15 logical scenes based on the content
-2. For each scene write:
-   - SCENE NUMBER and TITLE (short)
-   - VOICEOVER: The exact script text for that scene (copy directly from script)
-   - VEO PROMPT: A detailed, specific Google Flow/Veo prompt optimised for the visual style. Include: subject, action, setting, camera movement, lighting, atmosphere, style. Keep under 200 words.
-   - SHOT TYPE: (Wide/Medium/Close-up/Extreme close-up/Aerial/Pan/Push-in)
-   - DURATION: ${duration}s
-
-Format each scene EXACTLY like this:
----SCENE [N]: [TITLE]---
-VOICEOVER: [exact script text]
-SHOT TYPE: [type]
-VEO PROMPT: [full optimised prompt]
----END SCENE---
-
-Write all scenes now. Be cinematic, specific, and detailed in every Veo prompt.`;
+  const prompt='You are a cinematic AI video director for biblical history content.\n\nVIDEO: "'+title+'"\nSTYLE: '+style+'\nDURATION: '+duration+' seconds per scene\nRATIO: '+ratio+'\nCHARACTER: '+charRef+'\n\nDBH VISUAL RULES:\n- Setting: Ancient Middle East, first-century Jerusalem, Judean wilderness, Roman-era architecture\n- Lighting: Chiaroscuro, amber-gold tones, candlelight or harsh sunlight\n- Atmosphere: Dusty, ancient, cinematic weight\n- NO modern elements, NO text overlays\n\nSCRIPT:\n'+script+'\n\nBreak into 8-15 scenes. For each scene use EXACTLY this format:\n---SCENE [N]: [TITLE]---\nVOICEOVER: [script text for this scene]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan]\nVEO PROMPT: [detailed Veo prompt under 150 words]\n---END SCENE---\n\nWrite all scenes now.';
 
   try {
-    const response = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({prompt})
-    });
-    const data = await response.json();
-    if (!data.success) throw new Error(data.error || 'Generation failed');
-    const text = data.text || '';
-    if (!text) throw new Error('No response from AI');
-
-    document.getElementById('veoStatusText').textContent = 'Parsing scenes...';
-    renderVeoPrompts(text, title, style, ratio, duration);
-
-  } catch(err) {
-    document.getElementById('veoErrorBox').innerHTML = `<div class="err">⚠️ ${err.message}. Make sure the Anthropic API key is set in Vercel.</div>`;
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const data=await res.json();
+    if(!data.success) throw new Error(data.error||'Generation failed');
+    renderVeoScenes(data.text||'',title,duration,style,ratio);
+  } catch(err){
+    document.getElementById('veoErrorBox').innerHTML='<div class="err">'+err.message+'. Make sure ANTHROPIC_API_KEY is set in Vercel.</div>';
   }
-
-  btn.disabled = false;
-  btn.textContent = '🎬 GENERATE VEO PROMPTS';
-  document.getElementById('veoStatusBar').style.display = 'none';
+  btn.disabled=false; btn.textContent='GENERATE VEO PROMPTS';
+  document.getElementById('veoStatusBar').style.display='none';
 }
 
-function renderVeoPrompts(text, title, style, ratio, duration) {
-  // Parse scenes
-  const sceneRegex = /---SCENE (\d+): (.+?)---([\s\S]*?)---END SCENE---/g;
-  const scenes = [];
-  let match;
-  while ((match = sceneRegex.exec(text)) !== null) {
-    const body = match[3];
-    const voiceMatch = body.match(/VOICEOVER:\s*([\s\S]*?)(?=SHOT TYPE:|VEO PROMPT:|$)/);
-    const shotMatch = body.match(/SHOT TYPE:\s*(.+?)(?=
-|VEO PROMPT:|$)/);
-    const promptMatch = body.match(/VEO PROMPT:\s*([\s\S]*?)(?=DURATION:|---END|$)/);
-    scenes.push({
-      num: match[1],
-      title: match[2].trim(),
-      voiceover: voiceMatch ? voiceMatch[1].trim() : '',
-      shotType: shotMatch ? shotMatch[1].trim() : '',
-      prompt: promptMatch ? promptMatch[1].trim() : body.trim()
-    });
+function renderVeoScenes(text,title,duration,style,ratio) {
+  const scenes=[];
+  const re=/---SCENE (\d+): (.+?)---([\s\S]*?)---END SCENE---/g;
+  let m;
+  while((m=re.exec(text))!==null){
+    const body=m[3];
+    const vo=(body.match(/VOICEOVER:\s*([\s\S]*?)(?=SHOT TYPE:|VEO PROMPT:|$)/)||[])[1]||'';
+    const shot=(body.match(/SHOT TYPE:\s*(.+?)(?:\n|$)/)||[])[1]||'';
+    const vp=(body.match(/VEO PROMPT:\s*([\s\S]*?)(?=---END|$)/)||[])[1]||body.trim();
+    scenes.push({num:m[1],title:m[2].trim(),voiceover:vo.trim(),shotType:shot.trim(),prompt:vp.trim()});
   }
-
-  // Fallback if regex doesn't match — split by numbered sections
-  if (scenes.length === 0) {
-    const lines = text.split('
-');
-    let currentScene = null;
-    lines.forEach(line => {
-      if (/^(SCENE|Scene)\s*\d+/.test(line) || /^---SCENE/.test(line)) {
-        if (currentScene) scenes.push(currentScene);
-        currentScene = {num: scenes.length+1, title: line.replace(/---SCENE \d+:/,'').replace('---','').trim(), voiceover:'', shotType:'', prompt:''};
-      } else if (currentScene) {
-        if (line.startsWith('VOICEOVER:')) currentScene.voiceover = line.replace('VOICEOVER:','').trim();
-        else if (line.startsWith('SHOT TYPE:')) currentScene.shotType = line.replace('SHOT TYPE:','').trim();
-        else if (line.startsWith('VEO PROMPT:')) currentScene.prompt = line.replace('VEO PROMPT:','').trim();
-        else if (currentScene.prompt && !line.startsWith('DURATION:')) currentScene.prompt += ' ' + line.trim();
-      }
-    });
-    if (currentScene) scenes.push(currentScene);
+  if(scenes.length===0){
+    document.getElementById('veoErrorBox').innerHTML='<div class="err">Could not parse scenes. Try again or check your script format.</div>';
+    return;
   }
-
-  const shotColors = {
-    'Wide': 'pb', 'Medium': 'pg', 'Close-up': 'pa', 'Extreme close-up': 'pr',
-    'Aerial': 'pp', 'Pan': 'po', 'Push-in': 'pg'
-  };
-
-  const statsHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px;">
-      <div class="pstat"><div class="val">${scenes.length}</div><div class="lbl2">Scenes</div></div>
-      <div class="pstat"><div class="val">${scenes.length * parseInt(duration)}s</div><div class="lbl2">Total Duration</div></div>
-      <div class="pstat"><div class="val">${ratio}</div><div class="lbl2">Aspect Ratio</div></div>
-      <div class="pstat"><div class="val">${style.split(' ')[0]}</div><div class="lbl2">Style</div></div>
-    </div>`;
-
-  const scenesHTML = scenes.map((scene, i) => {
-    const shotClass = shotColors[scene.shotType] || 'pb';
-    return `
-      <div class="t-section" style="margin-bottom:12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1.5px;color:var(--gold);">Scene ${scene.num}</span>
-            <span style="font-size:0.78rem;font-weight:500;color:var(--text);">${scene.title}</span>
-            ${scene.shotType ? `<span class="pill ${shotClass}">${scene.shotType}</span>` : ''}
-          </div>
-          <button onclick="copyPrompt(this, ${i})" style="background:var(--navy3);border:1px solid var(--navy3);border-radius:6px;color:var(--muted);font-size:0.69rem;padding:4px 9px;cursor:pointer;" data-prompt="${encodeURIComponent(scene.prompt)}">📋 Copy</button>
-        </div>
-        ${scene.voiceover ? `
-        <div style="margin-bottom:10px;">
-          <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">🎙 Voiceover</div>
-          <div style="background:var(--navy);border-radius:6px;padding:9px 12px;font-size:0.76rem;line-height:1.5;color:var(--muted);font-style:italic;">"${scene.voiceover.slice(0,200)}${scene.voiceover.length>200?'...':''}"</div>
-        </div>` : ''}
-        <div>
-          <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px;">🎬 Veo Prompt</div>
-          <div style="background:var(--navy);border:1px solid var(--navy3);border-radius:6px;padding:10px 12px;font-size:0.78rem;line-height:1.6;color:var(--text);">${scene.prompt}</div>
-        </div>
-      </div>`;
+  window._veoScenes=scenes; window._veoTitle=title;
+  const statsHTML='<div class="pattern-grid" style="margin-bottom:16px;"><div class="pstat"><div class="val">'+scenes.length+'</div><div class="lbl2">Scenes</div></div><div class="pstat"><div class="val">'+(scenes.length*parseInt(duration))+'s</div><div class="lbl2">Total Duration</div></div><div class="pstat"><div class="val">'+ratio+'</div><div class="lbl2">Ratio</div></div></div>';
+  const instructHTML='<div style="background:var(--navy2);border:1px solid var(--navy3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:0.78rem;line-height:1.7;"><strong style="color:var(--amber);">How to use in Google Flow:</strong><br>1. Open <a href="https://labs.google/flow" target="_blank" style="color:var(--gold);">labs.google/flow</a><br>2. Install <a href="https://chromewebstore.google.com/detail/flow-automation-bulk-ai-v/hpnlhgdmjnbceiffmbeidnnapkikonnd" target="_blank" style="color:var(--gold);">Flow Automation Chrome extension</a><br>3. Click COPY ALL below and paste into the extension bulk import</div>';
+  const scenesHTML=scenes.map((s,i)=>{
+    const safePrompt=encodeURIComponent(s.prompt);
+    return '<div class="veo-scene"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div><span style="font-family:\'Bebas Neue\',sans-serif;font-size:0.95rem;color:var(--gold);">Scene '+s.num+'</span> <span style="font-size:0.78rem;color:var(--text);">'+s.title+'</span>'+(s.shotType?'<span class="pill pb" style="margin-left:6px;">'+s.shotType+'</span>':'')+'</div><button onclick="copyOnePrompt(this,\''+safePrompt+'\')" style="background:var(--navy3);border:1px solid var(--navy3);border-radius:6px;color:var(--muted);font-size:0.69rem;padding:4px 9px;cursor:pointer;">Copy</button></div>'+(s.voiceover?'<div style="margin-bottom:8px;"><div style="font-size:0.67rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Voiceover</div><div style="background:var(--navy);border-radius:6px;padding:8px;font-size:0.75rem;font-style:italic;color:var(--muted);">"'+s.voiceover.slice(0,180)+(s.voiceover.length>180?'...':'')+'"</div></div>':'')+'<div><div style="font-size:0.67rem;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Veo Prompt</div><div style="background:var(--navy);border:1px solid var(--navy3);border-radius:6px;padding:9px;font-size:0.77rem;line-height:1.6;">'+s.prompt+'</div></div></div>';
   }).join('');
-
-  // Store all prompts for copy all
-  window._veoScenes = scenes;
-  window._veoTitle = title;
-
-  document.getElementById('veoResults').innerHTML = `
-    <div class="results-hdr">🎬 ${scenes.length} Scenes Generated — ${title}</div>
-    ${statsHTML}
-    <div style="background:var(--navy2);border:1px solid var(--navy3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:0.78rem;line-height:1.7;">
-      <strong style="color:var(--amber);">How to use in Google Flow:</strong><br>
-      1. Open <a href="https://labs.google/flow" target="_blank" style="color:var(--gold);">labs.google/flow</a> in Chrome<br>
-      2. Install <a href="https://chromewebstore.google.com/detail/flow-automation-bulk-ai-v/hpnlhgdmjnbceiffmbeidnnapkikonnd" target="_blank" style="color:var(--gold);">Flow Automation Chrome extension</a><br>
-      3. Click <strong style="color:var(--amber);">📋 COPY ALL</strong> below → paste into the extension's bulk import<br>
-      4. Or copy each prompt individually and paste into Google Flow one by one
-    </div>
-    ${scenesHTML}`;
-
-  document.getElementById('veoCopyAllBtn').style.display = 'inline-block';
+  document.getElementById('veoResults').innerHTML='<div class="results-hdr">'+scenes.length+' Scenes — '+title+'</div>'+statsHTML+instructHTML+scenesHTML;
+  document.getElementById('veoCopyAllBtn').style.display='inline-block';
 }
 
-function copyPrompt(btn, index) {
-  const prompt = decodeURIComponent(btn.getAttribute('data-prompt'));
-  navigator.clipboard.writeText(prompt).then(() => {
-    btn.textContent = '✅ Copied!';
-    btn.style.borderColor = 'var(--green)';
-    btn.style.color = 'var(--green)';
-    setTimeout(() => {
-      btn.textContent = '📋 Copy';
-      btn.style.borderColor = 'var(--navy3)';
-      btn.style.color = 'var(--muted)';
-    }, 2000);
+function copyOnePrompt(btn,encodedPrompt) {
+  const prompt=decodeURIComponent(encodedPrompt);
+  navigator.clipboard.writeText(prompt).then(()=>{
+    btn.textContent='Copied!'; btn.style.color='var(--green)';
+    setTimeout(()=>{btn.textContent='Copy'; btn.style.color='var(--muted)';},2000);
   });
 }
 
 function copyAllPrompts() {
-  const scenes = window._veoScenes || [];
-  const title = window._veoTitle || 'DBH Video';
-  const allText = scenes.map(s =>
-    `SCENE ${s.num}: ${s.title}
-${s.shotType ? `SHOT: ${s.shotType}
-` : ''}VOICEOVER: ${s.voiceover}
-
-VEO PROMPT:
-${s.prompt}
-`
-  ).join('
----
-
-');
-
-  const full = `DBH VEO PROMPTS — ${title}
-Generated: ${new Date().toLocaleDateString()}
-Total scenes: ${scenes.length}
-
-${'='.repeat(50)}
-
-${allText}`;
-
-  navigator.clipboard.writeText(full).then(() => {
-    const btn = document.getElementById('veoCopyAllBtn');
-    btn.textContent = '✅ ALL COPIED!';
-    setTimeout(() => btn.textContent = '📋 COPY ALL', 2500);
+  const scenes=window._veoScenes||[], title=window._veoTitle||'DBH';
+  const text=scenes.map(s=>'SCENE '+s.num+': '+s.title+'\nSHOT: '+s.shotType+'\nVOICEOVER: '+s.voiceover+'\n\nVEO PROMPT:\n'+s.prompt).join('\n\n---\n\n');
+  navigator.clipboard.writeText('DBH VEO PROMPTS: '+title+'\n\n'+text).then(()=>{
+    const btn=document.getElementById('veoCopyAllBtn');
+    btn.textContent='ALL COPIED!';
+    setTimeout(()=>btn.textContent='COPY ALL',2500);
   });
 }
 </script>
-
 </body>
 </html>
