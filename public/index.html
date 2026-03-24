@@ -32,12 +32,27 @@ body::before {
   content:'';
   position:fixed;
   inset:0;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201,168,76,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 10% 60%, rgba(201,168,76,0.04) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 60% at 90% 80%, rgba(12,26,40,0.8) 0%, transparent 60%);
   pointer-events:none;
   z-index:0;
+  /* Jerusalem skyline silhouette + atmospheric layers */
+  background:
+    /* Top gold atmospheric glow */
+    radial-gradient(ellipse 120% 40% at 50% -10%, rgba(201,168,76,0.12) 0%, transparent 55%),
+    /* Left torch glow */
+    radial-gradient(ellipse 35% 50% at -5% 50%, rgba(180,100,20,0.12) 0%, transparent 60%),
+    /* Right torch glow */
+    radial-gradient(ellipse 35% 50% at 105% 50%, rgba(180,100,20,0.08) 0%, transparent 60%),
+    /* Bottom ground shadow */
+    radial-gradient(ellipse 100% 30% at 50% 110%, rgba(0,0,0,0.6) 0%, transparent 60%),
+    /* Center depth vignette */
+    radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(0,0,0,0.35) 100%);
+  animation: atmosphereShift 20s ease-in-out infinite alternate;
+}
+
+@keyframes atmosphereShift {
+  0%   { opacity: 0.7; }
+  50%  { opacity: 1.0; }
+  100% { opacity: 0.85; }
 }
 
 /* Grain texture overlay */
@@ -45,10 +60,12 @@ body::after {
   content:'';
   position:fixed;
   inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events:none;
   z-index:0;
-  opacity:0.4;
+  opacity:0.35;
+  /* Ancient stone / papyrus texture using fractal noise */
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23t)' opacity='0.08'/%3E%3C/svg%3E");
+  background-size: 400px 400px;
 }
 
 .wrap { position:relative; z-index:1; max-width:780px; margin:0 auto; padding:0 16px 60px; }
@@ -963,9 +980,135 @@ select {
   .tab-nav { flex-wrap: wrap; }
   .tab-btn { flex: 1 1 calc(50% - 4px); min-width: calc(50% - 4px); }
 }
+
+/* ═══════════════════════════════════════════════════
+   HISTORICAL BACKGROUND SCENE
+═══════════════════════════════════════════════════ */
+
+/* Layer 1: Jerusalem skyline silhouette — fixed behind everything */
+.bg-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Jerusalem city silhouette SVG layer */
+.bg-scene::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='xMidYMax slice'%3E%3Cpath fill='%23040C16' fill-opacity='0.95' d='M0,320 L0,200 L20,200 L20,180 L40,180 L40,160 L50,160 L50,140 L60,140 L60,160 L80,160 L80,120 L90,120 L90,100 L95,100 L95,80 L100,80 L100,100 L105,100 L105,120 L120,120 L120,140 L130,140 L130,130 L140,130 L140,110 L145,110 L145,90 L152,90 L152,70 L158,70 L158,90 L165,90 L165,110 L170,110 L170,130 L180,130 L180,150 L200,150 L200,130 L210,130 L210,110 L215,110 L215,95 L218,95 L218,75 L222,75 L222,55 L226,55 L226,75 L230,75 L230,95 L235,95 L235,110 L240,110 L240,130 L260,130 L260,150 L280,150 L280,140 L290,140 L290,120 L296,120 L296,100 L300,100 L300,120 L306,120 L306,140 L320,140 L320,160 L340,160 L340,140 L350,140 L350,120 L356,120 L356,95 L360,95 L360,75 L365,75 L365,55 L368,55 L368,35 L372,35 L372,55 L375,55 L375,75 L380,75 L380,95 L384,95 L384,120 L390,120 L390,140 L400,140 L400,160 L420,160 L420,150 L435,150 L435,130 L440,130 L440,110 L446,110 L446,90 L450,90 L450,70 L455,70 L455,90 L460,90 L460,110 L465,110 L465,130 L470,130 L470,150 L490,150 L490,160 L510,160 L510,150 L520,150 L520,130 L526,130 L526,110 L530,110 L530,90 L534,90 L534,65 L538,65 L538,45 L542,45 L542,65 L546,65 L546,90 L550,90 L550,110 L556,110 L556,130 L560,130 L560,150 L580,150 L580,160 L600,160 L600,145 L615,145 L615,125 L620,125 L620,105 L626,105 L626,85 L630,85 L630,65 L635,65 L635,85 L640,85 L640,105 L645,105 L645,125 L650,125 L650,145 L665,145 L665,160 L680,160 L680,150 L690,150 L690,130 L695,130 L695,110 L700,110 L700,130 L705,130 L705,150 L720,150 L720,160 L740,160 L740,145 L750,145 L750,125 L756,125 L756,100 L760,100 L760,80 L764,80 L764,60 L768,60 L768,40 L772,40 L772,60 L776,60 L776,80 L780,80 L780,100 L784,100 L784,125 L790,125 L790,145 L800,145 L800,160 L820,160 L820,150 L830,150 L830,130 L836,130 L836,110 L840,110 L840,130 L846,130 L846,150 L860,150 L860,160 L880,160 L880,145 L890,145 L890,125 L895,125 L895,100 L900,100 L900,80 L904,80 L904,60 L908,55 L912,60 L916,80 L916,100 L920,100 L920,125 L926,125 L926,145 L940,145 L940,160 L960,160 L960,150 L970,150 L970,130 L976,130 L976,110 L980,110 L980,90 L984,90 L984,110 L990,110 L990,130 L996,130 L996,150 L1010,150 L1010,160 L1030,160 L1030,145 L1040,145 L1040,125 L1046,125 L1046,105 L1050,105 L1050,85 L1055,85 L1055,65 L1060,65 L1060,85 L1065,85 L1065,105 L1070,105 L1070,125 L1076,125 L1076,145 L1090,145 L1090,160 L1110,160 L1110,150 L1120,150 L1120,130 L1126,130 L1126,110 L1130,110 L1130,130 L1136,130 L1136,150 L1150,150 L1150,160 L1170,160 L1170,150 L1180,150 L1180,130 L1185,130 L1185,110 L1190,110 L1190,90 L1194,90 L1194,70 L1198,70 L1198,90 L1202,90 L1202,110 L1206,110 L1206,130 L1210,130 L1210,150 L1220,150 L1220,160 L1240,160 L1240,145 L1250,145 L1250,125 L1256,125 L1256,105 L1260,105 L1260,85 L1265,85 L1265,65 L1270,65 L1270,85 L1275,85 L1275,105 L1280,105 L1280,125 L1286,125 L1286,145 L1300,145 L1300,160 L1320,160 L1320,150 L1330,150 L1330,130 L1336,130 L1336,110 L1340,110 L1340,130 L1346,130 L1346,150 L1360,150 L1360,160 L1380,160 L1380,180 L1400,180 L1400,200 L1440,200 L1440,320 Z'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.9;
+}
+
+/* Floating dust/ember particles */
+.bg-scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle 1px at 15% 25%, rgba(201,168,76,0.6) 0%, transparent 100%),
+    radial-gradient(circle 1.5px at 35% 60%, rgba(201,168,76,0.4) 0%, transparent 100%),
+    radial-gradient(circle 1px at 55% 15%, rgba(232,184,75,0.5) 0%, transparent 100%),
+    radial-gradient(circle 2px at 70% 40%, rgba(201,168,76,0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 85% 70%, rgba(232,184,75,0.4) 0%, transparent 100%),
+    radial-gradient(circle 1.5px at 25% 80%, rgba(201,168,76,0.3) 0%, transparent 100%),
+    radial-gradient(circle 1px at 90% 20%, rgba(201,168,76,0.5) 0%, transparent 100%),
+    radial-gradient(circle 2px at 48% 55%, rgba(232,184,75,0.25) 0%, transparent 100%),
+    radial-gradient(circle 1px at 62% 88%, rgba(201,168,76,0.4) 0%, transparent 100%),
+    radial-gradient(circle 1.5px at 8% 45%, rgba(232,184,75,0.35) 0%, transparent 100%);
+  animation: floatDust 15s ease-in-out infinite alternate;
+}
+
+@keyframes floatDust {
+  0%   { transform: translateY(0px) translateX(0px); opacity: 0.4; }
+  33%  { transform: translateY(-8px) translateX(4px); opacity: 0.7; }
+  66%  { transform: translateY(-4px) translateX(-6px); opacity: 0.5; }
+  100% { transform: translateY(-12px) translateX(2px); opacity: 0.8; }
+}
+
+/* Torch flame glow — left and right sides */
+.bg-torch-left,
+.bg-torch-right {
+  position: fixed;
+  width: 180px;
+  height: 400px;
+  pointer-events: none;
+  z-index: 0;
+  animation: torchFlicker 4s ease-in-out infinite alternate;
+}
+
+.bg-torch-left {
+  left: -60px;
+  top: 20%;
+  background: radial-gradient(ellipse 60% 80% at 40% 30%,
+    rgba(255,140,0,0.12) 0%,
+    rgba(201,100,0,0.08) 40%,
+    transparent 70%);
+}
+
+.bg-torch-right {
+  right: -60px;
+  top: 30%;
+  background: radial-gradient(ellipse 60% 80% at 60% 30%,
+    rgba(255,140,0,0.10) 0%,
+    rgba(201,100,0,0.06) 40%,
+    transparent 70%);
+  animation-delay: 1.5s;
+}
+
+@keyframes torchFlicker {
+  0%   { opacity: 0.6; transform: scaleX(1.0); }
+  20%  { opacity: 1.0; transform: scaleX(1.1); }
+  40%  { opacity: 0.7; transform: scaleX(0.95); }
+  60%  { opacity: 0.9; transform: scaleX(1.05); }
+  80%  { opacity: 0.6; transform: scaleX(0.98); }
+  100% { opacity: 1.0; transform: scaleX(1.08); }
+}
+
+/* Horizontal light beam across middle — ancient hall effect */
+.bg-beam {
+  position: fixed;
+  top: 30%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(201,168,76,0.06) 20%,
+    rgba(201,168,76,0.12) 50%,
+    rgba(201,168,76,0.06) 80%,
+    transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+  animation: beamPulse 8s ease-in-out infinite;
+  box-shadow: 0 0 40px 20px rgba(201,168,76,0.04);
+}
+
+@keyframes beamPulse {
+  0%, 100% { opacity: 0.4; top: 30%; }
+  50%       { opacity: 0.9; top: 32%; }
+}
+
+/* Make sure all content renders above background */
+.wrap { position: relative; z-index: 1; }
+#gateOverlay { z-index: 9999; }
 </style>
 </head>
 <body>
+
+<!-- HISTORICAL BACKGROUND SCENE -->
+<div class="bg-scene" aria-hidden="true"></div>
+<div class="bg-torch-left" aria-hidden="true"></div>
+<div class="bg-torch-right" aria-hidden="true"></div>
+<div class="bg-beam" aria-hidden="true"></div>
 
 <!-- PASSWORD GATE -->
 <div id="gateOverlay" style="position:fixed;inset:0;background:var(--navy);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
