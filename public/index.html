@@ -2837,22 +2837,66 @@ async function generateVeoBySections() {
     document.getElementById('veoStatusText').textContent='Step 2/2: Generating Veo scenes...';
   }
 
-  const wordCount=script.split(/\s+/).length;
-  const expectedScenes=Math.ceil(wordCount/70);
-  const CHUNK_SIZE=1500;
-  const words=script.split(/\s+/);
-  const chunks=[];
-  for(let i=0;i<words.length;i+=CHUNK_SIZE){
-    chunks.push(words.slice(i,i+CHUNK_SIZE).join(' '));
+  // Split script into PARAGRAPHS — preserves natural sentence boundaries
+  // so each voiceover line stays perfectly aligned with its scene
+  let paragraphs = script.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 20);
+  if (paragraphs.length < 3) {
+    // Fallback: split by sentence groups (3 sentences per scene)
+    const sentences = script.match(/[^.!?]+[.!?]+/g) || [script];
+    paragraphs = [];
+    for (let i = 0; i < sentences.length; i += 3) {
+      const group = sentences.slice(i, i + 3).join(' ').trim();
+      if (group.length > 20) paragraphs.push(group);
+    }
   }
 
-  const allScenes=[];
-  let sceneOffset=0;
+  // Group paragraphs into chunks of max 8 paragraphs per API call
+  // Each paragraph = one scene = perfect voiceover alignment
+  const PARAS_PER_CHUNK = 8;
+  const chunks = [];
+  for (let i = 0; i < paragraphs.length; i += PARAS_PER_CHUNK) {
+    chunks.push(paragraphs.slice(i, i + PARAS_PER_CHUNK));
+  }
 
-  for(let ci=0;ci<chunks.length;ci++){
-    document.getElementById('veoStatusText').textContent='Processing part '+(ci+1)+' of '+chunks.length+'... ('+allScenes.length+' scenes so far)';
-    const scenesInChunk=Math.ceil((chunks[ci].split(/\s+/).length/wordCount)*expectedScenes);
-    const prompt='You are a cinematic AI video director for biblical history content.\n\nVIDEO: "'+title+'" (Part '+(ci+1)+' of '+chunks.length+')\nSTYLE: '+style+'\nDURATION: '+duration+' seconds per scene\nRATIO: '+ratio+'\nCHARACTER: '+charRef+'\nSTARTING SCENE NUMBER: '+(sceneOffset+1)+'\n\nDBH VISUAL RULES:\n- Ancient Middle East, first-century Jerusalem, Judean wilderness\n- Chiaroscuro lighting, amber-gold tones, candlelight or sunlight\n- Dusty, cinematic, historically authentic atmosphere\n- NO modern elements, NO text overlays\n\nSCRIPT SECTION:\n'+chunks[ci]+'\n\nGenerate approximately '+scenesInChunk+' scenes. Use EXACTLY this format:\n---SCENE [N]: [TITLE]---\nVOICEOVER: [exact script text for this scene]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in]\nVEO PROMPT: [detailed cinematic prompt, 80-120 words]\n---END SCENE---\n\nWrite all scenes now.';
+  const allScenes = [];
+  let sceneOffset = 0;
+
+  for (let ci = 0; ci < chunks.length; ci++) {
+    const chunkParas = chunks[ci];
+    document.getElementById('veoStatusText').textContent =
+      'Processing part ' + (ci+1) + ' of ' + chunks.length +
+      '... (' + allScenes.length + ' scenes so far)';
+
+    // Number each paragraph so AI maps 1:1 to scenes
+    const numberedScript = chunkParas.map(function(p, idx) {
+      return '[PARAGRAPH ' + (sceneOffset + idx + 1) + ']\n' + p;
+    }).join('\n\n');
+
+    const prompt =
+      'You are a cinematic AI video director for biblical history content.\n\n' +
+      'VIDEO: "' + title + '" (Part ' + (ci+1) + ' of ' + chunks.length + ')\n' +
+      'STYLE: ' + style + '\n' +
+      'DURATION: ' + duration + ' seconds per scene\n' +
+      'RATIO: ' + ratio + '\n' +
+      'CHARACTER: ' + charRef + '\n' +
+      'STARTING SCENE NUMBER: ' + (sceneOffset + 1) + '\n\n' +
+      'DBH VISUAL RULES:\n' +
+      '- Ancient Middle East, first-century Jerusalem, Judean wilderness\n' +
+      '- Chiaroscuro lighting, amber-gold tones, candlelight or sunlight\n' +
+      '- Dusty, cinematic, historically authentic atmosphere\n' +
+      '- NO modern elements, NO text overlays\n\n' +
+      'CRITICAL RULE: Generate EXACTLY ONE scene per numbered paragraph below.\n' +
+      'The VOICEOVER field must contain the EXACT TEXT of that paragraph — word for word.\n' +
+      'Do NOT paraphrase, summarise or skip any paragraph.\n\n' +
+      'Use EXACTLY this format for each scene:\n' +
+      '---SCENE [N]: [SHORT DESCRIPTIVE TITLE]---\n' +
+      'VOICEOVER: [copy the paragraph text EXACTLY as written]\n' +
+      'SHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in/Slow-push]\n' +
+      'VEO PROMPT: [80-120 word cinematic Veo prompt matching the voiceover content]\n' +
+      '---END SCENE---\n\n' +
+      'SCRIPT PARAGRAPHS TO PROCESS:\n\n' +
+      numberedScript + '\n\n' +
+      'Generate exactly ' + chunkParas.length + ' scenes now, one per paragraph.';
 
     let chunkDone = false;
     for (let retry = 0; retry < 3 && !chunkDone; retry++) {
@@ -3054,9 +3098,32 @@ async function generateVeoLineByLine(mode) {
     const chunk=units.slice(i,i+BATCH);
     const startN=i+1;
     document.getElementById('veoStatusText').textContent='Generating scenes '+startN+'-'+Math.min(i+BATCH,units.length)+' of '+units.length+'...';
-    const numberedLines=chunk.map((u,j)=>'LINE '+(startN+j)+': '+u.trim()).join('\n');
+    const numberedLines = chunk.map(function(u, j) {
+      return '[LINE ' + (startN+j) + ']\n' + u.trim();
+    }).join('\n\n');
 
-    const prompt='You are a cinematic AI video director for biblical history content.\nVIDEO: "'+title+'"\nSTYLE: '+style+'\nDURATION: '+duration+' seconds per scene\nRATIO: '+ratio+'\nCHARACTER: '+charRef+'\n\nDBH VISUAL RULES:\n- Ancient Middle East, first-century Jerusalem\n- Chiaroscuro lighting, amber-gold tones\n- NO modern elements, NO text overlays\n\nFor EACH line generate one scene:\n---SCENE [N]: [SHORT TITLE]---\nVOICEOVER: [copy line exactly]\nSHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan]\nVEO PROMPT: [80-120 word cinematic prompt]\n---END SCENE---\n\nLINES:\n'+numberedLines+'\n\nOne scene per line now.';
+    const prompt =
+      'You are a cinematic AI video director for biblical history content.\n\n' +
+      'VIDEO: "' + title + '"\n' +
+      'STYLE: ' + style + '\n' +
+      'DURATION: ' + duration + ' seconds per scene\n' +
+      'RATIO: ' + ratio + '\n' +
+      'CHARACTER: ' + charRef + '\n\n' +
+      'DBH VISUAL RULES:\n' +
+      '- Ancient Middle East, first-century Jerusalem, Judean wilderness\n' +
+      '- Chiaroscuro lighting, amber-gold tones, candlelight or sunlight\n' +
+      '- NO modern elements, NO text overlays\n\n' +
+      'CRITICAL RULE: Generate EXACTLY ONE scene per numbered line.\n' +
+      'The VOICEOVER must be the EXACT TEXT of that line — copied word for word.\n' +
+      'Do NOT paraphrase or summarise. Copy it exactly.\n\n' +
+      'Use EXACTLY this format:\n' +
+      '---SCENE [N]: [SHORT TITLE]---\n' +
+      'VOICEOVER: [exact line text, word for word]\n' +
+      'SHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in]\n' +
+      'VEO PROMPT: [80-120 word cinematic Veo prompt]\n' +
+      '---END SCENE---\n\n' +
+      'LINES TO PROCESS:\n\n' +
+      numberedLines + '\n\nGenerate exactly ' + chunk.length + ' scenes now.';
 
     let done=false;
     for(let retry=0;retry<3&&!done;retry++){
