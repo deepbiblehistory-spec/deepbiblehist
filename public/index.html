@@ -1727,6 +1727,73 @@ select {
         </select>
       </div>
     </div>
+    <!-- HOOK TYPE SELECTOR -->
+    <input type="hidden" id="swHook" value="problem_hook">
+    <label class="lbl" style="margin-bottom:10px;">Hook Type</label>
+    <div id="swHookGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+
+      <div class="sw-hook-card active" onclick="selectHookType(this,'problem_hook')" style="border:2px solid var(--gold);border-radius:12px;padding:11px;cursor:pointer;background:rgba(201,168,76,0.08);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--gold);margin-bottom:4px;">&#9888; PROBLEM HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Opens with a problem the viewer didn&#39;t know they had. Creates immediate tension and a need for resolution.</p>
+        <div style="font-size:0.63rem;color:var(--amber);font-style:italic;">"Everything you&#39;ve been taught about [X] is wrong — and it&#39;s costing you..."</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'shocking_fact')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#128561; SHOCKING FACT HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Opens with an undeniable, counterintuitive fact that immediately breaks expectations and demands explanation.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"In 1947, a shepherd boy threw a rock into a cave. What he found changed the Bible forever."</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'forbidden_knowledge')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#128274; FORBIDDEN KNOWLEDGE HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Opens with something deliberately hidden or suppressed. Triggers curiosity + mild outrage. Very high retention for Christian audiences.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"There are chapters of the Bible that were removed. What was in them — and who removed them?"</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'mystery_question')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#10067; MYSTERY QUESTION HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Opens with a single powerful question nobody has satisfactorily answered. Creates an open loop the viewer must stay to close.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"Where did Jesus spend the 18 missing years of his life? The answer has been hiding in plain sight."</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'scene_drop')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#127774; IN-SCENE DROP HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Drops the viewer directly into a cinematic historical moment mid-action, no introduction. Extremely immersive and visual.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"It is 33 AD. A woman is running through the streets of Jerusalem. She has just seen something impossible."</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'credibility_challenge')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#128196; CREDIBILITY CHALLENGE HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Opens by challenging what scholars, historians or mainstream sources have always said. Positions DBH as the corrective voice.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"Every historian will tell you [X]. Every one of them is missing the same crucial piece of evidence."</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'personal_stakes')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#10084; PERSONAL STAKES HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Makes the viewer feel personally affected. Connects the ancient story directly to the viewer&#39;s faith, identity or daily life.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"If what we are about to show you is true — it changes what you believe about your own salvation."</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'contradiction_hook')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#9878; CONTRADICTION HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Opens by presenting two statements that cannot both be true — then promises to resolve the contradiction with evidence.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"The Bible says [A]. History says [B]. Only one of them can be right — and the answer is not what you expect."</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'discovery_moment')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#128269; DISCOVERY MOMENT HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Opens at the exact moment of an archaeological or historical discovery. Creates immediate excitement and documentary urgency.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"In [year], a team of archaeologists made a discovery so significant — they were ordered to keep it quiet."</div>
+      </div>
+
+      <div class="sw-hook-card" onclick="selectHookType(this,'before_after')" style="border:1px solid var(--border);border-radius:12px;padding:11px;cursor:pointer;background:var(--navy3);transition:all 0.2s;">
+        <div style="font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:1px;color:var(--text);margin-bottom:4px;">&#8644; BEFORE AND AFTER HOOK</div>
+        <p style="font-size:0.74rem;color:var(--muted);line-height:1.4;margin-bottom:4px;">Shows the viewer where they are now (uninformed) vs where they will be after watching. Promises a transformation of understanding.</p>
+        <div style="font-size:0.63rem;color:var(--muted);font-style:italic;">"By the end of this video, everything you thought you knew about [X] will look completely different."</div>
+      </div>
+
+    </div>
+
     <div style="margin-bottom:12px;"><label class="lbl">Key Evidence / Angle (optional)</label>
       <textarea class="txt" id="swEvidence" style="min-height:70px;" placeholder="e.g. Dead Sea Scrolls reference, Josephus quote, specific archaeological site..."></textarea>
     </div>
