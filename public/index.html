@@ -6,173 +6,871 @@
 <title>DBH Channel Intelligence</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap');
-:root{--gold:#C9A84C;--amber:#E8B84B;--navy:#0D1B2A;--navy2:#152235;--navy3:#1E2F45;--text:#E8E8E8;--muted:#8A9BB0;--red:#E05252;--green:#52C78A;}
+:root {
+  --gold:#C9A84C; --amber:#E8B84B; --gold-bright:#F5D080;
+  --navy:#060E18; --navy2:#0C1A28; --navy3:#142236; --navy4:#1C2E44;
+  --text:#EDE8E0; --muted:#7A8FA6; --red:#E05252; --green:#4DC88A;
+  --border:rgba(201,168,76,0.25); --border-bright:rgba(201,168,76,0.6);
+  --glow:rgba(201,168,76,0.15);
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--navy);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:20px 14px;}
-header{text-align:center;margin-bottom:24px;}
-header h1{font-family:serif;font-size:2.2rem;letter-spacing:3px;color:var(--gold);line-height:1;}
-header p{color:var(--muted);font-size:0.78rem;margin-top:5px;letter-spacing:1px;text-transform:uppercase;}
-.tab-nav{display:flex;gap:3px;margin-bottom:22px;background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:4px;}
-.tab-btn{flex:1;background:transparent;border:none;border-radius:8px;color:var(--muted);font-family:serif;font-size:0.75rem;letter-spacing:1px;padding:9px 3px;cursor:pointer;transition:all 0.2s;}
-.tab-btn.active{background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--navy);}
-.tab-panel{display:none;}.tab-panel.active{display:block;}
-.card{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:18px;margin-bottom:18px;}
-.lbl{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:7px;}
-input[type=text],input[type=password],select,.txt{width:100%;background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.83rem;outline:none;transition:border-color 0.2s;box-sizing:border-box;}
-input:focus,select:focus,.txt:focus{border-color:var(--gold);}
-.txt{resize:vertical;min-height:90px;line-height:1.5;font-size:0.76rem;}
-.run-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:serif;font-size:1.1rem;letter-spacing:2px;padding:13px;cursor:pointer;margin-bottom:18px;}
-.run-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.icon-btn{background:var(--navy3);border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-family:'Inter',sans-serif;font-size:0.73rem;font-weight:600;padding:6px 11px;cursor:pointer;white-space:nowrap;}
-.icon-btn:hover{background:var(--gold);color:var(--navy);}
-.add-btn{background:transparent;border:1px dashed var(--navy3);border-radius:8px;color:var(--muted);cursor:pointer;padding:9px;font-size:0.81rem;width:100%;margin-top:6px;}
-.add-btn:hover{border-color:var(--gold);color:var(--gold);}
-.remove-btn{background:transparent;border:1px solid var(--navy3);border-radius:6px;color:var(--muted);cursor:pointer;padding:7px 10px;font-size:0.82rem;}
-.remove-btn:hover{border-color:var(--red);color:var(--red);}
-.status-bar{background:var(--navy2);border:1px solid var(--navy3);border-radius:8px;padding:10px 14px;font-size:0.78rem;color:var(--muted);margin-bottom:18px;display:none;align-items:center;gap:8px;}
-.spinner{width:14px;height:14px;border:2px solid var(--navy3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+html{scroll-behavior:smooth;}
+
+body {
+  background:var(--navy);
+  color:var(--text);
+  font-family:'Crimson Pro',Georgia,serif;
+  min-height:100vh;
+  padding:0;
+  overflow-x:hidden;
+}
+
+/* Atmospheric background */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 10% 60%, rgba(201,168,76,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 60% at 90% 80%, rgba(12,26,40,0.8) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Grain texture overlay */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:0;
+  opacity:0.4;
+}
+
+.wrap { position:relative; z-index:1; max-width:780px; margin:0 auto; padding:0 16px 60px; }
+
+/* ── HEADER ── */
+header {
+  text-align:center;
+  padding:48px 20px 36px;
+  position:relative;
+}
+
+.header-eyebrow {
+  font-family:'Cinzel',serif;
+  font-size:0.62rem;
+  letter-spacing:6px;
+  color:var(--gold);
+  text-transform:uppercase;
+  margin-bottom:16px;
+  opacity:0.8;
+}
+
+header h1 {
+  font-family:'Cinzel',serif;
+  font-size:2.8rem;
+  font-weight:900;
+  letter-spacing:4px;
+  line-height:1;
+  background:linear-gradient(135deg, #F5D080 0%, #C9A84C 40%, #E8B84B 70%, #A07830 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 30px rgba(201,168,76,0.3));
+  margin-bottom:10px;
+}
+
+.header-sub {
+  font-family:'Crimson Pro',serif;
+  font-size:0.88rem;
+  color:var(--muted);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-style:italic;
+}
+
+.header-line {
+  width:120px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin:20px auto 0;
+}
+
+/* ── TAB NAV ── */
+.tab-nav {
+  display:flex;
+  gap:2px;
+  margin-bottom:28px;
+  background:var(--navy2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:4px;
+  position:relative;
+  box-shadow:0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.tab-btn {
+  flex:1;
+  background:transparent;
+  border:none;
+  border-radius:10px;
+  color:var(--muted);
+  font-family:'Cinzel',serif;
+  font-size:0.65rem;
+  letter-spacing:1.5px;
+  padding:11px 6px;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  text-transform:uppercase;
+  position:relative;
+}
+
+.tab-btn:hover:not(.active) {
+  color:var(--text);
+  background:rgba(201,168,76,0.06);
+}
+
+.tab-btn.active {
+  background:linear-gradient(135deg, rgba(201,168,76,0.2), rgba(232,184,75,0.12));
+  color:var(--gold-bright);
+  box-shadow:0 0 20px rgba(201,168,76,0.15), inset 0 1px 0 rgba(201,168,76,0.2);
+  border:1px solid var(--border);
+}
+
+.tab-btn.active::after {
+  content:'';
+  position:absolute;
+  bottom:-5px;
+  left:50%;
+  transform:translateX(-50%);
+  width:40px;
+  height:1px;
+  background:var(--gold);
+  box-shadow:0 0 8px var(--gold);
+}
+
+.tab-panel { display:none; animation:fadeIn 0.3s ease; }
+.tab-panel.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── CARDS ── */
+.card {
+  background:linear-gradient(145deg, var(--navy3), var(--navy2));
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:16px;
+  position:relative;
+  box-shadow:0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+  transition:border-color 0.2s;
+}
+
+.card:hover { border-color:rgba(201,168,76,0.35); }
+
+.card::before {
+  content:'';
+  position:absolute;
+  top:0; left:20px; right:20px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+  border-radius:50%;
+}
+
+/* ── SECTION TITLES ── */
+.section-label {
+  font-family:'Cinzel',serif;
+  font-size:0.6rem;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.section-label::after {
+  content:'';
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg, var(--border), transparent);
+}
+
+/* ── INPUTS ── */
+.lbl {
+  font-family:'Cinzel',serif;
+  font-size:0.58rem;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  color:var(--muted);
+  display:block;
+  margin-bottom:6px;
+}
+
+input[type=text],input[type=password],select,.txt {
+  width:100%;
+  background:rgba(6,14,24,0.8);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 14px;
+  color:var(--text);
+  font-family:'Crimson Pro',serif;
+  font-size:0.95rem;
+  outline:none;
+  transition:all 0.2s;
+  box-sizing:border-box;
+  appearance:none;
+}
+
+input:focus,select:focus,.txt:focus {
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(201,168,76,0.1), 0 0 20px rgba(201,168,76,0.08);
+  background:rgba(6,14,24,0.95);
+}
+
+.txt {
+  resize:vertical;
+  min-height:90px;
+  line-height:1.6;
+  font-size:0.88rem;
+}
+
+select {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:32px;
+  cursor:pointer;
+}
+
+/* ── BUTTONS ── */
+.run-btn {
+  width:100%;
+  background:linear-gradient(135deg, #C9A84C 0%, #E8B84B 50%, #C9A84C 100%);
+  border:none;
+  border-radius:12px;
+  color:#060E18;
+  font-family:'Cinzel',serif;
+  font-size:0.85rem;
+  letter-spacing:3px;
+  font-weight:700;
+  padding:15px;
+  cursor:pointer;
+  margin-bottom:16px;
+  transition:all 0.2s;
+  text-transform:uppercase;
+  box-shadow:0 4px 20px rgba(201,168,76,0.3), 0 1px 0 rgba(255,255,255,0.2) inset;
+  position:relative;
+  overflow:hidden;
+}
+
+.run-btn::before {
+  content:'';
+  position:absolute;
+  top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+  transform:translateX(-100%);
+  transition:transform 0.5s;
+}
+
+.run-btn:hover::before { transform:translateX(100%); }
+.run-btn:hover { box-shadow:0 6px 28px rgba(201,168,76,0.45); transform:translateY(-1px); }
+.run-btn:active { transform:translateY(0); }
+.run-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+.icon-btn {
+  background:transparent;
+  border:1px solid var(--border-bright);
+  border-radius:8px;
+  color:var(--gold);
+  font-family:'Cinzel',serif;
+  font-size:0.6rem;
+  letter-spacing:1.5px;
+  font-weight:600;
+  padding:7px 12px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all 0.2s;
+  text-transform:uppercase;
+}
+
+.icon-btn:hover {
+  background:var(--gold);
+  color:var(--navy);
+  box-shadow:0 0 16px rgba(201,168,76,0.4);
+}
+
+.add-btn {
+  background:transparent;
+  border:1px dashed rgba(201,168,76,0.3);
+  border-radius:10px;
+  color:var(--muted);
+  cursor:pointer;
+  padding:10px;
+  font-family:'Crimson Pro',serif;
+  font-size:0.88rem;
+  width:100%;
+  margin-top:8px;
+  transition:all 0.2s;
+  letter-spacing:1px;
+}
+
+.add-btn:hover { border-color:var(--gold); color:var(--gold); background:var(--glow); }
+
+.remove-btn {
+  background:transparent;
+  border:1px solid var(--navy4);
+  border-radius:7px;
+  color:var(--muted);
+  cursor:pointer;
+  padding:8px 11px;
+  font-size:0.8rem;
+  transition:all 0.2s;
+}
+
+.remove-btn:hover { border-color:var(--red); color:var(--red); }
+
+/* ── STATUS & ERRORS ── */
+.status-bar {
+  background:var(--navy2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 16px;
+  font-family:'Crimson Pro',serif;
+  font-size:0.88rem;
+  color:var(--muted);
+  margin-bottom:16px;
+  display:none;
+  align-items:center;
+  gap:10px;
+}
+
+.spinner {
+  width:16px; height:16px;
+  border:2px solid var(--navy4);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+  flex-shrink:0;
+}
 @keyframes spin{to{transform:rotate(360deg);}}
-.err{background:#2A1A1A;border:1px solid var(--red);border-radius:8px;padding:11px 14px;color:var(--red);font-size:0.81rem;margin-bottom:14px;}
-.results-hdr{font-family:serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold);margin-bottom:14px;}
-.ch-card{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;margin-bottom:18px;overflow:hidden;}
-.ch-card-hdr{background:var(--navy3);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
-.video-row{display:grid;grid-template-columns:100px 1fr;gap:10px;margin-bottom:10px;}
-.thumb-wrap{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:16/9;background:var(--navy3);}
-.thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
-.view-badge{position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,0.85);color:#fff;font-size:0.6rem;padding:1px 4px;border-radius:3px;font-weight:500;}
-.tag{font-size:0.6rem;padding:2px 6px;border-radius:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;display:inline-block;margin:2px 2px 0 0;}
-.tag-caps{background:#2A1F4A;color:#A78BFA;}.tag-colon{background:#1A2F3A;color:#5BC4E8;}
-.tag-question{background:#1A3A2A;color:#52C78A;}.tag-number{background:#3A2A1A;color:#E8A052;}
-.tag-mystery{background:#3A1A1A;color:#E05252;}.tag-ellipsis{background:#2A2A1A;color:#C9C952;}
-.intel-section{background:var(--navy2);border:1px solid var(--gold);border-radius:12px;padding:18px;margin-bottom:16px;}
-.intel-title{font-family:serif;font-size:1.1rem;letter-spacing:2px;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--navy3);}
-.pattern-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px;}
-.pstat{background:var(--navy3);border-radius:8px;padding:11px;text-align:center;}
-.pstat .val{font-family:serif;font-size:1.6rem;color:var(--amber);line-height:1;}
-.pstat .lbl2{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:4px;}
-.t-slot{background:var(--navy2);border:1px solid var(--navy3);border-radius:12px;padding:15px;margin-bottom:14px;}
-.t-slot-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.t-section{background:var(--navy2);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:14px;}
-.t-title{font-family:serif;font-size:1.05rem;letter-spacing:2px;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--navy3);}
-.score-row{margin-bottom:9px;}
-.score-labels{display:flex;justify-content:space-between;font-size:0.74rem;margin-bottom:3px;}
-.score-track{background:var(--navy3);border-radius:4px;height:7px;overflow:hidden;}
-.score-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--amber));}
-.pill{display:inline-block;font-size:0.67rem;padding:3px 8px;border-radius:10px;margin:2px;font-weight:500;}
-.pp{background:#2A1F4A;color:#A78BFA;}.pb{background:#1A2F3A;color:#5BC4E8;}
-.pr{background:#3A1A1A;color:#E05252;}.pg{background:#1A3A2A;color:#52C78A;}
-.pa{background:#3A2A1A;color:#E8A052;}.po{background:#2A2A1A;color:#C9C952;}
-.cta-item{background:var(--navy3);border-radius:8px;padding:9px 12px;margin-bottom:7px;font-size:0.77rem;border-left:3px solid var(--amber);}
-.compare-col{background:var(--navy3);border-radius:8px;padding:12px;}
-.winner{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--amber));color:var(--navy);font-size:0.6rem;font-weight:700;padding:2px 6px;border-radius:10px;text-transform:uppercase;margin-left:5px;}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
-.channel-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;}
-.channel-row input{background:var(--navy);border:1px solid var(--navy3);border-radius:8px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.81rem;outline:none;box-sizing:border-box;}
-.channel-row input:focus{border-color:var(--gold);}
-.veo-scene{background:var(--navy2);border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:12px;}
+
+.err {
+  background:rgba(224,82,82,0.08);
+  border:1px solid rgba(224,82,82,0.3);
+  border-radius:10px;
+  padding:12px 16px;
+  color:var(--red);
+  font-family:'Crimson Pro',serif;
+  font-size:0.88rem;
+  margin-bottom:14px;
+}
+
+/* ── RESULTS HEADER ── */
+.results-hdr {
+  font-family:'Cinzel',serif;
+  font-size:1.1rem;
+  letter-spacing:3px;
+  color:var(--gold);
+  margin-bottom:16px;
+  text-transform:uppercase;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.results-hdr::after {
+  content:'';
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg, var(--border-bright), transparent);
+}
+
+/* ── CHANNEL CARDS ── */
+.ch-card {
+  background:linear-gradient(145deg, var(--navy3), var(--navy2));
+  border:1px solid var(--border);
+  border-radius:16px;
+  margin-bottom:20px;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+
+.ch-card-hdr {
+  background:linear-gradient(90deg, rgba(201,168,76,0.12), rgba(201,168,76,0.04));
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+
+.video-row {
+  display:grid;
+  grid-template-columns:110px 1fr;
+  gap:12px;
+  margin-bottom:12px;
+  align-items:start;
+}
+
+.thumb-wrap {
+  position:relative;
+  border-radius:8px;
+  overflow:hidden;
+  aspect-ratio:16/9;
+  background:var(--navy4);
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+
+.thumb-wrap img { width:100%;height:100%;object-fit:cover;display:block; }
+
+.view-badge {
+  position:absolute;bottom:4px;right:4px;
+  background:rgba(0,0,0,0.9);
+  color:var(--gold);
+  font-family:'Cinzel',serif;
+  font-size:0.58rem;
+  padding:2px 5px;
+  border-radius:4px;
+  font-weight:600;
+  letter-spacing:0.5px;
+}
+
+.tag {
+  font-family:'Cinzel',serif;
+  font-size:0.55rem;
+  padding:2px 7px;
+  border-radius:20px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  display:inline-block;
+  margin:2px 2px 0 0;
+}
+
+.tag-caps{background:rgba(167,139,250,0.15);color:#A78BFA;border:1px solid rgba(167,139,250,0.3);}
+.tag-colon{background:rgba(91,196,232,0.12);color:#5BC4E8;border:1px solid rgba(91,196,232,0.25);}
+.tag-question{background:rgba(82,199,138,0.12);color:#52C78A;border:1px solid rgba(82,199,138,0.25);}
+.tag-number{background:rgba(232,160,82,0.12);color:#E8A052;border:1px solid rgba(232,160,82,0.25);}
+.tag-mystery{background:rgba(224,82,82,0.12);color:#E05252;border:1px solid rgba(224,82,82,0.25);}
+.tag-ellipsis{background:rgba(201,201,82,0.12);color:#C9C952;border:1px solid rgba(201,201,82,0.25);}
+
+/* ── INTEL CARDS ── */
+.intel-section {
+  background:linear-gradient(145deg, var(--navy3), var(--navy2));
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+}
+
+.intel-section::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.intel-title {
+  font-family:'Cinzel',serif;
+  font-size:0.72rem;
+  letter-spacing:3px;
+  color:var(--gold);
+  margin-bottom:14px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+  text-transform:uppercase;
+}
+
+/* ── STAT GRID ── */
+.pattern-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.pstat {
+  background:rgba(6,14,24,0.6);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 10px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.2s;
+}
+
+.pstat:hover { border-color:var(--border-bright); }
+
+.pstat::after {
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+}
+
+.pstat .val {
+  font-family:'Cinzel',serif;
+  font-size:1.7rem;
+  font-weight:700;
+  color:var(--amber);
+  line-height:1;
+  display:block;
+  text-shadow:0 0 20px rgba(232,184,75,0.4);
+}
+
+.pstat .lbl2 {
+  font-family:'Cinzel',serif;
+  font-size:0.52rem;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-top:6px;
+  display:block;
+}
+
+/* ── TRANSCRIPT SLOTS ── */
+.t-slot {
+  background:linear-gradient(145deg, var(--navy3), var(--navy2));
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+  transition:border-color 0.2s;
+}
+
+.t-slot:hover { border-color:rgba(201,168,76,0.35); }
+
+.t-slot-hdr {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.t-section {
+  background:linear-gradient(145deg, var(--navy3), var(--navy2));
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:14px;
+  position:relative;
+}
+
+.t-section::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent);
+  border-radius:16px 16px 0 0;
+}
+
+.t-title {
+  font-family:'Cinzel',serif;
+  font-size:0.68rem;
+  letter-spacing:2.5px;
+  color:var(--gold);
+  margin-bottom:12px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+  text-transform:uppercase;
+}
+
+/* ── SCORE BARS ── */
+.score-row { margin-bottom:10px; }
+.score-labels { display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px;font-family:'Crimson Pro',serif; }
+.score-track { background:rgba(6,14,24,0.8);border-radius:6px;height:6px;overflow:hidden;border:1px solid var(--border); }
+.score-fill { height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--amber)); }
+
+/* ── PILLS ── */
+.pill {
+  display:inline-block;
+  font-family:'Cinzel',serif;
+  font-size:0.55rem;
+  padding:3px 9px;
+  border-radius:20px;
+  margin:2px;
+  font-weight:600;
+  letter-spacing:0.8px;
+  text-transform:uppercase;
+}
+
+.pp{background:rgba(167,139,250,0.12);color:#A78BFA;border:1px solid rgba(167,139,250,0.25);}
+.pb{background:rgba(91,196,232,0.1);color:#5BC4E8;border:1px solid rgba(91,196,232,0.2);}
+.pr{background:rgba(224,82,82,0.1);color:#E05252;border:1px solid rgba(224,82,82,0.2);}
+.pg{background:rgba(77,200,138,0.1);color:#4DC88A;border:1px solid rgba(77,200,138,0.2);}
+.pa{background:rgba(232,160,82,0.1);color:#E8A052;border:1px solid rgba(232,160,82,0.2);}
+.po{background:rgba(201,201,82,0.1);color:#C9C952;border:1px solid rgba(201,201,82,0.2);}
+
+/* ── CTA ITEMS ── */
+.cta-item {
+  background:rgba(6,14,24,0.6);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:8px;
+  font-family:'Crimson Pro',serif;
+  font-size:0.88rem;
+  border-left:2px solid var(--amber);
+}
+
+/* ── COMPARE COL ── */
+.compare-col {
+  background:rgba(6,14,24,0.5);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+}
+
+.winner {
+  display:inline-block;
+  background:linear-gradient(135deg,var(--gold),var(--amber));
+  color:var(--navy);
+  font-family:'Cinzel',serif;
+  font-size:0.52rem;
+  font-weight:700;
+  padding:2px 7px;
+  border-radius:20px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-left:5px;
+}
+
+/* ── LAYOUT HELPERS ── */
+.controls { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px; }
+.channel-row { display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px; }
+.channel-row input { background:rgba(6,14,24,0.8);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-family:'Crimson Pro',serif;font-size:0.9rem;outline:none;box-sizing:border-box; }
+.channel-row input:focus { border-color:var(--gold); }
+
+/* ── VEO SCENES ── */
+.veo-scene {
+  background:linear-gradient(145deg, rgba(28,46,68,0.6), rgba(12,26,40,0.8));
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:12px;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+
+.veo-scene:hover {
+  border-color:var(--border-bright);
+  box-shadow:0 4px 20px rgba(201,168,76,0.1);
+}
+
+/* ── COPY BTN ── */
+.copy-btn {
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:7px;
+  color:var(--muted);
+  font-family:'Cinzel',serif;
+  font-size:0.55rem;
+  letter-spacing:1px;
+  padding:5px 10px;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-transform:uppercase;
+}
+
+.copy-btn:hover { border-color:var(--gold); color:var(--gold); background:var(--glow); }
+
+/* ── BATCH CARDS ── */
+.batch-card {
+  background:linear-gradient(145deg, var(--navy3), var(--navy2));
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:12px;
+  transition:border-color 0.2s;
+}
+
+.batch-card:hover { border-color:var(--border-bright); }
+
+/* ── DIVIDER ── */
+.divider {
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--border-bright), transparent);
+  margin:28px 0;
+}
+
+/* ── DOWNLOAD BTN ── */
+#downloadBtn {
+  background:linear-gradient(135deg,var(--gold),var(--amber));
+  border:none;
+  border-radius:10px;
+  color:var(--navy);
+  font-family:'Cinzel',serif;
+  font-size:0.65rem;
+  letter-spacing:2px;
+  padding:9px 16px;
+  cursor:pointer;
+  visibility:hidden;
+  font-weight:700;
+  text-transform:uppercase;
+  transition:all 0.2s;
+  box-shadow:0 4px 16px rgba(201,168,76,0.3);
+}
+
+#downloadBtn:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(201,168,76,0.45); }
+
+/* ── COPY ALL BTN ── */
+#veoCopyAllBtn {
+  display:none;
+  background:transparent;
+  border:1px solid var(--border-bright);
+  border-radius:12px;
+  color:var(--gold);
+  font-family:'Cinzel',serif;
+  font-size:0.7rem;
+  letter-spacing:2px;
+  padding:14px 18px;
+  cursor:pointer;
+  white-space:nowrap;
+  font-weight:700;
+  text-transform:uppercase;
+  transition:all 0.2s;
+}
+
+#veoCopyAllBtn:hover {
+  background:var(--gold);
+  color:var(--navy);
+  box-shadow:0 0 24px rgba(201,168,76,0.4);
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--navy2); }
+::-webkit-scrollbar-thumb { background:var(--border-bright); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--gold); }
+
+/* ── ENTRANCE ANIMATIONS ── */
+.tab-panel.active .card,
+.tab-panel.active .t-slot {
+  animation:slideUp 0.3s ease both;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
+<div class="wrap">
+
 <header>
-  <h1>DBH Channel Intelligence</h1>
-  <p>YouTube Analysis, Transcript Analyzer &amp; Veo Prompt Generator</p>
+  <div class="header-eyebrow">Deep Bible History</div>
+  <h1>CHANNEL INTELLIGENCE</h1>
+  <div class="header-sub">YouTube Analysis &bull; Transcript Analyzer &bull; Veo Prompts</div>
+  <div class="header-line"></div>
 </header>
 
 <div class="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('tab-channel',this)">CHANNEL ANALYSIS</button>
-  <button class="tab-btn" onclick="switchTab('tab-transcript',this)">TRANSCRIPT ANALYZER</button>
-  <button class="tab-btn" onclick="switchTab('tab-veo',this)">VEO PROMPTS</button>
+  <button class="tab-btn active" onclick="switchTab('tab-channel',this)">&#9782; Channel Analysis</button>
+  <button class="tab-btn" onclick="switchTab('tab-transcript',this)">&#9997; Transcripts</button>
+  <button class="tab-btn" onclick="switchTab('tab-veo',this)">&#9654; Veo Prompts</button>
 </div>
 
-<!-- TAB 1: CHANNEL ANALYSIS -->
+<!-- TAB 1 -->
 <div id="tab-channel" class="tab-panel active">
   <div class="card">
-    <label class="lbl">YouTube Data API v3 Key</label>
+    <div class="section-label">YouTube API Key</div>
+    <label class="lbl">Data API v3 Key</label>
     <input type="password" id="ytApiKey" placeholder="AIza...">
-    <p style="font-size:0.71rem;color:var(--muted);margin-top:5px;">Free key from <a href="https://console.cloud.google.com/" target="_blank" style="color:var(--amber);">Google Cloud Console</a> - Enable YouTube Data API v3 - Create credentials</p>
+    <p style="font-size:0.82rem;color:var(--muted);margin-top:8px;font-style:italic;">Free key from <a href="https://console.cloud.google.com/" target="_blank" style="color:var(--gold);">Google Cloud Console</a> &mdash; Enable YouTube Data API v3 &mdash; Create credentials</p>
   </div>
+
   <div class="card">
-    <div style="font-size:0.73rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;">Competitor Channels</div>
+    <div class="section-label">Competitor Channels</div>
     <div id="channelInputs">
       <div class="channel-row">
         <input type="text" placeholder="Channel ID (UCxxxxxx)" class="ch-id">
         <input type="text" placeholder="Nickname (e.g. Bible Origins)" class="ch-name">
-        <button class="remove-btn" onclick="removeRow(this)">x</button>
+        <button class="remove-btn" onclick="removeRow(this)">&#10005;</button>
       </div>
     </div>
-    <button class="add-btn" onclick="addRow()">+ Add Channel</button>
+    <button class="add-btn" onclick="addRow()">&#43; Add Channel</button>
   </div>
+
   <div class="controls">
-    <div><label class="lbl">Videos per channel</label>
-      <select id="vidCount"><option value="10">10 videos</option><option value="20" selected>20 videos</option><option value="30">30 videos</option><option value="50">50 videos</option></select>
-    </div>
-    <div><label class="lbl">Sort by</label>
-      <select id="sortOrder"><option value="date">Most Recent</option><option value="viewCount">Most Viewed</option></select>
-    </div>
+    <div><label class="lbl">Videos per Channel</label>
+      <select id="vidCount"><option value="10">10 videos</option><option value="20" selected>20 videos</option><option value="30">30 videos</option><option value="50">50 videos</option></select></div>
+    <div><label class="lbl">Sort By</label>
+      <select id="sortOrder"><option value="date">Most Recent</option><option value="viewCount">Most Viewed</option></select></div>
   </div>
-  <button class="run-btn" id="runBtn" onclick="runAnalysis()">ANALYSE CHANNELS</button>
+
+  <button class="run-btn" id="runBtn" onclick="runAnalysis()">&#128269; Analyse Channels</button>
   <div class="status-bar" id="statusBar"><div class="spinner"></div><span id="statusText">Fetching...</span></div>
   <div id="errorBox"></div>
+
   <div id="results" style="display:none;">
     <div class="results-hdr">Channel Data</div>
     <div id="channelCards"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:14px;">
-      <div class="results-hdr" style="margin-bottom:0;">AI Intelligence Report</div>
-      <button id="downloadBtn" onclick="downloadReport()" style="background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:8px;color:var(--navy);font-family:serif;font-size:0.9rem;letter-spacing:1.5px;padding:8px 14px;cursor:pointer;visibility:hidden;">DOWNLOAD PDF</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:16px;">
+      <div class="results-hdr" style="margin-bottom:0;">Intelligence Report</div>
+      <button id="downloadBtn" onclick="downloadReport()">&#11015; Download PDF</button>
     </div>
     <div id="intelReport"></div>
   </div>
 </div>
 
-<!-- TAB 2: TRANSCRIPT ANALYZER -->
+<!-- TAB 2 -->
 <div id="tab-transcript" class="tab-panel">
-  <div class="card"><p style="font-size:0.8rem;color:var(--muted);line-height:1.6;">Add up to 3 video transcripts. Extract from YouTube URL or paste manually. Analyses each individually then compares side by side.</p></div>
+  <div class="card"><p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;">Add up to 3 competitor transcripts. Extract automatically from YouTube or paste manually. The tool analyses each video individually then compares them side by side.</p></div>
+
   <div id="tSlots">
     <div class="t-slot">
       <div class="t-slot-hdr">
-        <span style="font-family:serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 1</span>
-        <button class="icon-btn" onclick="fetchTranscript(0)">Extract Transcript</button>
+        <span style="font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:2px;color:var(--amber);">Video 1</span>
+        <button class="icon-btn" onclick="fetchTranscript(0)">&#11123; Extract</button>
       </div>
       <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
-      <input type="text" class="t-url-input" placeholder="YouTube URL (for auto-extract)" style="margin-bottom:8px;">
-      <textarea class="txt t-text-input" placeholder="Paste transcript here or use Extract above..."></textarea>
+      <input type="text" class="t-url-input" placeholder="YouTube URL (for auto-extract)..." style="margin-bottom:8px;">
+      <textarea class="txt t-text-input" placeholder="Paste transcript here, or use Extract above..."></textarea>
     </div>
     <div class="t-slot">
       <div class="t-slot-hdr">
-        <span style="font-family:serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 2</span>
-        <button class="icon-btn" onclick="fetchTranscript(1)">Extract Transcript</button>
+        <span style="font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:2px;color:var(--amber);">Video 2</span>
+        <button class="icon-btn" onclick="fetchTranscript(1)">&#11123; Extract</button>
       </div>
       <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
-      <input type="text" class="t-url-input" placeholder="YouTube URL (for auto-extract)" style="margin-bottom:8px;">
+      <input type="text" class="t-url-input" placeholder="YouTube URL..." style="margin-bottom:8px;">
       <textarea class="txt t-text-input" placeholder="Paste transcript here..."></textarea>
     </div>
     <div class="t-slot">
       <div class="t-slot-hdr">
-        <span style="font-family:serif;font-size:1rem;letter-spacing:1.5px;color:var(--amber);">Video 3</span>
-        <button class="icon-btn" onclick="fetchTranscript(2)">Extract Transcript</button>
+        <span style="font-family:'Cinzel',serif;font-size:0.9rem;letter-spacing:2px;color:var(--amber);">Video 3</span>
+        <button class="icon-btn" onclick="fetchTranscript(2)">&#11123; Extract</button>
       </div>
       <input type="text" class="t-title-input" placeholder="Video title..." style="margin-bottom:8px;">
-      <input type="text" class="t-url-input" placeholder="YouTube URL (for auto-extract)" style="margin-bottom:8px;">
+      <input type="text" class="t-url-input" placeholder="YouTube URL..." style="margin-bottom:8px;">
       <textarea class="txt t-text-input" placeholder="Paste transcript here..."></textarea>
     </div>
   </div>
-  <button class="run-btn" id="tRunBtn" onclick="runTranscriptAnalysis()">ANALYSE TRANSCRIPTS</button>
+
+  <button class="run-btn" id="tRunBtn" onclick="runTranscriptAnalysis()">&#128300; Analyse Transcripts</button>
   <div class="status-bar" id="tStatusBar"><div class="spinner"></div><span id="tStatusText">Analysing...</span></div>
   <div id="tErrorBox"></div>
   <div id="tResults"></div>
 </div>
 
-<!-- TAB 3: VEO PROMPT GENERATOR -->
+<!-- TAB 3 -->
 <div id="tab-veo" class="tab-panel">
-  <div class="card"><p style="font-size:0.8rem;color:var(--muted);line-height:1.6;">Paste your DBH script below. The AI breaks it into scenes and generates an optimised Google Flow / Veo prompt for every scene.</p></div>
+  <div class="card"><p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;">Paste your DBH script below. The AI breaks it into cinematic scenes and generates an optimised Google Flow &sol; Veo prompt for every scene &mdash; ready to paste directly into Google Flow.</p></div>
+
   <div class="card">
+    <div class="section-label">Scene Settings</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-      <div><label class="lbl">Video Topic / Title</label><input type="text" id="veoTitle" placeholder="e.g. The Lost Tomb of Jesus"></div>
+      <div><label class="lbl">Video Title</label><input type="text" id="veoTitle" placeholder="e.g. The Lost Tomb of Jesus"></div>
       <div><label class="lbl">Scene Duration</label>
-        <select id="veoDuration"><option value="5">5 seconds</option><option value="8" selected>8 seconds</option><option value="10">10 seconds</option></select>
-      </div>
+        <select id="veoDuration"><option value="5">5 seconds</option><option value="8" selected>8 seconds</option><option value="10">10 seconds</option></select></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
       <div><label class="lbl">Visual Style</label>
@@ -181,69 +879,47 @@ input:focus,select:focus,.txt:focus{border-color:var(--gold);}
           <option value="cinematic photorealistic">Cinematic Photorealistic</option>
           <option value="documentary style">Documentary Style</option>
           <option value="epic historical drama">Epic Historical Drama</option>
-        </select>
-      </div>
+        </select></div>
       <div><label class="lbl">Aspect Ratio</label>
-        <select id="veoRatio"><option value="16:9" selected>16:9 YouTube</option><option value="9:16">9:16 Shorts</option></select>
-      </div>
+        <select id="veoRatio"><option value="16:9" selected>16:9 YouTube</option><option value="9:16">9:16 Shorts</option></select></div>
     </div>
     <div><label class="lbl">Character Reference</label>
-      <input type="text" id="veoCharRef" value="Levantine male figure, olive skin, dark curly hair, dark eyes, weathered face, first-century wool robe, sandals">
-    </div>
+      <input type="text" id="veoCharRef" value="Levantine male figure, olive skin, dark curly hair, dark eyes, weathered face, first-century wool robe, sandals"></div>
   </div>
+
   <div class="card">
-    <label class="lbl">Paste Your Script</label>
+    <div class="section-label">Script Input</div>
     <textarea class="txt" id="veoScript" style="min-height:160px;" placeholder="Paste your full DBH script here..."></textarea>
-    <div style="display:flex;gap:8px;margin-top:10px;">
-      <button onclick="generateVeoPrompts()" id="veoGenBtn" class="run-btn" style="margin-bottom:0;flex:1;">GENERATE VEO PROMPTS</button>
-      <button onclick="copyAllPrompts()" id="veoCopyAllBtn" style="display:none;background:var(--navy3);border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-family:serif;font-size:0.9rem;letter-spacing:1.5px;padding:13px 14px;cursor:pointer;white-space:nowrap;">COPY ALL</button>
+    <div style="display:flex;gap:10px;margin-top:12px;">
+      <button onclick="generateVeoPrompts()" id="veoGenBtn" class="run-btn" style="margin-bottom:0;flex:1;">&#9654; Generate Veo Prompts</button>
+      <button onclick="copyAllPrompts()" id="veoCopyAllBtn">&#128203; Copy All Prompts</button>
     </div>
   </div>
+
   <div class="status-bar" id="veoStatusBar"><div class="spinner"></div><span id="veoStatusText">Generating...</span></div>
   <div id="veoErrorBox"></div>
   <div id="veoResults"></div>
 
-  <!-- ELEVENLABS BATCH SPLITTER -->
-  <div style="margin-top:28px;">
-    <div style="font-family:serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">VOICEOVER BATCH SPLITTER</div>
-    <div class="card">
-      <p style="font-size:0.8rem;color:var(--muted);line-height:1.6;margin-bottom:14px;">Paste your full script below. The tool splits it into ElevenLabs-ready batches — each under the character limit, split at natural sentence breaks.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
-        <div>
-          <label class="lbl">Number of Batches</label>
-          <select id="batchCount">
-            <option value="6">6 batches</option>
-            <option value="8">8 batches</option>
-            <option value="10">10 batches</option>
-            <option value="12" selected>12 batches (DBH standard)</option>
-            <option value="15">15 batches</option>
-            <option value="20">20 batches</option>
-          </select>
-        </div>
-        <div>
-          <label class="lbl">Max Chars per Batch</label>
-          <select id="batchMaxChars">
-            <option value="2500">2,500 chars</option>
-            <option value="4000" selected>4,000 chars (ElevenLabs free)</option>
-            <option value="5000">5,000 chars</option>
-            <option value="8000">8,000 chars (ElevenLabs paid)</option>
-          </select>
-        </div>
-        <div>
-          <label class="lbl">Split Mode</label>
-          <select id="batchSplitMode">
-            <option value="equal" selected>Equal parts</option>
-            <option value="sentence">At sentence breaks</option>
-            <option value="paragraph">At paragraph breaks</option>
-          </select>
-        </div>
-      </div>
-      <label class="lbl">Paste Script for Splitting</label>
-      <textarea class="txt" id="batchScript" style="min-height:140px;" placeholder="Paste your full DBH script here to split into ElevenLabs batches..."></textarea>
-      <button onclick="splitIntoBatches()" style="width:100%;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:10px;color:var(--navy);font-family:serif;font-size:1.1rem;letter-spacing:2px;padding:13px;cursor:pointer;margin-top:10px;">SPLIT INTO BATCHES</button>
+  <div class="divider"></div>
+
+  <!-- BATCH SPLITTER -->
+  <div class="results-hdr">Voiceover Batch Splitter</div>
+  <div class="card">
+    <p style="font-size:0.9rem;color:var(--muted);line-height:1.7;font-style:italic;margin-bottom:16px;">Paste your full script to split into ElevenLabs-ready batches. Each batch stays under the character limit, split at natural breaks.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div><label class="lbl">Number of Batches</label>
+        <select id="batchCount"><option value="6">6 batches</option><option value="8">8 batches</option><option value="10">10 batches</option><option value="12" selected>12 (DBH Standard)</option><option value="15">15 batches</option><option value="20">20 batches</option></select></div>
+      <div><label class="lbl">Max Chars per Batch</label>
+        <select id="batchMaxChars"><option value="2500">2,500 (Free)</option><option value="4000" selected>4,000 (Standard)</option><option value="5000">5,000</option><option value="8000">8,000 (Paid)</option></select></div>
+      <div><label class="lbl">Split Mode</label>
+        <select id="batchSplitMode"><option value="equal" selected>Equal Parts</option><option value="sentence">At Sentences</option><option value="paragraph">At Paragraphs</option></select></div>
     </div>
-    <div id="batchResults"></div>
+    <label class="lbl">Script to Split</label>
+    <textarea class="txt" id="batchScript" style="min-height:130px;" placeholder="Paste your full DBH script here to split into ElevenLabs batches..."></textarea>
+    <button onclick="splitIntoBatches()" class="run-btn" style="margin-top:12px;">&#9889; Split Into Batches</button>
   </div>
+  <div id="batchResults"></div>
+</div>
 
 </div>
 
