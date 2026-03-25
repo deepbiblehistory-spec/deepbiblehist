@@ -2955,7 +2955,7 @@ async function generateVeoBySections() {
       }
     }
     if(!chunkDone&&allScenes.length>0) break;
-    if(ci<chunks.length-1) await new Promise(r=>setTimeout(r,3000));
+    if(ci<chunks.length-1) await new Promise(r=>setTimeout(r,8000)); // 8s between chunks
   }
 
   if(allScenes.length>0) renderVeoScenes(allScenes,title,duration,style,ratio);
@@ -3171,26 +3171,60 @@ async function generateVeoLineByLine(mode) {
       numberedLines + '\n\nGenerate exactly ' + chunk.length + ' scenes now.';
 
     let done=false;
-    for(let retry=0;retry<3&&!done;retry++){
+    const MAX_RETRIES = 5;
+    for(let retry=0; retry<MAX_RETRIES && !done; retry++){
       try{
         if(retry>0){
-          document.getElementById('veoStatusText').textContent='Rate limited — waiting '+(retry*10)+'s...';
-          await new Promise(r=>setTimeout(r,retry*10000));
+          const waitSecs = retry * 20; // 20s, 40s, 60s, 80s
+          document.getElementById('veoStatusText').textContent=
+            'Rate limited — waiting '+waitSecs+'s before retry '+(retry)+'/'+MAX_RETRIES+'...';
+          await new Promise(r=>setTimeout(r,waitSecs*1000));
+          document.getElementById('veoStatusText').textContent=
+            'Retrying scene '+startN+' of '+units.length+'...';
         }
         const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,max_tokens:8000})});
         const data=await res.json();
-        if(!data.success) throw new Error(data.error||'Failed');
+        if(!data.success){
+          const isRateLimit = data.error && (
+            data.error.includes('overload') || data.error.includes('529') ||
+            data.error.includes('rate') || data.error.includes('capacity')
+          );
+          if(isRateLimit && retry < MAX_RETRIES-1) continue;
+          throw new Error(data.error||'Failed');
+        }
         const parsed=parseScenes(data.text||'',allScenes.length);
+        if(parsed.length === 0 && retry < MAX_RETRIES-1){
+          // Empty parse — likely malformed response, retry
+          await new Promise(r=>setTimeout(r,5000));
+          continue;
+        }
         allScenes.push(...parsed);
         done=true;
       }catch(err){
-        if(retry===2){
-          document.getElementById('veoErrorBox').innerHTML='<div class="err">Batch failed at scene '+startN+': '+err.message+'. Showing '+allScenes.length+' scenes so far.</div>';
+        if(retry===MAX_RETRIES-1){
+          if(allScenes.length > 0){
+            document.getElementById('veoErrorBox').innerHTML=
+              '<div class="err">Stopped at scene '+startN+' after '+MAX_RETRIES+' retries: '+err.message+
+              '. '+allScenes.length+' scenes generated so far.</div>';
+          } else {
+            // Zero scenes — auto-switch to section mode
+            document.getElementById('veoErrorBox').innerHTML=
+              '<div class="err">Line-by-line mode hit rate limits. Switching to section mode automatically...</div>';
+            await new Promise(r=>setTimeout(r,2000));
+            document.getElementById('veoErrorBox').innerHTML='';
+            btn.disabled=false;
+            btn.textContent='Generate Veo Prompts';
+            document.getElementById('veoStatusBar').style.display='none';
+            await generateVeoBySections();
+            return;
+          }
         }
       }
     }
+    if(!done && allScenes.length === 0) break;
     if(!done) break;
-    if(i+BATCH<units.length) await new Promise(r=>setTimeout(r,3000));
+    // Pause between batches to avoid rate limits
+    if(i+BATCH<units.length) await new Promise(r=>setTimeout(r,8000)); // 8s between batches
   }
 
   if(allScenes.length>0) renderVeoScenes(allScenes,title+' [Line-by-Line — '+allScenes.length+' scenes]',duration,style,ratio);
