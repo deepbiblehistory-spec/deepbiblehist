@@ -2868,6 +2868,28 @@ async function generateVeoBySections() {
       '... (' + allScenes.length + ' scenes so far)';
 
     // Number each paragraph so AI maps 1:1 to scenes
+    // Build character reference block from scanned characters
+    const scannedChars = window._charRefsGenerated || [];
+    let charRefBlock = '';
+    if (scannedChars.length > 0) {
+      charRefBlock = 'AVAILABLE CHARACTER REFERENCES:\n' +
+        scannedChars.map(function(c) {
+          return '- ' + c.name + ' (' + c.gender + ', ' + c.role + '): ' + c.ref;
+        }).join('\n') + '\n\n' +
+        'CHARACTER SELECTION RULE: For each scene, identify which character(s) appear in that paragraph ' +
+        'based on their name, pronouns (he/she/his/her/him/they) or role. ' +
+        'Use ONLY the matching character reference in the Veo prompt. ' +
+        'If she/her/woman/female pronouns appear — use a FEMALE character reference. ' +
+        'If he/him/his/man/male — use a MALE character reference. ' +
+        'If no specific character — use the most contextually appropriate one.\n';
+    } else {
+      charRefBlock = 'CHARACTER: ' + charRef + '\n' +
+        'CHARACTER GENDER RULE: Read the paragraph carefully. If it mentions she/her/woman/female/Mary/' +
+        'Magdalene/mother/daughter/prophetess — use a Levantine FEMALE figure with female features. ' +
+        'If he/him/man/male/Jesus/disciple/prophet — use a Levantine MALE figure. ' +
+        'Match the character gender and appearance to the content of each paragraph.\n';
+    }
+
     const numberedScript = chunkParas.map(function(p, idx) {
       return '[PARAGRAPH ' + (sceneOffset + idx + 1) + ']\n' + p;
     }).join('\n\n');
@@ -2878,8 +2900,8 @@ async function generateVeoBySections() {
       'STYLE: ' + style + '\n' +
       'DURATION: ' + duration + ' seconds per scene\n' +
       'RATIO: ' + ratio + '\n' +
-      'CHARACTER: ' + charRef + '\n' +
       'STARTING SCENE NUMBER: ' + (sceneOffset + 1) + '\n\n' +
+      charRefBlock + '\n' +
       'DBH VISUAL RULES:\n' +
       '- Ancient Middle East, first-century Jerusalem, Judean wilderness\n' +
       '- Chiaroscuro lighting, amber-gold tones, candlelight or sunlight\n' +
@@ -2887,12 +2909,14 @@ async function generateVeoBySections() {
       '- NO modern elements, NO text overlays\n\n' +
       'CRITICAL RULE: Generate EXACTLY ONE scene per numbered paragraph below.\n' +
       'The VOICEOVER field must contain the EXACT TEXT of that paragraph — word for word.\n' +
-      'Do NOT paraphrase, summarise or skip any paragraph.\n\n' +
+      'Do NOT paraphrase, summarise or skip any paragraph.\n' +
+      'Match the character in the Veo prompt to whoever appears in that paragraph.\n\n' +
       'Use EXACTLY this format for each scene:\n' +
       '---SCENE [N]: [SHORT DESCRIPTIVE TITLE]---\n' +
       'VOICEOVER: [copy the paragraph text EXACTLY as written]\n' +
       'SHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in/Slow-push]\n' +
-      'VEO PROMPT: [80-120 word cinematic Veo prompt matching the voiceover content]\n' +
+      'CHARACTER USED: [name of character or Male/Female figure used in this scene]\n' +
+      'VEO PROMPT: [80-120 word cinematic Veo prompt — include the correct character visual reference]\n' +
       '---END SCENE---\n\n' +
       'SCRIPT PARAGRAPHS TO PROCESS:\n\n' +
       numberedScript + '\n\n' +
@@ -2956,6 +2980,7 @@ function parseScenes(text, offset) {
       title: m[2].trim(),
       voiceover: vo.trim(),
       shotType: shot.trim(),
+      charUsed: charUsed.trim(),
       prompt: vp.trim()
     });
   }
@@ -2991,6 +3016,7 @@ function renderVeoScenes(scenes, title, duration, style, ratio) {
       '<div><span style="font-family:serif;font-size:0.95rem;color:var(--gold);">Scene ' + s.num + '</span> ' +
       '<span style="font-size:0.78rem;color:var(--text);">' + s.title + '</span>' +
       (s.shotType ? '<span class="pill pb" style="margin-left:6px;">' + s.shotType + '</span>' : '') +
+      (s.charUsed ? '<span class="pill pg" style="margin-left:4px;">' + s.charUsed + '</span>' : '') +
       '</div>' +
       '<button onclick="copyOnePromptBtn(this)" data-prompt="' + safePrompt + '" style="background:var(--navy3);border:1px solid var(--navy3);border-radius:6px;color:var(--muted);font-size:0.69rem;padding:4px 9px;cursor:pointer;">Copy</button>' +
       '</div>' +
@@ -3102,25 +3128,44 @@ async function generateVeoLineByLine(mode) {
       return '[LINE ' + (startN+j) + ']\n' + u.trim();
     }).join('\n\n');
 
+    // Smart character block
+    const scannedCharsLBL = window._charRefsGenerated || [];
+    let charBlockLBL = '';
+    if (scannedCharsLBL.length > 0) {
+      charBlockLBL = 'AVAILABLE CHARACTER REFERENCES:\n' +
+        scannedCharsLBL.map(function(c) {
+          return '- ' + c.name + ' (' + c.gender + ', ' + c.role + '): ' + c.ref;
+        }).join('\n') + '\n\n' +
+        'CHARACTER SELECTION RULE: For each line, detect which character appears ' +
+        'from their name or pronouns (she/her = female, he/him = male). ' +
+        'Use ONLY the matching character reference in that scene Veo prompt.\n';
+    } else {
+      charBlockLBL = 'CHARACTER: ' + charRef + '\n' +
+        'GENDER RULE: If she/her/woman/female name appears in the line — use a Levantine FEMALE figure. ' +
+        'If he/him/man/male name — use a Levantine MALE figure.\n';
+    }
+
     const prompt =
       'You are a cinematic AI video director for biblical history content.\n\n' +
       'VIDEO: "' + title + '"\n' +
       'STYLE: ' + style + '\n' +
       'DURATION: ' + duration + ' seconds per scene\n' +
-      'RATIO: ' + ratio + '\n' +
-      'CHARACTER: ' + charRef + '\n\n' +
+      'RATIO: ' + ratio + '\n\n' +
+      charBlockLBL + '\n' +
       'DBH VISUAL RULES:\n' +
       '- Ancient Middle East, first-century Jerusalem, Judean wilderness\n' +
       '- Chiaroscuro lighting, amber-gold tones, candlelight or sunlight\n' +
       '- NO modern elements, NO text overlays\n\n' +
       'CRITICAL RULE: Generate EXACTLY ONE scene per numbered line.\n' +
       'The VOICEOVER must be the EXACT TEXT of that line — copied word for word.\n' +
-      'Do NOT paraphrase or summarise. Copy it exactly.\n\n' +
+      'Do NOT paraphrase or summarise. Copy it exactly.\n' +
+      'Use the correct character (male/female) based on who appears in each line.\n\n' +
       'Use EXACTLY this format:\n' +
       '---SCENE [N]: [SHORT TITLE]---\n' +
       'VOICEOVER: [exact line text, word for word]\n' +
       'SHOT TYPE: [Wide/Medium/Close-up/Aerial/Pan/Push-in]\n' +
-      'VEO PROMPT: [80-120 word cinematic Veo prompt]\n' +
+      'CHARACTER USED: [character name or Male/Female figure]\n' +
+      'VEO PROMPT: [80-120 word cinematic Veo prompt with correct character]\n' +
       '---END SCENE---\n\n' +
       'LINES TO PROCESS:\n\n' +
       numberedLines + '\n\nGenerate exactly ' + chunk.length + ' scenes now.';
