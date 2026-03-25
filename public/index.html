@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DBH Channel Intelligence</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://apis.google.com/js/api.js" onload="gapiLoaded()" async defer></script>
-<script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
+<script src="https://apis.google.com/js/api.js" async defer></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
@@ -1970,32 +1970,42 @@ let dbhFolderId = null;
 
 // ── GAPI + GIS INIT ───────────────────────────────────────────────────────
 function gapiLoaded() {
-  gapi.load('client', function() {
-    gapi.client.init({}).then(function() {
-      gapiInited = true;
-      maybeEnableDrive();
+  try {
+    gapi.load('client', function() {
+      gapi.client.init({}).then(function() {
+        gapiInited = true;
+        maybeEnableDrive();
+      }).catch(function(e) { console.log('gapi init error:', e); });
     });
-  });
+  } catch(e) { console.log('gapiLoaded error:', e); }
 }
 
 function gisLoaded() {
-  if (typeof google === 'undefined' || !google.accounts) return;
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: GOOGLE_CLIENT_ID,
-    scope: DRIVE_SCOPE,
-    callback: function(resp) {
-      if (resp.error) {
-        showDriveError('Auth failed: ' + resp.error);
-        return;
+  try {
+    if (typeof google === 'undefined' || !google.accounts) return;
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: DRIVE_SCOPE,
+      callback: function(resp) {
+        if (resp.error) { showDriveError('Auth failed: ' + resp.error); return; }
+        accessToken = resp.access_token;
+        gapi.client.setToken({access_token: accessToken});
+        onDriveConnected();
       }
-      accessToken = resp.access_token;
-      gapi.client.setToken({access_token: accessToken});
-      onDriveConnected();
-    }
-  });
-  gisInited = true;
-  maybeEnableDrive();
+    });
+    gisInited = true;
+    maybeEnableDrive();
+  } catch(e) { console.log('gisLoaded error:', e); }
 }
+
+// Poll for Google APIs to load instead of relying on onload callbacks
+(function pollGoogleAPIs() {
+  setTimeout(function() {
+    if (typeof gapi !== 'undefined' && !gapiInited) gapiLoaded();
+    if (typeof google !== 'undefined' && google.accounts && !gisInited) gisLoaded();
+    if (!gapiInited || !gisInited) pollGoogleAPIs();
+  }, 1000);
+})();
 
 function maybeEnableDrive() {
   if (gapiInited && gisInited) {
@@ -2947,7 +2957,17 @@ async function generateVeoBySections() {
           if(isOverload&&retry<2) continue;
           throw new Error(data.error||'Generation failed');
         }
-        const parsed=parseScenes(data.text||'',sceneOffset);
+        const rawText2 = data.text||'';
+        console.log('SECTION RAW (first 500):', rawText2.slice(0,500));
+        const parsed=parseScenes(rawText2, sceneOffset);
+        console.log('SECTION PARSED SCENES:', parsed.length);
+        if(parsed.length === 0 && !chunkDone){
+          document.getElementById('veoErrorBox').innerHTML =
+            '<div class="err">API responded but no scenes parsed. Raw response:<br><br>' +
+            '<code style="font-size:0.72rem;white-space:pre-wrap;word-break:break-all;">' +
+            rawText2.slice(0,800).replace(/</g,'&lt;').replace(/>/g,'&gt;') +
+            '</code></div>';
+        }
         allScenes.push(...parsed);
         sceneOffset+=parsed.length;
         chunkDone=true;
@@ -2977,24 +2997,72 @@ async function generateVeoBySections() {
 
 function parseScenes(text, offset) {
   const scenes = [];
-  const re = /---SCENE (\d+): (.+?)---([\s\S]*?)---END SCENE---/g;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    const body = m[3];
-    const vo   = (body.match(/VOICEOVER:\s*([\s\S]*?)(?=SHOT TYPE:|VEO PROMPT:|$)/) || [])[1] || '';
-    const shot = (body.match(/SHOT TYPE:\s*(.+?)(?:\n|$)/) || [])[1] || '';
 
-    const vp   = (body.match(/VEO PROMPT:\s*([\s\S]*?)(?=---END|$)/)                || [])[1] || body.trim();
+  // Strategy 1: Standard ---SCENE N: TITLE--- format
+  const re1 = /---SCENE\s*(\d+)[:\-\s]+(.+?)---([\s\S]*?)---END SCENE---/gi;
+  let m;
+  while ((m = re1.exec(text)) !== null) {
+    scenes.push(extractScene(m[1], m[2], m[3], offset + scenes.length));
+  }
+  if (scenes.length > 0) return scenes;
+
+  // Strategy 2: SCENE N: TITLE without dashes
+  const re2 = /(?:^|\n)SCENE\s*(\d+)[:\.\)]\s*([^\n]+)\n([\s\S]*?)(?=(?:\n)SCENE\s*\d+[:\.\)]|$)/gi;
+  while ((m = re2.exec(text)) !== null) {
+    if (m[3].trim().length > 20) {
+      scenes.push(extractScene(m[1], m[2], m[3], offset + scenes.length));
+    }
+  }
+  if (scenes.length > 0) return scenes;
+
+  // Strategy 3: Match VOICEOVER + VEO PROMPT pairs
+  const voMatches = [...text.matchAll(/VOICEOVER:\s*([\s\S]*?)(?=VEO PROMPT:|SHOT TYPE:|SCENE\s*\d+|---)/gi)];
+  const vpMatches = [...text.matchAll(/VEO PROMPT:\s*([\s\S]*?)(?=VOICEOVER:|SCENE\s*\d+|---|$)/gi)];
+  const count = Math.min(voMatches.length, vpMatches.length);
+  for (let i = 0; i < count; i++) {
     scenes.push({
-      num: offset + scenes.length + 1,
-      title: m[2].trim(),
-      voiceover: vo.trim(),
-      shotType: shot.trim(),
-      charUsed: charUsed.trim(),
-      prompt: vp.trim()
+      num: offset + i + 1,
+      title: 'Scene ' + (offset + i + 1),
+      voiceover: voMatches[i][1].trim(),
+      shotType: '',
+      charUsed: '',
+      prompt: vpMatches[i][1].trim()
     });
   }
+  if (scenes.length > 0) return scenes;
+
+  // Strategy 4: Split by blank lines, extract what we can
+  const blocks = text.split(/\n\s*\n/).filter(b => b.trim().length > 50);
+  for (let i = 0; i < blocks.length; i++) {
+    const b = blocks[i];
+    const vp = (b.match(/VEO PROMPT:\s*([\s\S]+)/i) || [])[1] || '';
+    if (vp.trim().length > 30) {
+      scenes.push({
+        num: offset + i + 1,
+        title: 'Scene ' + (offset + i + 1),
+        voiceover: (b.match(/VOICEOVER:\s*(.+)/i) || [])[1] || '',
+        shotType:  (b.match(/SHOT TYPE:\s*(.+)/i)  || [])[1] || '',
+        charUsed:  (b.match(/CHARACTER USED:\s*(.+)/i) || [])[1] || '',
+        prompt: vp.trim().slice(0, 500)
+      });
+    }
+  }
   return scenes;
+}
+
+function extractScene(numStr, titleStr, body, offsetIdx) {
+  const vo       = (body.match(/VOICEOVER:\s*([\s\S]*?)(?=SHOT TYPE:|CHARACTER USED:|VEO PROMPT:|$)/i) || [])[1] || '';
+  const shot     = (body.match(/SHOT TYPE:\s*(.+?)(?:\n|$)/i)       || [])[1] || '';
+  const charUsed = (body.match(/CHARACTER USED:\s*(.+?)(?:\n|$)/i)  || [])[1] || '';
+  const vp       = (body.match(/VEO PROMPT:\s*([\s\S]*?)(?=---END|---SCENE|$)/i) || [])[1] || body.trim();
+  return {
+    num:       offsetIdx + 1,
+    title:     titleStr.trim(),
+    voiceover: vo.trim(),
+    shotType:  shot.trim(),
+    charUsed:  charUsed.trim(),
+    prompt:    vp.trim()
+  };
 }
 
 function renderVeoScenes(scenes, title, duration, style, ratio) {
@@ -3202,11 +3270,22 @@ async function generateVeoLineByLine(mode) {
           if(isRateLimit && retry < MAX_RETRIES-1) continue;
           throw new Error(data.error||'Failed');
         }
-        const parsed=parseScenes(data.text||'',allScenes.length);
+        const rawLBL = data.text || '';
+        console.log('LBL RAW (500):', rawLBL.slice(0,500));
+        const parsed = parseScenes(rawLBL, allScenes.length);
+        console.log('LBL PARSED:', parsed.length);
         if(parsed.length === 0 && retry < MAX_RETRIES-1){
-          // Empty parse — likely malformed response, retry
           await new Promise(r=>setTimeout(r,5000));
           continue;
+        }
+        if(parsed.length === 0){
+          document.getElementById('veoErrorBox').innerHTML =
+            '<div class="err" style="overflow:auto;max-height:300px;">'+
+            '<strong>API responded but no scenes parsed.</strong><br>'+
+            'Check F12 Console for full raw response.<br><br>'+
+            'Preview:<br><code style="font-size:0.7rem;white-space:pre-wrap;">' +
+            rawLBL.slice(0,600).replace(/</g,'&lt;').replace(/>/g,'&gt;') +
+            '</code></div>';
         }
         allScenes.push(...parsed);
         done=true;
