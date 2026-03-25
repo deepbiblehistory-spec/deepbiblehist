@@ -3173,7 +3173,7 @@ async function generateVeoLineByLine(mode) {
   const duration=document.getElementById('veoDuration').value;
   const style=document.getElementById('veoStyle').value;
   const ratio=document.getElementById('veoRatio').value;
-  const charRef=document.getElementById('veoCharRef').value.trim();
+  let charRef=document.getElementById('veoCharRef').value.trim();
   if(!script||script.length<50){document.getElementById('veoErrorBox').innerHTML='<div class="err">Please paste your script first.</div>';return;}
   document.getElementById('veoErrorBox').innerHTML='';
   document.getElementById('veoResults').innerHTML='';
@@ -3181,6 +3181,24 @@ async function generateVeoLineByLine(mode) {
   const btn=document.getElementById('veoGenBtn');
   btn.disabled=true;
   document.getElementById('veoStatusBar').style.display='flex';
+
+  // Auto-scan characters if not done yet — same as section mode
+  if (!window._charRefsGenerated) {
+    document.getElementById('veoStatusText').textContent='Step 1/2: Scanning characters from script...';
+    try {
+      const chars = await generateCharacterRefs(script, title);
+      if (chars && chars.length > 0) {
+        window._charRefsGenerated = chars;
+        charRef = chars.map(function(c){ return c.ref; }).join(' | ');
+        document.getElementById('veoCharRef').value = chars[0].ref;
+        renderCharacterCards(chars);
+      }
+    } catch(e) { console.log('Character scan skipped:', e.message); }
+    document.getElementById('veoStatusText').textContent='Step 2/2: Generating Veo scenes...';
+  } else {
+    // Already scanned — use existing refs
+    charRef = window._charRefsGenerated.map(function(c){ return c.ref; }).join(' | ');
+  }
 
   let units=[];
   if(mode==='linebytime'){
